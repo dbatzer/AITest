@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCIS 1110: Fundamentals of Information Literacy & Systems | CNM Portfolio</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cnm: {
+                            blue: '#002B49',
+                            gold: '#FFC72C',
+                            accent: '#00A3E0',
+                            dark: '#0B1120',
+                            card: '#161F33',
+                            border: '#1E293B'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b1120;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FFC72C;
+        }
+
+        /* Glassmorphism panel styling */
+        .glass-panel {
+            background: rgba(22, 31, 51, 0.85);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-panel-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-panel-hover:hover {
+            border-color: rgba(255, 199, 44, 0.45);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px -10px rgba(0, 163, 224, 0.3);
+        }
+
+        /* Background grid overlay */
+        .grid-bg {
+            background-size: 36px 36px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+
+        /* Pulse glow for status elements */
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.5; filter: drop-shadow(0 0 12px rgba(255, 199, 44, 0.4)); }
+            50% { opacity: 0.9; filter: drop-shadow(0 0 22px rgba(0, 163, 224, 0.6)); }
+        }
+
+        .glow-effect {
+            animation: pulseGlow 4s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-cnm-dark text-slate-100 font-sans min-h-screen relative overflow-x-hidden grid-bg">
+
+    <!-- Interactive Canvas Background -->
+    <canvas id="neuralCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-35"></canvas>
+
+    <div class="relative z-10 flex flex-col min-h-screen">
+        
+        <!-- Header / Navigation Bar -->
+        <header class="sticky top-0 z-40 glass-panel border-b border-slate-800/80">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                
+                <!-- Logo & Institution Branding -->
+                <a href="#" class="flex items-center gap-3 group">
+                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-cnm-blue via-slate-900 to-cnm-gold p-0.5 shadow-lg shadow-cnm-gold/10 group-hover:scale-105 transition-transform flex items-center justify-center">
+                        <div class="w-full h-full bg-cnm-blue rounded-[10px] flex items-center justify-center text-cnm-gold font-black text-lg">
+                            BCIS
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-extrabold text-lg tracking-tight text-white group-hover:text-cnm-gold transition-colors">BCIS 1110</span>
+                            <span class="text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-full bg-cnm-gold/15 text-cnm-gold border border-cnm-gold/30 font-bold">Sec D91</span>
+                        </div>
+                        <p class="text-xs text-slate-400 font-mono">Fundamentals of Info Literacy & Systems</p>
+                    </div>
+                </a>
+
+                <!-- Header Information & Actions -->
+                <div class="flex items-center gap-4">
+                    <div class="hidden lg:flex items-center gap-6 text-xs font-medium text-slate-300 mr-2">
+                        <span class="flex items-center gap-2">
+                            <i class="fa-solid fa-user-tie text-cnm-gold"></i>
+                            <span class="text-slate-400">Instructor:</span> David Batzer
+                        </span>
+                        <span class="flex items-center gap-2">
+                            <i class="fa-solid fa-calendar-days text-cnm-accent"></i>
+                            <span class="text-slate-400">Term:</span> Summer 2026 (CRN 95782)
+                        </span>
+                        <span class="flex items-center gap-2">
+                            <i class="fa-solid fa-graduation-cap text-emerald-400"></i>
+                            <span class="text-slate-400">School:</span> BHT / Business
+                        </span>
+                    </div>
+
+                    <a href="#activities" class="px-4 py-2 rounded-xl bg-cnm-gold text-slate-950 font-bold text-xs hover:bg-yellow-400 transition-colors shadow-lg shadow-cnm-gold/20 flex items-center gap-2">
+                        <i class="fa-solid fa-laptop-code text-xs"></i> Activity Hub
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            
+            <!-- Hero Banner Section -->
+            <section class="mb-10 relative rounded-3xl p-6 sm:p-10 overflow-hidden glass-panel border border-slate-700/60 shadow-2xl">
+                <!-- Background ambient lights -->
+                <div class="absolute -top-24 -right-24 w-96 h-96 bg-cnm-accent/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-cnm-gold/15 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    <div class="lg:col-span-8">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cnm-blue/80 border border-cnm-accent/40 text-xs text-cnm-accent font-mono mb-4">
+                            <i class="fa-solid fa-university text-cnm-gold"></i>
+                            <span>Central New Mexico Community College • School of Business, Hospitality & Technology</span>
+                        </div>
+
+                        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
+                            BCIS 1110: <span class="bg-gradient-to-r from-cnm-gold via-amber-300 to-cnm-accent bg-clip-text text-transparent">Information Literacy & Systems Hub</span>
+                        </h1>
+
+                        <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-6">
+                            Welcome to the student submission and interactive laboratory hub for <strong>BCIS 1110 (CRN 95782)</strong>. This digital portfolio showcases completed lab modules covering productivity software (MS Office 365 / SIMnet), data analysis, file management, computer security, CRAAP source evaluation, and responsible Generative AI utilization.
+                        </p>
+
+                        <!-- Quick Course Info Badges -->
+                        <div class="flex flex-wrap gap-2 text-xs font-mono mb-6">
+                            <span class="px-3 py-1.5 rounded-lg bg-slate-900/90 text-slate-300 border border-slate-700/80 flex items-center gap-2">
+                                <i class="fa-solid fa-envelope text-cnm-gold"></i> dbatzer@cnm.edu
+                            </span>
+                            <span class="px-3 py-1.5 rounded-lg bg-slate-900/90 text-slate-300 border border-slate-700/80 flex items-center gap-2">
+                                <i class="fa-solid fa-book-open text-cnm-accent"></i> SIMnet & MS Office 365
+                            </span>
+                            <span class="px-3 py-1.5 rounded-lg bg-slate-900/90 text-slate-300 border border-slate-700/80 flex items-center gap-2">
+                                <i class="fa-solid fa-clock text-emerald-400"></i> Due: Fridays @ 11:58 PM
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Course Syllabus Stat Card -->
+                    <div class="lg:col-span-4 bg-slate-900/90 rounded-2xl p-5 border border-slate-800 shadow-inner">
+                        <h3 class="text-xs font-bold text-cnm-gold uppercase tracking-wider mb-3 flex items-center justify-between">
+                            <span>Syllabus Highlights</span>
+                            <i class="fa-solid fa-list-check"></i>
+                        </h3>
+                        
+                        <div class="space-y-3 text-xs">
+                            <div class="flex items-start gap-2.5 p-2 rounded-lg bg-slate-800/60 border border-slate-700/50">
+                                <i class="fa-solid fa-shield-halved text-cnm-accent mt-0.5"></i>
+                                <div>
+                                    <span class="font-bold text-white block">SLO 1 & 2: Ethics & Security</span>
+                                    <span class="text-slate-400">Cybercrime, privacy, and legal information usage.</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-2.5 p-2 rounded-lg bg-slate-800/60 border border-slate-700/50">
+                                <i class="fa-solid fa-magnifying-glass text-cnm-gold mt-0.5"></i>
+                                <div>
+                                    <span class="font-bold text-white block">SLO 3: CRAAP Evaluation</span>
+                                    <span class="text-slate-400">Analyzing bias, accuracy, and source relevance.</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-2.5 p-2 rounded-lg bg-slate-800/60 border border-slate-700/50">
+                                <i class="fa-solid fa-chart-line text-emerald-400 mt-0.5"></i>
+                                <div>
+                                    <span class="font-bold text-white block">SLO 4: Productivity Suite</span>
+                                    <span class="text-slate-400">Word, Excel, PowerPoint, Access & SIMnet.</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-2.5 p-2 rounded-lg bg-slate-800/60 border border-slate-700/50">
+                                <i class="fa-solid fa-robot text-purple-400 mt-0.5"></i>
+                                <div>
+                                    <span class="font-bold text-white block">SLO 5: GenAI & Citation</span>
+                                    <span class="text-slate-400">AI citation rules, prompt logs & verbal defense.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Activities Section Header -->
+            <div id="activities" class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+                        <i class="fa-solid fa-folder-tree text-cnm-gold"></i>
+                        <span>BCIS 1110 Activities (01 - 10)</span>
+                    </h2>
+                    <p class="text-slate-400 text-xs sm:text-sm mt-1">Select any module to view live specifications, launcher links, or full source files.</p>
+                </div>
+
+                <!-- Search and Tag Filter Bar -->
+                <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                    <!-- Search input -->
+                    <div class="relative min-w-[240px]">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                        <input type="text" id="searchInput" placeholder="Search activities or topics..." 
+                            class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cnm-gold transition-colors">
+                    </div>
+
+                    <!-- Category dropdown / filter -->
+                    <select id="categoryFilter" class="bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-cnm-gold transition-colors">
+                        <option value="all">All BCIS Topics</option>
+                        <option value="office">MS Office & SIMnet</option>
+                        <option value="security">Security & Ethics</option>
+                        <option value="infolit">Info Literacy & Sources</option>
+                        <option value="tech">Systems & Tech</option>
+                        <option value="ai">GenAI & Citation</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Activity Grid Dynamic Container -->
+            <div id="activityGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Activity cards generated dynamically via JavaScript -->
+            </div>
+
+            <!-- BCIS 1110 Syllabus & AI Guidelines Card -->
+            <section class="mt-12 glass-panel rounded-3xl p-6 sm:p-8 border border-slate-800">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                    
+                    <div class="lg:col-span-1">
+                        <div class="inline-flex p-3 rounded-2xl bg-cnm-blue/80 border border-cnm-gold/30 text-cnm-gold mb-4 text-2xl">
+                            <i class="fa-solid fa-scale-balanced"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2">BCIS 1110 Generative AI Policy</h3>
+                        <p class="text-slate-300 text-xs leading-relaxed mb-4">
+                            Artificial Intelligence (ChatGPT, Copilot, Gemini) is utilized as a tool for assistance—not substitution. Students are expected to understand all submitted work and provide formal prompt citations.
+                        </p>
+                        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-xs font-mono text-slate-300">
+                            <span class="text-cnm-gold font-bold block mb-1">APA Prompt Citation Format:</span>
+                            <span class="text-slate-400">"Ask your AI tool at the end of a session: 'Please cite this interaction in APA format and include the original prompt.'"</span>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-2 border-t lg:border-t-0 lg:border-l border-slate-800 pt-6 lg:pt-0 lg:pl-8">
+                        <h3 class="text-lg font-bold text-slate-200 mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-laptop-file text-cnm-accent"></i>
+                            <span>Course Tools & Software Requirements</span>
+                        </h3>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="p-4 rounded-xl bg-slate-900/70 border border-slate-800">
+                                <h4 class="font-bold text-sm text-cnm-gold mb-1 flex items-center gap-2">
+                                    <i class="fa-solid fa-cloud"></i> SIMnet & SIMbook
+                                </h4>
+                                <p class="text-xs text-slate-300 leading-relaxed">
+                                    Integrated learning system for MS Word, Excel, Access, and PowerPoint guided projects and simulations. Included with CNM tuition (includED).
+                                </p>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-900/70 border border-slate-800">
+                                <h4 class="font-bold text-sm text-cnm-accent mb-1 flex items-center gap-2">
+                                    <i class="fa-solid fa-desktop"></i> CNM Virtual Desktop
+                                </h4>
+                                <p class="text-xs text-slate-300 leading-relaxed">
+                                    Used by Mac and Chromebook users to access full MS Office 2021 / 365 features for complex Excel and Access projects: 
+                                    <a href="https://virtualdesktop.cnm.edu" target="_blank" class="text-cnm-gold hover:underline font-mono">virtualdesktop.cnm.edu</a>
+                                </p>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-900/70 border border-slate-800">
+                                <h4 class="font-bold text-sm text-emerald-400 mb-1 flex items-center gap-2">
+                                    <i class="fa-solid fa-filter"></i> CRAAP Evaluation Framework
+                                </h4>
+                                <p class="text-xs text-slate-300 leading-relaxed">
+                                    Formal source auditing technique assessing Currency, Relevance, Authority, Accuracy, and Purpose for information literacy.
+                                </p>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-900/70 border border-slate-800">
+                                <h4 class="font-bold text-sm text-purple-400 mb-1 flex items-center gap-2">
+                                    <i class="fa-solid fa-headset"></i> CNM ITS & Brightspace Help
+                                </h4>
+                                <p class="text-xs text-slate-300 leading-relaxed">
+                                    Tech support line: (505) 224-HELP (3457). 24/7 Brightspace support available directly inside <a href="http://mycourses.cnm.edu" target="_blank" class="text-cnm-accent hover:underline font-mono">mycourses.cnm.edu</a>.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-auto border-t border-slate-800/80 glass-panel py-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="text-xs text-slate-400 text-center sm:text-left">
+                    <p>© 2026 CNM BCIS 1110 Activity Repository • Instructor: David Batzer</p>
+                    <p class="mt-1 font-mono text-slate-500">Target Files: activity01.html ... activity10.html</p>
+                </div>
+                <div class="flex items-center gap-4 text-xs text-slate-400">
+                    <a href="https://www.cnm.edu" target="_blank" rel="noopener" class="hover:text-cnm-gold transition-colors">
+                        <i class="fa-solid fa-graduation-cap mr-1"></i> CNM Main Site
+                    </a>
+                    <a href="http://mycourses.cnm.edu" target="_blank" rel="noopener" class="hover:text-cnm-gold transition-colors">
+                        <i class="fa-solid fa-chalkboard-user mr-1"></i> Brightspace
+                    </a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Quick View Specs Modal -->
+    <div id="quickViewModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md hidden transition-opacity">
+        <div class="bg-cnm-card border border-slate-700 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+            <button id="closeModalBtn" class="absolute top-5 right-5 text-slate-400 hover:text-white transition-colors text-xl w-8 h-8 flex items-center justify-center rounded-full bg-slate-800">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center gap-3 mb-4">
+                <span id="modalBadge" class="font-mono text-xs px-2.5 py-1 rounded-full bg-cnm-gold/20 text-cnm-gold border border-cnm-gold/40 font-bold">ACTIVITY 01</span>
+                <span id="modalCategory" class="text-xs text-slate-400 font-mono uppercase tracking-wider">OFFICE PRODUCTIVITY</span>
+            </div>
+
+            <h3 id="modalTitle" class="text-2xl font-bold text-white mb-3">Activity Title</h3>
+            <p id="modalDescription" class="text-slate-300 text-sm leading-relaxed mb-6">Activity detailed breakdown...</p>
+
+            <div class="bg-slate-900/80 rounded-2xl p-4 border border-slate-800 mb-6 font-mono text-xs">
+                <div class="text-slate-400 mb-2 font-sans font-semibold text-xs tracking-wider uppercase">BCIS 1110 Specifications:</div>
+                <ul class="space-y-2 text-slate-300">
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-file-code text-cnm-gold"></i> Target File: <span id="modalFilename" class="text-cnm-accent font-bold">activity01.html</span></li>
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-bullseye text-cnm-gold"></i> Course SLO: <span id="modalSlo" class="text-slate-200">SLO 4 (Productivity Tools)</span></li>
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-layer-group text-cnm-gold"></i> Tool Stack: <span id="modalStack">HTML5, SIMnet Concepts, JS</span></li>
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-400"></i> Status: <span class="text-emerald-400">Ready to Launch</span></li>
+                </ul>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <a id="modalLaunchBtn" href="#" target="_blank" class="flex-1 py-3 px-4 rounded-xl bg-cnm-gold text-slate-950 font-bold text-center text-sm hover:bg-yellow-400 transition-colors shadow-lg shadow-cnm-gold/20 flex items-center justify-center gap-2">
+                    <span>Launch Activity</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+                <button id="modalCopyBtn" class="py-3 px-4 rounded-xl bg-slate-800 text-slate-200 hover:bg-slate-700 transition-colors text-sm font-semibold flex items-center gap-2">
+                    <i class="fa-solid fa-copy"></i>
+                    <span>Copy Link</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 bg-slate-900 border border-cnm-gold text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <i class="fa-solid fa-circle-check text-cnm-gold text-lg"></i>
+        <span id="toastMessage" class="text-sm font-medium">Link copied to clipboard!</span>
+    </div>
+
+    <script>
+        // BCIS 1110 Curriculum-Aligned Activity Dataset (Activities 01 - 10)
+        const activities = [
+            {
+                id: "01",
+                file: "activity01.html",
+                title: "File Management & Windows 11 Explorer",
+                category: "office",
+                categoryLabel: "MS Office & SIMnet",
+                slo: "SLO 4: Productivity Tools & File Systems",
+                icon: "fa-folder-open",
+                description: "Interactive file management environment modeling directory trees, path naming conventions, file compression (.zip), and Windows 11 storage structures.",
+                stack: "HTML5, Vanilla JS, File System API, Windows 11 UI",
+                tags: ["File Management", "Windows 11", "Module 2"]
+            },
+            {
+                id: "02",
+                file: "activity02.html",
+                title: "Computer Hardware & OS Architecture Analyzer",
+                category: "tech",
+                categoryLabel: "Systems & Tech",
+                slo: "SLO 5: Current Information Systems",
+                icon: "fa-microchip",
+                description: "Interactive breakdown of computer hardware components (CPU, RAM, SSD), green computing sustainability, and operating system kernels.",
+                stack: "HTML5 Canvas, ES6 State Engine, Hardware Metrics",
+                tags: ["Hardware", "Operating Systems", "Module 2-3"]
+            },
+            {
+                id: "03",
+                file: "activity03.html",
+                title: "MS Word Communications & Document Formatter",
+                category: "office",
+                categoryLabel: "MS Office & SIMnet",
+                slo: "SLO 4: Communications & Productivity Tools",
+                icon: "fa-file-word",
+                description: "Document design studio featuring live MLA vs. APA formatting toggles, header/footer configuration, typography metrics, and SIMbook project checks.",
+                stack: "DOM Manipulator, Modern CSS Flex, MLA/APA Parser",
+                tags: ["MS Word", "MLA/APA", "Module 3-5"]
+            },
+            {
+                id: "04",
+                file: "activity04.html",
+                title: "Information Literacy & CRAAP Source Evaluator",
+                category: "infolit",
+                categoryLabel: "Info Literacy & Sources",
+                slo: "SLO 3: Evaluate Bias, Accuracy & Source Relevance",
+                icon: "fa-magnifying-glass-chart",
+                description: "CNM Library Database research simulator with interactive CRAAP scoring (Currency, Relevance, Authority, Accuracy, Purpose) for source validation.",
+                stack: "CNM Database API, Rating Matrix, Regex Audit",
+                tags: ["CRAAP Report", "Database Search", "Module 4 & 6"]
+            },
+            {
+                id: "05",
+                file: "activity05.html",
+                title: "Computer Security & Cybercrime Simulator",
+                category: "security",
+                categoryLabel: "Security & Ethics",
+                slo: "SLO 2: Legal, Safe & Ethical Resource Usage",
+                icon: "fa-user-shield",
+                description: "Cyberthreat interactive lab covering malware vectors, Google Self-Audits, phishing detection, password strength, and everyday cybercrime prevention.",
+                stack: "Cyber Threat Engine, Password Math, Privacy Audit",
+                tags: ["Cybersecurity", "Malware", "Module 5-6"]
+            },
+            {
+                id: "06",
+                file: "activity06.html",
+                title: "Generative AI & APA Prompt Citation Builder",
+                category: "ai",
+                categoryLabel: "GenAI & Citation",
+                slo: "SLO 5 & Syllabus AI Policy",
+                icon: "fa-robot",
+                description: "GenAI prompt logging tool designed for CNM coursework. Generates compliant APA citations, logs prompt iterations, and prepares oral review notes.",
+                stack: "APA Citation Engine, Prompt Formatter, LocalStorage",
+                tags: ["Generative AI", "APA Citation", "Module 7"]
+            },
+            {
+                id: "07",
+                file: "activity07.html",
+                title: "Excel Data Analysis & Financial Modeling Studio",
+                category: "office",
+                categoryLabel: "MS Office & SIMnet",
+                slo: "SLO 4: Data Analysis & Decision-Making",
+                icon: "fa-file-excel",
+                description: "Spreadsheet calculation engine simulating MS Excel formulas (VLOOKUP, IF, PMT), dynamic charts, pivot summaries, and SIMnet guided project logic.",
+                stack: "Math Calculation Engine, Dynamic SVG Charts, JS Matrix",
+                tags: ["MS Excel", "Data Analysis", "Module 7-10"]
+            },
+            {
+                id: "08",
+                file: "activity08.html",
+                title: "Networking Protocols & Internet Infrastructure",
+                category: "tech",
+                categoryLabel: "Systems & Tech",
+                slo: "SLO 5: Information Systems & Tech",
+                icon: "fa-network-wired",
+                description: "Visualizer demonstrating packet switching, TCP/IP routing, DNS resolution, Wi-Fi security, and network topology across local and global nodes.",
+                stack: "HTML5 Canvas, Network Animation Loop",
+                tags: ["Networking", "The Internet", "Module 8-9"]
+            },
+            {
+                id: "09",
+                file: "activity09.html",
+                title: "Relational Database & Access Query Studio",
+                category: "office",
+                categoryLabel: "MS Office & SIMnet",
+                slo: "SLO 4: Information Management",
+                icon: "fa-database",
+                description: "Microsoft Access simulator highlighting primary keys, foreign key relationships, SQL query building, forms, and report generation.",
+                stack: "Relational DB Engine, SQL Builder, Table Rendering",
+                tags: ["MS Access", "Database", "Module 11"]
+            },
+            {
+                id: "10",
+                file: "activity10.html",
+                title: "Attention Economy & E-Commerce Impact Hub",
+                category: "infolit",
+                categoryLabel: "Info Literacy & Sources",
+                slo: "SLO 1: Social Impact on Commerce & Personal Activities",
+                icon: "fa-chart-pie",
+                description: "Social impact analysis console examining e-commerce web design, AI scam awareness, online learning platforms, and the attention economy.",
+                stack: "Interactive Dashboards, Media Player Sync, Quiz Engine",
+                tags: ["Social Impact", "E-Commerce", "Module 12-14"]
+            }
+        ];
+
+        function renderActivities(items) {
+            const grid = document.getElementById('activityGrid');
+            grid.innerHTML = '';
+
+            if (items.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full p-12 text-center glass-panel rounded-3xl border border-slate-800">
+                        <i class="fa-solid fa-folder-open text-4xl text-slate-600 mb-3 block"></i>
+                        <h4 class="text-lg font-bold text-slate-300">No matching BCIS 1110 modules found</h4>
+                        <p class="text-xs text-slate-500 mt-1">Try adjusting your keyword search or topic filter.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            items.forEach(act => {
+                const card = document.createElement('div');
+                card.className = 'glass-panel rounded-2xl p-6 glass-panel-hover flex flex-col justify-between group border border-slate-800 relative';
+                
+                card.innerHTML = `
+                    <div>
+                        <!-- Card Header -->
+                        <div class="flex items-center justify-between gap-2 mb-3">
+                            <span class="font-mono text-xs font-bold px-2.5 py-1 rounded-full bg-slate-900 text-cnm-gold border border-cnm-gold/30">
+                                ACTIVITY ${act.id}
+                            </span>
+                            <span class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">
+                                ${act.categoryLabel}
+                            </span>
+                        </div>
+
+                        <!-- Activity Title -->
+                        <h3 class="text-lg font-bold text-white group-hover:text-cnm-gold transition-colors mb-2 flex items-start gap-2.5">
+                            <i class="fa-solid ${act.icon} text-slate-400 group-hover:text-cnm-gold transition-colors mt-1 text-sm"></i>
+                            <span>${act.title}</span>
+                        </h3>
+
+                        <!-- SLO Indicator -->
+                        <div class="text-[11px] font-mono text-cnm-accent mb-3 flex items-center gap-1.5">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                            <span>${act.slo}</span>
+                        </div>
+
+                        <!-- Description -->
+                        <p class="text-slate-300 text-xs leading-relaxed mb-5 line-clamp-3">
+                            ${act.description}
+                        </p>
+                    </div>
+
+                    <div>
+                        <!-- Tags -->
+                        <div class="flex flex-wrap gap-1.5 mb-5">
+                            ${act.tags.map(tag => `<span class="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-900/90 text-slate-400 border border-slate-800">#${tag}</span>`).join('')}
+                        </div>
+
+                        <!-- Action Controls -->
+                        <div class="flex items-center gap-2 pt-4 border-t border-slate-800/80">
+                            <a href="${act.file}" target="_blank" class="flex-1 py-2 px-3 rounded-xl bg-cnm-gold text-slate-950 font-bold text-xs hover:bg-yellow-400 transition-colors shadow-md shadow-cnm-gold/10 flex items-center justify-center gap-1.5">
+                                <span>Launch</span>
+                                <i class="fa-solid fa-external-link text-[10px]"></i>
+                            </a>
+                            <button onclick="openModal('${act.id}')" class="py-2 px-3 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors text-xs font-semibold flex items-center gap-1" title="View Specifications">
+                                <i class="fa-solid fa-circle-info"></i>
+                                <span>Specs</span>
+                            </button>
+                            <button onclick="copyLink('${act.file}')" class="p-2 rounded-xl bg-slate-800/60 text-slate-400 hover:bg-slate-800 hover:text-cnm-gold transition-colors text-xs" title="Copy Activity Link">
+                                <i class="fa-solid fa-link"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterActivities() {
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+            const categoryValue = document.getElementById('categoryFilter').value;
+
+            const filtered = activities.filter(act => {
+                const matchesCategory = (categoryValue === 'all') || (act.category === categoryValue);
+                const matchesSearch = act.title.toLowerCase().includes(searchQuery) || 
+                                      act.description.toLowerCase().includes(searchQuery) ||
+                                      act.slo.toLowerCase().includes(searchQuery) ||
+                                      act.tags.some(t => t.toLowerCase().includes(searchQuery)) ||
+                                      act.file.toLowerCase().includes(searchQuery);
+
+                return matchesCategory && matchesSearch;
+            });
+
+            renderActivities(filtered);
+        }
+
+        function openModal(actId) {
+            const act = activities.find(a => a.id === actId);
+            if (!act) return;
+
+            document.getElementById('modalBadge').innerText = `ACTIVITY ${act.id}`;
+            document.getElementById('modalCategory').innerText = act.categoryLabel;
+            document.getElementById('modalTitle').innerText = act.title;
+            document.getElementById('modalDescription').innerText = act.description;
+            document.getElementById('modalFilename').innerText = act.file;
+            document.getElementById('modalSlo').innerText = act.slo;
+            document.getElementById('modalStack').innerText = act.stack;
+            document.getElementById('modalLaunchBtn').href = act.file;
+
+            document.getElementById('modalCopyBtn').onclick = function() {
+                copyLink(act.file);
+            };
+
+            const modal = document.getElementById('quickViewModal');
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('quickViewModal').classList.add('hidden');
+        }
+
+        function copyLink(filename) {
+            const fullUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1) + filename;
+            
+            const tempInput = document.createElement('input');
+            tempInput.value = fullUrl;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            try {
+                document.execCommand('copy');
+                showToast(`Copied link for ${filename}`);
+            } catch (err) {
+                showToast(`Link: ${fullUrl}`);
+            }
+            document.body.removeChild(tempInput);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.innerText = msg;
+
+            toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 3000);
+        }
+
+        function initNeuralCanvas() {
+            const canvas = document.getElementById('neuralCanvas');
+            const ctx = canvas.getContext('2d');
+
+            let width, height;
+            let nodes = [];
+            const nodeCount = 40;
+
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            }
+
+            window.addEventListener('resize', () => {
+                resize();
+                createNodes();
+            });
+
+            function createNodes() {
+                nodes = [];
+                for (let i = 0; i < nodeCount; i++) {
+                    nodes.push({
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        vx: (Math.random() - 0.5) * 0.7,
+                        vy: (Math.random() - 0.5) * 0.7,
+                        radius: Math.random() * 2 + 1
+                    });
+                }
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, width, height);
+
+                for (let i = 0; i < nodes.length; i++) {
+                    for (let j = i + 1; j < nodes.length; j++) {
+                        const dx = nodes[i].x - nodes[j].x;
+                        const dy = nodes[i].y - nodes[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < 140) {
+                            ctx.beginPath();
+                            ctx.moveTo(nodes[i].x, nodes[i].y);
+                            ctx.lineTo(nodes[j].x, nodes[j].y);
+                            ctx.strokeStyle = `rgba(0, 163, 224, ${1 - dist / 140 * 0.65})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.stroke();
+                        }
+                    }
+                }
+
+                nodes.forEach(node => {
+                    node.x += node.vx;
+                    node.y += node.vy;
+
+                    if (node.x < 0 || node.x > width) node.vx *= -1;
+                    if (node.y < 0 || node.y > height) node.vy *= -1;
+
+                    ctx.beginPath();
+                    ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = '#FFC72C';
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(draw);
+            }
+
+            resize();
+            createNodes();
+            draw();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderActivities(activities);
+            initNeuralCanvas();
+
+            document.getElementById('searchInput').addEventListener('input', filterActivities);
+            document.getElementById('categoryFilter').addEventListener('change', filterActivities);
+
+            document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+            document.getElementById('quickViewModal').addEventListener('click', (e) => {
+                if (e.target.id === 'quickViewModal') closeModal();
+            });
+        });
+    </script>
+</body>
+</html>
