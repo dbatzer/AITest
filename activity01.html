@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCIS 1110 Activity 01: File Management & Windows 11 Explorer | CNM</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cnm: {
+                            blue: '#002B49',
+                            gold: '#FFC72C',
+                            accent: '#00A3E0',
+                            dark: '#0B1120',
+                            card: '#161F33',
+                            border: '#1E293B',
+                            winHeader: '#1c2230',
+                            winSidebar: '#131927',
+                            winHover: '#26334d',
+                            winSelected: '#1e3a5f'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Segoe UI', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b1120;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FFC72C;
+        }
+
+        .glass-panel {
+            background: rgba(22, 31, 51, 0.88);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .win-btn {
+            transition: all 0.15s ease;
+        }
+        .win-btn:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .file-item {
+            user-select: none;
+            touch-action: none;
+        }
+        .file-item.selected {
+            background-color: rgba(0, 163, 224, 0.25);
+            border: 1px solid rgba(0, 163, 224, 0.6);
+        }
+        .file-item.cut-state {
+            opacity: 0.45;
+            filter: grayscale(40%);
+        }
+
+        /* Marquee selection box styling */
+        #selectionBox {
+            position: absolute;
+            border: 1px solid #00A3E0;
+            background-color: rgba(0, 163, 224, 0.2);
+            pointer-events: none;
+            z-index: 30;
+            display: none;
+        }
+
+        @keyframes checkPop {
+            0% { transform: scale(0.8); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .check-anim {
+            animation: checkPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+    </style>
+</head>
+<body class="bg-cnm-dark text-slate-100 font-sans min-h-screen relative flex flex-col select-none overflow-x-hidden">
+
+    <!-- Navigation / Header -->
+    <header class="sticky top-0 z-40 bg-cnm-dark/95 border-b border-slate-800 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="flex items-center gap-2 group text-slate-300 hover:text-cnm-gold transition-colors">
+                    <i class="fa-solid fa-chevron-left text-xs"></i>
+                    <span class="text-xs font-mono font-semibold">Content Hub</span>
+                </a>
+                <span class="text-slate-700">|</span>
+                <div class="flex items-center gap-2">
+                    <span class="px-2 py-0.5 rounded bg-cnm-gold/20 text-cnm-gold text-xs font-mono font-bold border border-cnm-gold/30">ACTIVITY 01</span>
+                    <h1 class="text-sm font-bold text-white tracking-tight">File Management & Windows 11 Explorer</h1>
+                </div>
+            </div>
+
+            <!-- Instructor / SLO Badge -->
+            <div class="hidden sm:flex items-center gap-4 text-xs font-mono">
+                <span class="text-slate-400"><i class="fa-solid fa-graduation-cap text-cnm-accent mr-1"></i> SLO 4: Productivity Suite</span>
+                <span class="px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">Instructor: David Batzer</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
+        
+        <!-- Platform Alert / CNM Virtual Desktop Banner -->
+        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-lg">
+            <div class="flex items-start gap-3">
+                <div class="p-2.5 rounded-xl bg-cnm-gold/15 text-cnm-gold border border-cnm-gold/30 mt-0.5">
+                    <i class="fa-solid fa-desktop text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="text-xs font-bold text-white uppercase tracking-wider">CNM Platform Requirements Note</h3>
+                    <p class="text-xs text-slate-300 mt-0.5">
+                        Mac users are encouraged to use the <a href="https://virtualdesktop.cnm.edu" target="_blank" class="text-cnm-gold hover:underline font-mono">CNM Virtual Desktop</a>. Chromebook users <strong>MUST</strong> use the Virtual Desktop for native Windows 11 File Explorer tasks.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2 self-end md:self-auto">
+                <button onclick="resetSimulator()" class="px-3 py-1.5 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors text-xs font-semibold flex items-center gap-1.5">
+                    <i class="fa-solid fa-rotate-left text-cnm-accent"></i> Reset Lab
+                </button>
+                <button onclick="toggleGuideDrawer()" class="px-3 py-1.5 rounded-xl bg-cnm-blue text-slate-200 border border-cnm-accent/40 hover:bg-slate-800 transition-colors text-xs font-semibold flex items-center gap-1.5">
+                    <i class="fa-solid fa-book-open text-cnm-gold"></i> Step Guide
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Interactive Workspace Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            <!-- Left 8 Cols: Windows 11 File Explorer Simulator -->
+            <div class="lg:col-span-8 space-y-4">
+                
+                <!-- Windows 11 Explorer Window Container -->
+                <div class="bg-slate-900 rounded-2xl border border-slate-700/80 shadow-2xl overflow-hidden flex flex-col min-h-[580px] relative" id="explorerWindow">
+                    
+                    <!-- Window Title Bar -->
+                    <div class="bg-cnm-winHeader px-4 py-2.5 flex items-center justify-between border-b border-slate-800">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-folder-open text-cnm-gold text-xs"></i>
+                            <span id="windowTitle" class="text-xs font-medium text-slate-200">File Explorer - Downloads</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-slate-400 text-xs">
+                            <span class="w-3 h-3 rounded-full bg-slate-700 inline-block"></span>
+                            <span class="w-3 h-3 rounded-full bg-slate-700 inline-block"></span>
+                            <span class="w-3 h-3 rounded-full bg-emerald-500/80 inline-block"></span>
+                        </div>
+                    </div>
+
+                    <!-- Command Bar / Ribbon Toolbar -->
+                    <div class="bg-slate-900/90 px-3 py-2 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+                        <!-- Primary Command Actions -->
+                        <div class="flex items-center gap-1">
+                            <button id="btnNewFolder" onclick="createNewFolder()" class="win-btn px-2.5 py-1.5 rounded-lg text-slate-200 flex items-center gap-1.5 font-medium hover:text-white">
+                                <i class="fa-solid fa-folder-plus text-cnm-gold"></i>
+                                <span>New folder</span>
+                            </button>
+                            <span class="h-4 w-px bg-slate-800 mx-1"></span>
+                            
+                            <button id="btnCut" onclick="cutSelected()" class="win-btn px-2 py-1.5 rounded-lg text-slate-300 hover:text-white flex items-center gap-1 disabled:opacity-40" disabled title="Cut (Ctrl+X)">
+                                <i class="fa-solid fa-scissors text-cnm-accent"></i>
+                                <span class="hidden sm:inline">Cut</span>
+                            </button>
+                            
+                            <button id="btnCopy" onclick="copySelected()" class="win-btn px-2 py-1.5 rounded-lg text-slate-300 hover:text-white flex items-center gap-1 disabled:opacity-40" disabled title="Copy (Ctrl+C)">
+                                <i class="fa-solid fa-copy text-slate-400"></i>
+                                <span class="hidden sm:inline">Copy</span>
+                            </button>
+                            
+                            <button id="btnPaste" onclick="pasteClipboard()" class="win-btn px-2 py-1.5 rounded-lg text-slate-300 hover:text-white flex items-center gap-1 disabled:opacity-40" id="pasteBtn" disabled title="Paste (Ctrl+V)">
+                                <i class="fa-solid fa-paste text-emerald-400"></i>
+                                <span class="hidden sm:inline">Paste</span>
+                            </button>
+                            
+                            <button id="btnRename" onclick="renameSelectedPrompt()" class="win-btn px-2 py-1.5 rounded-lg text-slate-300 hover:text-white flex items-center gap-1 disabled:opacity-40" disabled title="Rename">
+                                <i class="fa-solid fa-pen-to-square text-amber-400"></i>
+                                <span class="hidden sm:inline">Rename</span>
+                            </button>
+                            
+                            <button id="btnDelete" onclick="deleteSelected()" class="win-btn px-2 py-1.5 rounded-lg text-slate-300 hover:text-rose-400 flex items-center gap-1 disabled:opacity-40" disabled title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                                <span class="hidden sm:inline">Delete</span>
+                            </button>
+                        </div>
+
+                        <!-- Special Action: Extract All / Zip -->
+                        <div class="flex items-center gap-2">
+                            <button id="btnExtractAll" onclick="extractZip()" class="px-2.5 py-1.5 rounded-lg bg-cnm-gold/20 text-cnm-gold border border-cnm-gold/40 hover:bg-cnm-gold hover:text-slate-950 font-bold transition-colors flex items-center gap-1.5">
+                                <i class="fa-solid fa-box-open"></i>
+                                <span>Extract all</span>
+                            </button>
+                            
+                            <button id="btnCompressZip" onclick="compressToZip()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors flex items-center gap-1.5">
+                                <i class="fa-solid fa-file-zipper text-cnm-accent"></i>
+                                <span>Compress to Zip</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Breadcrumbs & Search Address Bar -->
+                    <div class="bg-cnm-winSidebar px-3 py-2 border-b border-slate-800 flex items-center gap-2 text-xs">
+                        <!-- Navigation History -->
+                        <div class="flex items-center gap-1 text-slate-400">
+                            <button onclick="navigateUp()" class="p-1 rounded hover:bg-slate-800 hover:text-white" title="Up to Parent Folder">
+                                <i class="fa-solid fa-arrow-up"></i>
+                            </button>
+                        </div>
+
+                        <!-- Breadcrumb Path Display -->
+                        <div class="flex-grow bg-slate-900 border border-slate-800 rounded-lg px-3 py-1 flex items-center gap-1 font-mono text-slate-300 overflow-x-auto" id="breadcrumbPath">
+                            <!-- Dynamically updated breadcrumb navigation -->
+                        </div>
+
+                        <!-- Search Box -->
+                        <div class="relative w-36 sm:w-48">
+                            <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 text-[10px]"></i>
+                            <input type="text" id="explorerSearchInput" oninput="handleSearchInput(this.value)" placeholder="Search folder..." 
+                                class="w-full bg-slate-900 border border-slate-800 rounded-lg pl-7 pr-2 py-1 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cnm-accent">
+                        </div>
+                    </div>
+
+                    <!-- Explorer Main Content (Sidebar + View Pane) -->
+                    <div class="flex-grow flex relative overflow-hidden min-h-[420px]">
+                        
+                        <!-- Left Navigation Sidebar -->
+                        <aside class="w-48 bg-cnm-winSidebar border-r border-slate-800 p-2 text-xs font-mono space-y-1 hidden sm:block">
+                            <div class="text-[10px] text-slate-500 font-bold px-2 py-1 uppercase tracking-wider">Quick Access</div>
+                            
+                            <button onclick="navigateToPath(['Downloads'])" class="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-slate-300 hover:bg-cnm-winHover transition-colors text-left" id="navDownloads">
+                                <i class="fa-solid fa-download text-cnm-accent"></i>
+                                <span>Downloads</span>
+                            </button>
+
+                            <button onclick="navigateToPath(['Downloads', 'File Management'])" class="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-slate-300 hover:bg-cnm-winHover transition-colors text-left pl-4" id="navFileMgmt">
+                                <i class="fa-solid fa-folder text-cnm-gold"></i>
+                                <span class="truncate">File Management</span>
+                            </button>
+
+                            <div class="pt-3 text-[10px] text-slate-500 font-bold px-2 py-1 uppercase tracking-wider">System</div>
+                            <div class="px-2 py-1 text-slate-400 flex items-center gap-2">
+                                <i class="fa-solid fa-hard-drive"></i>
+                                <span>Local Disk (C:)</span>
+                            </div>
+                        </aside>
+
+                        <!-- Main File Grid View Pane -->
+                        <div class="flex-grow p-4 bg-slate-900/60 overflow-y-auto relative" id="viewPane" oncontextmenu="handleContextMenu(event)" onclick="handlePaneClick(event)">
+                            
+                            <!-- Marquee Drag Selection Box -->
+                            <div id="selectionBox"></div>
+
+                            <!-- Dynamic File Items Grid -->
+                            <div id="fileGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 relative">
+                                <!-- Rendered dynamically by JS -->
+                            </div>
+
+                            <!-- Empty Directory Notice -->
+                            <div id="emptyNotice" class="hidden absolute inset-0 flex flex-col items-center justify-center text-slate-500 pointer-events-none">
+                                <i class="fa-solid fa-folder-open text-4xl mb-2"></i>
+                                <span class="text-xs font-mono">This folder is empty</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Explorer Status Bar -->
+                    <div class="bg-cnm-winHeader px-4 py-1.5 border-t border-slate-800 flex items-center justify-between text-[11px] font-mono text-slate-400">
+                        <span id="statusItemCount">0 items</span>
+                        <span id="statusSelectionCount" class="text-cnm-accent font-semibold">0 items selected</span>
+                    </div>
+                </div>
+
+                <!-- Helper tip box -->
+                <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-slate-400 flex items-center justify-between font-mono">
+                    <span class="flex items-center gap-2">
+                        <i class="fa-solid fa-keyboard text-cnm-gold"></i>
+                        <span>Pro Tip: Use <strong class="text-slate-200">Ctrl+Click</strong> for individual multi-selection, <strong class="text-slate-200">Shift+Click</strong> for range selection, or drag a box across items!</span>
+                    </span>
+                    <span class="text-slate-500 text-[10px]">Windows 11 Build 22H2</span>
+                </div>
+            </div>
+
+            <!-- Right 4 Cols: Live Task Auto-Grader & Steps -->
+            <div class="lg:col-span-4 space-y-4">
+                
+                <!-- Auto-Grader Score Summary Card -->
+                <div class="glass-panel rounded-2xl p-5 border border-slate-700/80 shadow-xl">
+                    <div class="flex items-center justify-between mb-3">
+                        <h2 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-cnm-gold"></i>
+                            <span>Assignment Tasks Checklist</span>
+                        </h2>
+                        <span id="taskProgressBadge" class="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-slate-800 text-cnm-accent border border-cnm-accent/30">
+                            0 / 10 Completed
+                        </span>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden mb-4 border border-slate-700">
+                        <div id="taskProgressBar" class="bg-gradient-to-r from-cnm-accent via-emerald-400 to-cnm-gold h-full w-0 transition-all duration-500"></div>
+                    </div>
+
+                    <!-- Step Checklist Items Container -->
+                    <div class="space-y-2 text-xs" id="checklistContainer">
+                        <!-- Checklist dynamically rendered -->
+                    </div>
+
+                    <!-- Completion Certificate Launcher -->
+                    <div id="completionBanner" class="mt-5 p-4 rounded-xl bg-gradient-to-br from-cnm-blue to-slate-900 border border-cnm-gold/50 hidden">
+                        <div class="flex items-center gap-2 text-cnm-gold font-bold text-xs mb-1">
+                            <i class="fa-solid fa-trophy text-sm"></i>
+                            <span>100% Activity Completed!</span>
+                        </div>
+                        <p class="text-[11px] text-slate-300 mb-3">All file management tasks verified. Generate your CNM submission confirmation report below.</p>
+                        <button onclick="generateSubmissionReport()" class="w-full py-2 px-3 rounded-lg bg-cnm-gold text-slate-950 font-bold text-xs hover:bg-yellow-400 transition-colors flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-file-pdf"></i>
+                            <span>Download Submission Verification</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Instructor Notes & Formatting Criteria -->
+                <div class="glass-panel rounded-2xl p-5 border border-slate-800 font-mono text-xs space-y-3">
+                    <h3 class="font-bold text-slate-200 flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-400"></i>
+                        <span>Common Student Mistakes</span>
+                    </h3>
+                    <ul class="space-y-2 text-slate-400 text-[11px] list-disc list-inside">
+                        <li>Forgeting to extract <span class="text-slate-200">Data Files Folder.zip</span> before working inside it.</li>
+                        <li>Leaving the zipper icon on the uncompressed folder.</li>
+                        <li>Not moving the final zipped file into the <span class="text-slate-200">File Management</span> folder.</li>
+                        <li>Deleting files before separating the <span class="text-slate-200">job</span> document files.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Windows 11 Context Menu (Right-Click) -->
+    <div id="contextMenu" class="fixed z-50 bg-slate-900/95 border border-slate-700/80 rounded-xl shadow-2xl py-1.5 text-xs text-slate-200 w-48 hidden backdrop-blur-md">
+        <button onclick="cutSelected(); hideContextMenu()" class="w-full text-left px-3 py-1.5 hover:bg-cnm-winHover flex items-center justify-between">
+            <span class="flex items-center gap-2"><i class="fa-solid fa-scissors text-cnm-accent"></i> Cut</span>
+            <span class="text-[10px] text-slate-500 font-mono">Ctrl+X</span>
+        </button>
+        <button onclick="copySelected(); hideContextMenu()" class="w-full text-left px-3 py-1.5 hover:bg-cnm-winHover flex items-center justify-between">
+            <span class="flex items-center gap-2"><i class="fa-solid fa-copy text-slate-400"></i> Copy</span>
+            <span class="text-[10px] text-slate-500 font-mono">Ctrl+C</span>
+        </button>
+        <button id="ctxPasteBtn" onclick="pasteClipboard(); hideContextMenu()" class="w-full text-left px-3 py-1.5 hover:bg-cnm-winHover flex items-center justify-between disabled:opacity-40">
+            <span class="flex items-center gap-2"><i class="fa-solid fa-paste text-emerald-400"></i> Paste</span>
+            <span class="text-[10px] text-slate-500 font-mono">Ctrl+V</span>
+        </button>
+        <div class="h-px bg-slate-800 my-1"></div>
+        <button onclick="renameSelectedPrompt(); hideContextMenu()" class="w-full text-left px-3 py-1.5 hover:bg-cnm-winHover flex items-center gap-2">
+            <i class="fa-solid fa-pen-to-square text-amber-400"></i> Rename
+        </button>
+        <button onclick="compressToZip(); hideContextMenu()" class="w-full text-left px-3 py-1.5 hover:bg-cnm-winHover flex items-center gap-2">
+            <i class="fa-solid fa-file-zipper text-cnm-accent"></i> Compress to Zip file
+        </button>
+        <div class="h-px bg-slate-800 my-1"></div>
+        <button onclick="deleteSelected(); hideContextMenu()" class="w-full text-left px-3 py-1.5 hover:bg-cnm-winHover text-rose-400 flex items-center gap-2">
+            <i class="fa-solid fa-trash"></i> Delete
+        </button>
+    </div>
+
+    <!-- Step Guide Slide-over Drawer -->
+    <div id="guideDrawer" class="fixed inset-y-0 right-0 z-50 w-full sm:w-96 bg-cnm-card border-l border-slate-700 shadow-2xl p-6 transform translate-x-full transition-transform duration-300 overflow-y-auto">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-book-open text-cnm-gold"></i>
+                <span>Assignment Instructions</span>
+            </h3>
+            <button onclick="toggleGuideDrawer()" class="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="space-y-4 text-xs text-slate-300 leading-relaxed">
+            <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 font-mono">
+                <span class="text-cnm-gold font-bold block mb-1">Target Directory:</span>
+                Downloads > Managing Files Lastname
+            </div>
+
+            <ol class="space-y-3 list-decimal list-inside text-slate-300">
+                <li><strong>Extract Data Files:</strong> Click <span class="text-cnm-gold font-bold">Extract All</span> on <span class="font-mono text-slate-200">Data Files Folder.zip</span> in Downloads.</li>
+                <li><strong>Rename Root Folder:</strong> Change <span class="font-mono text-slate-200">Resources - Data Files</span> to <span class="font-mono text-slate-200">Managing Files Lastname</span>.</li>
+                <li><strong>Create Subfolders:</strong> Create 3 new folders: <span class="font-mono text-slate-200">Pictures</span>, <span class="font-mono text-slate-200">Files</span>, and <span class="font-mono text-slate-200">Aspen Manual</span>.</li>
+                <li><strong>Rename Trip Pics:</strong> Rename <span class="font-mono text-slate-200">Trip Pics</span> to <span class="font-mono text-slate-200">Trip Pictures</span>.</li>
+                <li><strong>Move Photos:</strong> Hold <span class="font-mono text-slate-200">Ctrl</span>, select <span class="text-slate-200">City Hall</span>, <span class="text-slate-200">Community Center</span>, <span class="text-slate-200">Runner</span>. Cut & Paste into <span class="text-slate-200">Pictures</span>.</li>
+                <li><strong>Move PDFs:</strong> Drag the 4 PDF files into <span class="text-slate-200">Aspen Manual</span>.</li>
+                <li><strong>Shift Select Job Files:</strong> Type <span class="font-mono text-slate-200">job</span> in search. Click the first, hold <span class="font-mono text-slate-200">Shift</span>, click the last (5 files total). Cut & Paste into <span class="text-slate-200">Files</span>.</li>
+                <li><strong>Delete Loose Files:</strong> Drag-select or select all 8 remaining loose files in the main folder and press Delete.</li>
+                <li><strong>Rename Promotion:</strong> Inside <span class="text-slate-200">Aspen Manual</span>, rename <span class="font-mono text-slate-200">Promotion</span> to <span class="font-mono text-slate-200">Promotion Plan</span>.</li>
+                <li><strong>Compress to Zip:</strong> Right-click <span class="font-mono text-slate-200">Managing Files Lastname</span> and select <span class="text-cnm-gold font-bold">Compress to Zip file</span>. Move it to <span class="font-mono text-slate-200">File Management</span>.</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Submission Modal -->
+    <div id="reportModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md hidden">
+        <div class="bg-cnm-card border border-slate-700 rounded-3xl max-w-md w-full p-6 text-slate-100 shadow-2xl relative">
+            <button onclick="closeReportModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="w-14 h-14 rounded-2xl bg-cnm-gold/20 text-cnm-gold border border-cnm-gold/40 mx-auto flex items-center justify-center text-2xl mb-3">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white">BCIS 1110 Activity 01 Report</h3>
+                <p class="text-xs text-slate-400 font-mono mt-1">CNM Instructor: David Batzer • CRN 95782</p>
+            </div>
+
+            <div class="bg-slate-900 rounded-2xl p-4 border border-slate-800 space-y-2 text-xs font-mono mb-6">
+                <div class="flex justify-between text-slate-400">
+                    <span>Student Submission:</span>
+                    <span class="text-slate-200 font-bold" id="rptStudentName">Managing Files Student</span>
+                </div>
+                <div class="flex justify-between text-slate-400">
+                    <span>Module Target:</span>
+                    <span class="text-cnm-accent">activity01.html</span>
+                </div>
+                <div class="flex justify-between text-slate-400">
+                    <span>Task Score:</span>
+                    <span class="text-emerald-400 font-bold">10 / 10 (100%)</span>
+                </div>
+                <div class="flex justify-between text-slate-400">
+                    <span>Verification Hash:</span>
+                    <span class="text-slate-500 text-[10px]" id="rptHash">CNM-BCIS-2026-95782</span>
+                </div>
+            </div>
+
+            <button onclick="window.print()" class="w-full py-3 px-4 rounded-xl bg-cnm-gold text-slate-950 font-bold text-xs hover:bg-yellow-400 transition-colors flex items-center justify-center gap-2">
+                <i class="fa-solid fa-print"></i>
+                <span>Print / Save Completion Verification</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        
+        // Initial Simulated File System Tree Structure
+        const initialFS = {
+            "Downloads": {
+                type: "folder",
+                children: {
+                    "File Management": {
+                        type: "folder",
+                        children: {}
+                    },
+                    "Data Files Folder.zip": {
+                        type: "zip",
+                        contents: {
+                            "Resources - Data Files": {
+                                type: "folder",
+                                children: {
+                                    "Trip Pics": {
+                                        type: "folder",
+                                        children: {}
+                                    },
+                                    "City Hall.jpg": { type: "image" },
+                                    "Community Center.jpg": { type: "image" },
+                                    "Runner.png": { type: "image" },
+                                    "Policy_Manual.pdf": { type: "pdf" },
+                                    "Safety_Guidelines.pdf": { type: "pdf" },
+                                    "Employee_Handbook.pdf": { type: "pdf" },
+                                    "Aspen_Overview.pdf": { type: "pdf" },
+                                    "job_description_admin.docx": { type: "docx" },
+                                    "job_posting_tech.docx": { type: "docx" },
+                                    "job_requirements.xlsx": { type: "xlsx" },
+                                    "job_offer_template.pdf": { type: "pdf" },
+                                    "job_application.docx": { type: "docx" },
+                                    "Promotion": { type: "file" },
+                                    "notes.txt": { type: "txt" },
+                                    "temp1.tmp": { type: "tmp" },
+                                    "draft_memo.docx": { type: "docx" },
+                                    "old_schedule.xlsx": { type: "xlsx" },
+                                    "image_raw.png": { type: "image" },
+                                    "data_export.csv": { type: "csv" },
+                                    "archive_v1.bak": { type: "bak" },
+                                    "readme_old.txt": { type: "txt" }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        // State variables
+        let fsState = JSON.parse(JSON.stringify(initialFS));
+        let currentPath = ["Downloads"];
+        let selectedItemNames = [];
+        let clipboard = { action: null, path: null, items: [] };
+        let searchQuery = "";
+        let isExtracted = false;
+
+        // Tasks Checklist State Matrix
+        const tasks = [
+            { id: 1, text: "Extract 'Data Files Folder.zip'", done: false },
+            { id: 2, text: "Rename folder to 'Managing Files Lastname'", done: false },
+            { id: 3, text: "Create subfolders: Pictures, Files, Aspen Manual", done: false },
+            { id: 4, text: "Rename 'Trip Pics' to 'Trip Pictures'", done: false },
+            { id: 5, text: "Move 3 photo files into 'Pictures' folder", done: false },
+            { id: 6, text: "Move 4 PDF files into 'Aspen Manual' folder", done: false },
+            { id: 7, text: "Search 'job' & move 5 job files into 'Files'", done: false },
+            { id: 8, text: "Delete remaining 8 unorganized files", done: false },
+            { id: 9, text: "Rename 'Promotion' to 'Promotion Plan' inside Aspen Manual", done: false },
+            { id: 10, text: "Compress 'Managing Files Lastname' to Zip & move to 'File Management'", done: false }
+        ];
+
+
+        function getCurrentDir() {
+            let curr = fsState;
+            for (let folder of currentPath) {
+                if (curr[folder] && curr[folder].type === "folder") {
+                    curr = curr[folder].children;
+                } else {
+                    return {};
+                }
+            }
+            return curr;
+        }
+
+        function renderBreadcrumbs() {
+            const container = document.getElementById('breadcrumbPath');
+            container.innerHTML = '';
+
+            let pathAcc = [];
+            currentPath.forEach((p, idx) => {
+                pathAcc.push(p);
+                const pathCopy = [...pathAcc];
+
+                const btn = document.createElement('button');
+                btn.className = 'hover:text-cnm-gold transition-colors flex items-center gap-1 font-semibold';
+                btn.innerText = p;
+                btn.onclick = () => navigateToPath(pathCopy);
+
+                container.appendChild(btn);
+
+                if (idx < currentPath.length - 1) {
+                    const sep = document.createElement('span');
+                    sep.className = 'text-slate-600 text-[10px]';
+                    sep.innerText = '>';
+                    container.appendChild(sep);
+                }
+            });
+
+            document.getElementById('windowTitle').innerText = `File Explorer - ${currentPath[currentPath.length - 1]}`;
+        }
+
+        function renderViewPane() {
+            const grid = document.getElementById('fileGrid');
+            const emptyNotice = document.getElementById('emptyNotice');
+            grid.innerHTML = '';
+
+            const currentDir = getCurrentDir();
+            let entries = Object.keys(currentDir);
+
+            // Apply search filter if active
+            if (searchQuery.trim() !== '') {
+                entries = entries.filter(name => name.toLowerCase().includes(searchQuery.toLowerCase()));
+            }
+
+            if (entries.length === 0) {
+                emptyNotice.classList.remove('hidden');
+            } else {
+                emptyNotice.classList.add('hidden');
+            }
+
+            entries.forEach(name => {
+                const item = currentDir[name];
+                const isSelected = selectedItemNames.includes(name);
+                const isCut = clipboard.action === 'cut' && clipboard.items.includes(name);
+
+                const card = document.createElement('div');
+                card.className = `file-item p-2.5 rounded-xl border border-transparent hover:bg-cnm-winHover/70 flex flex-col items-center text-center cursor-pointer transition-all relative ${isSelected ? 'selected' : ''} ${isCut ? 'cut-state' : ''}`;
+                
+                // Click handlers for single, ctrl, shift
+                card.onclick = (e) => handleItemClick(e, name, entries);
+                card.ondblclick = (e) => handleItemDblClick(e, name);
+
+                let iconHtml = getIconForItem(name, item.type);
+
+                card.innerHTML = `
+                    <div class="text-3xl mb-1">${iconHtml}</div>
+                    <span class="text-xs text-slate-200 break-all line-clamp-2 leading-snug">${name}</span>
+                `;
+
+                grid.appendChild(card);
+            });
+
+            // Update status bar
+            document.getElementById('statusItemCount').innerText = `${entries.length} items`;
+            document.getElementById('statusSelectionCount').innerText = `${selectedItemNames.length} selected`;
+
+            // Enable/disable toolbar buttons based on selection
+            const hasSelection = selectedItemNames.length > 0;
+            document.getElementById('btnCut').disabled = !hasSelection;
+            document.getElementById('btnCopy').disabled = !hasSelection;
+            document.getElementById('btnRename').disabled = selectedItemNames.length !== 1;
+            document.getElementById('btnDelete').disabled = !hasSelection;
+            document.getElementById('btnPaste').disabled = clipboard.items.length === 0;
+            document.getElementById('ctxPasteBtn').disabled = clipboard.items.length === 0;
+
+            // Update sidebar highlights
+            document.getElementById('navDownloads').classList.toggle('bg-cnm-winHover', currentPath.length === 1 && currentPath[0] === 'Downloads');
+            document.getElementById('navFileMgmt').classList.toggle('bg-cnm-winHover', currentPath.length === 2 && currentPath[1] === 'File Management');
+
+            checkTaskProgress();
+        }
+
+        function getIconForItem(name, type) {
+            if (type === 'folder') return '<i class="fa-solid fa-folder text-amber-400"></i>';
+            if (type === 'zip') return '<i class="fa-solid fa-file-zipper text-cnm-gold"></i>';
+            if (name.endsWith('.pdf')) return '<i class="fa-solid fa-file-pdf text-rose-500"></i>';
+            if (name.endsWith('.jpg') || name.endsWith('.png')) return '<i class="fa-solid fa-file-image text-emerald-400"></i>';
+            if (name.endsWith('.docx')) return '<i class="fa-solid fa-file-word text-blue-500"></i>';
+            if (name.endsWith('.xlsx')) return '<i class="fa-solid fa-file-excel text-emerald-500"></i>';
+            return '<i class="fa-solid fa-file text-slate-400"></i>';
+        }
+
+
+        function handleItemClick(e, name, allEntries) {
+            e.stopPropagation();
+
+            if (e.ctrlKey || e.metaKey) {
+                // Ctrl Toggle Selection
+                if (selectedItemNames.includes(name)) {
+                    selectedItemNames = selectedItemNames.filter(n => n !== name);
+                } else {
+                    selectedItemNames.push(name);
+                }
+            } else if (e.shiftKey && selectedItemNames.length > 0) {
+                // Shift Range Selection
+                const lastSelected = selectedItemNames[selectedItemNames.length - 1];
+                const startIndex = allEntries.indexOf(lastSelected);
+                const endIndex = allEntries.indexOf(name);
+
+                const min = Math.min(startIndex, endIndex);
+                const max = Math.max(startIndex, endIndex);
+
+                const range = allEntries.slice(min, max + 1);
+                selectedItemNames = Array.from(new Set([...selectedItemNames, ...range]));
+            } else {
+                // Single Selection
+                selectedItemNames = [name];
+            }
+
+            renderViewPane();
+        }
+
+        function handleItemDblClick(e, name) {
+            e.stopPropagation();
+            const currentDir = getCurrentDir();
+            if (currentDir[name] && currentDir[name].type === 'folder') {
+                currentPath.push(name);
+                selectedItemNames = [];
+                searchQuery = "";
+                document.getElementById('explorerSearchInput').value = "";
+                renderBreadcrumbs();
+                renderViewPane();
+            }
+        }
+
+        function handlePaneClick(e) {
+            selectedItemNames = [];
+            hideContextMenu();
+            renderViewPane();
+        }
+
+        function navigateToPath(newPath) {
+            currentPath = [...newPath];
+            selectedItemNames = [];
+            renderBreadcrumbs();
+            renderViewPane();
+        }
+
+        function navigateUp() {
+            if (currentPath.length > 1) {
+                currentPath.pop();
+                selectedItemNames = [];
+                renderBreadcrumbs();
+                renderViewPane();
+            }
+        }
+
+
+        function extractZip() {
+            const currentDir = getCurrentDir();
+            if (currentDir["Data Files Folder.zip"]) {
+                const zipContents = currentDir["Data Files Folder.zip"].contents;
+                Object.assign(currentDir, JSON.parse(JSON.stringify(zipContents)));
+                isExtracted = true;
+                tasks[0].done = true;
+                renderViewPane();
+            }
+        }
+
+        function createNewFolder() {
+            const currentDir = getCurrentDir();
+            let folderName = "New folder";
+            let counter = 1;
+            while (currentDir[folderName]) {
+                folderName = `New folder (${counter++})`;
+            }
+            currentDir[folderName] = { type: "folder", children: {} };
+            selectedItemNames = [folderName];
+            renderViewPane();
+        }
+
+        function cutSelected() {
+            if (selectedItemNames.length === 0) return;
+            clipboard = {
+                action: 'cut',
+                sourcePath: [...currentPath],
+                items: [...selectedItemNames]
+            };
+            renderViewPane();
+        }
+
+        function copySelected() {
+            if (selectedItemNames.length === 0) return;
+            clipboard = {
+                action: 'copy',
+                sourcePath: [...currentPath],
+                items: [...selectedItemNames]
+            };
+            renderViewPane();
+        }
+
+        function pasteClipboard() {
+            if (!clipboard.action || clipboard.items.length === 0) return;
+
+            // Get source directory object
+            let srcDir = fsState;
+            for (let p of clipboard.sourcePath) {
+                srcDir = srcDir[p].children || srcDir[p].contents;
+            }
+
+            const targetDir = getCurrentDir();
+
+            clipboard.items.forEach(itemName => {
+                if (srcDir[itemName]) {
+                    if (clipboard.action === 'cut') {
+                        targetDir[itemName] = srcDir[itemName];
+                        delete srcDir[itemName];
+                    } else if (clipboard.action === 'copy') {
+                        targetDir[itemName] = JSON.parse(JSON.stringify(srcDir[itemName]));
+                    }
+                }
+            });
+
+            clipboard = { action: null, sourcePath: null, items: [] };
+            selectedItemNames = [];
+            renderViewPane();
+        }
+
+        function renameSelectedPrompt() {
+            if (selectedItemNames.length !== 1) return;
+            const oldName = selectedItemNames[0];
+            const newName = prompt(`Rename "${oldName}" to:`, oldName);
+
+            if (newName && newName.trim() !== '' && newName !== oldName) {
+                const currentDir = getCurrentDir();
+                if (!currentDir[newName.trim()]) {
+                    currentDir[newName.trim()] = currentDir[oldName];
+                    delete currentDir[oldName];
+                    selectedItemNames = [newName.trim()];
+                    renderViewPane();
+                } else {
+                    alert("An item with that name already exists.");
+                }
+            }
+        }
+
+        function deleteSelected() {
+            if (selectedItemNames.length === 0) return;
+            const currentDir = getCurrentDir();
+            selectedItemNames.forEach(name => {
+                delete currentDir[name];
+            });
+            selectedItemNames = [];
+            renderViewPane();
+        }
+
+        function compressToZip() {
+            if (selectedItemNames.length === 0) return;
+            const currentDir = getCurrentDir();
+            const targetName = selectedItemNames[0];
+            const zipName = `${targetName}.zip`;
+
+            currentDir[zipName] = {
+                type: 'zip',
+                contents: { [targetName]: JSON.parse(JSON.stringify(currentDir[targetName])) }
+            };
+
+            selectedItemNames = [zipName];
+            renderViewPane();
+        }
+
+
+        function handleSearchInput(val) {
+            searchQuery = val;
+            renderViewPane();
+        }
+
+        function handleContextMenu(e) {
+            e.preventDefault();
+            const menu = document.getElementById('contextMenu');
+            menu.style.left = `${e.clientX}px`;
+            menu.style.top = `${e.clientY}px`;
+            menu.classList.remove('hidden');
+        }
+
+        function hideContextMenu() {
+            document.getElementById('contextMenu').classList.add('hidden');
+        }
+
+
+        function checkTaskProgress() {
+            // Task 1: Zip extracted
+            const downloadsDir = fsState["Downloads"].children;
+            const hasExtractedFolder = Object.keys(downloadsDir).some(k => k.startsWith("Managing Files") || k === "Resources - Data Files");
+            if (hasExtractedFolder || isExtracted) tasks[0].done = true;
+
+            // Task 2: Root folder renamed to "Managing Files Lastname"
+            const renamedFolderKey = Object.keys(downloadsDir).find(k => k.startsWith("Managing Files") && k !== "Managing Files Lastname.zip");
+            let targetRoot = null;
+            if (renamedFolderKey && renamedFolderKey.toLowerCase().startsWith("managing files")) {
+                tasks[1].done = true;
+                targetRoot = downloadsDir[renamedFolderKey].children;
+            }
+
+            if (targetRoot) {
+                // Task 3: Create Pictures, Files, Aspen Manual
+                const hasPic = targetRoot["Pictures"] && targetRoot["Pictures"].type === "folder";
+                const hasFiles = targetRoot["Files"] && targetRoot["Files"].type === "folder";
+                const hasAspen = targetRoot["Aspen Manual"] && targetRoot["Aspen Manual"].type === "folder";
+                if (hasPic && hasFiles && hasAspen) tasks[2].done = true;
+
+                // Task 4: Rename Trip Pics to Trip Pictures
+                if (targetRoot["Trip Pictures"] || (hasPic && targetRoot["Pictures"].children["Trip Pictures"])) tasks[3].done = true;
+
+                // Task 5: Move 3 photos into Pictures
+                if (hasPic) {
+                    const picDir = targetRoot["Pictures"].children;
+                    const picsCount = Object.keys(picDir).filter(k => k.endsWith('.jpg') || k.endsWith('.png')).length;
+                    if (picsCount >= 3) tasks[4].done = true;
+                }
+
+                // Task 6: Move 4 PDFs into Aspen Manual
+                if (hasAspen) {
+                    const aspenDir = targetRoot["Aspen Manual"].children;
+                    const pdfCount = Object.keys(aspenDir).filter(k => k.endsWith('.pdf')).length;
+                    if (pdfCount >= 4) tasks[5].done = true;
+
+                    // Task 9: Rename Promotion to Promotion Plan in Aspen Manual
+                    if (aspenDir["Promotion Plan"] || aspenDir["Promotion Plan.docx"]) tasks[8].done = true;
+                }
+
+                // Task 7: Move 5 job files into Files
+                if (hasFiles) {
+                    const filesDir = targetRoot["Files"].children;
+                    const jobCount = Object.keys(filesDir).filter(k => k.startsWith('job')).length;
+                    if (jobCount >= 5) tasks[6].done = true;
+                }
+
+                // Task 8: Delete loose files in targetRoot
+                const remainingLoose = Object.keys(targetRoot).filter(k => 
+                    !["Pictures", "Files", "Aspen Manual", "Trip Pictures"].includes(k)
+                );
+                if (remainingLoose.length === 0) tasks[7].done = true;
+            }
+
+            // Task 10: Zipped file moved to File Management folder
+            const fileMgmtDir = downloadsDir["File Management"] ? downloadsDir["File Management"].children : {};
+            const zippedInMgmt = Object.keys(fileMgmtDir).some(k => k.endsWith('.zip') && k.toLowerCase().includes('managing files'));
+            if (zippedInMgmt) tasks[9].done = true;
+
+            renderChecklistUI();
+        }
+
+        function renderChecklistUI() {
+            const container = document.getElementById('checklistContainer');
+            container.innerHTML = '';
+
+            let completedCount = 0;
+
+            tasks.forEach(task => {
+                if (task.done) completedCount++;
+
+                const item = document.createElement('div');
+                item.className = `p-2.5 rounded-xl border flex items-start gap-2.5 transition-all ${
+                    task.done 
+                    ? 'bg-emerald-950/30 border-emerald-500/40 text-slate-200' 
+                    : 'bg-slate-900/60 border-slate-800 text-slate-400'
+                }`;
+
+                item.innerHTML = `
+                    <div class="mt-0.5">
+                        ${task.done 
+                            ? '<i class="fa-solid fa-circle-check text-emerald-400 text-sm check-anim"></i>' 
+                            : '<i class="fa-regular fa-circle text-slate-600 text-sm"></i>'}
+                    </div>
+                    <span class="text-xs leading-tight font-medium ${task.done ? 'text-white' : 'text-slate-400'}">${task.text}</span>
+                `;
+
+                container.appendChild(item);
+            });
+
+            // Update Progress Bar
+            const percent = Math.round((completedCount / tasks.length) * 100);
+            document.getElementById('taskProgressBar').style.width = `${percent}%`;
+            document.getElementById('taskProgressBadge').innerText = `${completedCount} / ${tasks.length} Completed`;
+
+            // Completion Banner
+            const banner = document.getElementById('completionBanner');
+            if (completedCount === tasks.length) {
+                banner.classList.remove('hidden');
+            } else {
+                banner.classList.add('hidden');
+            }
+        }
+
+        function resetSimulator() {
+            fsState = JSON.parse(JSON.stringify(initialFS));
+            currentPath = ["Downloads"];
+            selectedItemNames = [];
+            clipboard = { action: null, sourcePath: null, items: [] };
+            searchQuery = "";
+            isExtracted = false;
+            tasks.forEach(t => t.done = false);
+            renderBreadcrumbs();
+            renderViewPane();
+        }
+
+        function toggleGuideDrawer() {
+            document.getElementById('guideDrawer').classList.toggle('translate-x-full');
+        }
+
+        function generateSubmissionReport() {
+            document.getElementById('reportModal').classList.remove('hidden');
+        }
+
+        function closeReportModal() {
+            document.getElementById('reportModal').classList.add('hidden');
+        }
+
+        // Initialize on DOM load
+        window.addEventListener('DOMContentLoaded', () => {
+            renderBreadcrumbs();
+            renderViewPane();
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('#contextMenu')) {
+                    hideContextMenu();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
