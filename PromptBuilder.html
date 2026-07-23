@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCIS 1110 Interactive Activity Prompt Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    },
+                    colors: {
+                        cnmNavy: '#003B71',
+                        cnmBlue: '#0066B2',
+                        cnmGold: '#EAA123'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        /* Custom Scrollbar for code output */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        .checkbox-card input:checked + div {
+            border-color: #0066B2;
+            background-color: #f0f9ff;
+        }
+        .radio-card input:checked + div {
+            border-color: #0066B2;
+            background-color: #eff6ff;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <header class="bg-cnmNavy text-white shadow-lg border-b border-blue-900 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white text-cnmNavy p-2 rounded-lg font-bold text-xl flex items-center justify-center w-10 h-10 shadow">
+                    <i class="fa-solid fa-robot"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                        BCIS 1110 <span class="text-xs bg-cnmGold text-slate-900 font-semibold px-2 py-0.5 rounded-full uppercase">Syllabus AI Tool</span>
+                    </h1>
+                    <p class="text-xs text-blue-200">Fundamentals of Information Literacy & Systems • CNM Course Activity Generator</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-2 text-sm">
+                <label for="presetSelector" class="text-xs text-blue-200 font-medium whitespace-nowrap"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Quick Presets:</label>
+                <select id="presetSelector" onchange="loadPreset(this.value)" class="bg-blue-950 text-blue-100 text-xs rounded-lg px-3 py-1.5 border border-blue-700 focus:outline-none focus:ring-2 focus:ring-cnmGold">
+                    <option value="">-- Select Syllabus Module (1-15) --</option>
+                    <option value="mod1">Module 1: Orientation & Syllabus Overview</option>
+                    <option value="mod2">Module 2: Managing Files, Folders & Windows 11</option>
+                    <option value="mod3">Module 3: Computer Concepts & MS Word Basics</option>
+                    <option value="mod4">Module 4: Library Databases, APA/MLA & Word Ch 2</option>
+                    <option value="mod5">Module 5: Computer Security, Malware & Cybercrime</option>
+                    <option value="mod6">Module 6: Source Evaluation & CRAAP Reports</option>
+                    <option value="mod7">Module 7: Generative AI Ethics & MS Excel Basics</option>
+                    <option value="mod8">Module 8: The Internet & Excel Formulas/Functions</option>
+                    <option value="mod9">Module 9: Networking & Excel Charts/Analysis</option>
+                    <option value="mod10">Module 10: Excel Financial Modeling Assessment</option>
+                    <option value="mod11">Module 11: MS Access & Database Fundamentals</option>
+                    <option value="mod12">Module 12: Info Systems, Commerce & Web Design</option>
+                    <option value="mod13">Module 13: Attention Economy, AI Scams & PPT Ch 1</option>
+                    <option value="mod14">Module 14: Online Learning Impact & Advanced PPT</option>
+                    <option value="mod15">Module 15: Presentation Mastery & TED Talk Capstone</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- LEFT PANEL: INPUT BUILDER (7 Cols) -->
+            <div class="lg:col-span-7 space-y-6">
+                
+                <!-- TOPIC & MODULE SELECTION -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex items-center justify-between mb-4 border-b pb-2">
+                        <h2 class="font-semibold text-slate-900 text-lg flex items-center gap-2">
+                            <i class="fa-solid fa-book-bookmark text-cnmBlue"></i> 1. Course Topic & Concept
+                        </h2>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-md font-medium">Step 1 of 6</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">BCIS 1110 Topic Category</label>
+                            <select id="topicSelect" onchange="updatePrompt()" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-cnmBlue focus:border-cnmBlue">
+                                <option value="Computer Concepts & Hardware">Hardware & Computer Architecture</option>
+                                <option value="Operating Systems & File Management">Operating Systems & File Management</option>
+                                <option value="Word Processing (MS Word)">Word Processing & Document Design (MS Word)</option>
+                                <option value="Spreadsheets & Data Analysis (MS Excel)" selected>Spreadsheets & Data Analysis (MS Excel)</option>
+                                <option value="Database Management (MS Access)">Database Management & Queries (MS Access)</option>
+                                <option value="Presentation Tools (MS PowerPoint)">Presentation Tools & Visual Communication (MS PowerPoint)</option>
+                                <option value="Cybersecurity, Malware & Privacy">Cybersecurity, Privacy & Malware Defense</option>
+                                <option value="Information Evaluation & CRAAP Test">Information Evaluation (CRAAP Test & Bias)</option>
+                                <option value="Generative AI & Tech Ethics">Generative AI, Ethics & Citation Standards</option>
+                                <option value="Networking, Internet & Social Impact">Networking, Web Search & Attention Economy</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Major Specific Concept</label>
+                            <input type="text" id="majorConcept" oninput="updatePrompt()" value="Building Financial Models using VLOOKUP, IF functions, and Summary Charts" placeholder="e.g., CRAAP Test Matrix, Excel PivotTables..." class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-cnmBlue focus:border-cnmBlue">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex items-center justify-between mb-3 border-b pb-2">
+                        <h2 class="font-semibold text-slate-900 text-lg flex items-center gap-2">
+                            <i class="fa-solid fa-bullseye text-cnmBlue"></i> 2. Student Learning Outcomes (SLOs)
+                        </h2>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-md font-medium">Select applicable</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mb-3">Official CNM BCIS 1110 Course Student Learning Outcomes (SLOs):</p>
+
+                    <div class="space-y-2.5" id="sloContainer">
+                        <label class="checkbox-card cursor-pointer block">
+                            <input type="checkbox" class="slo-check hidden" value="SLO 1: Describe the social impact of information literacy and systems in relation to commerce, education, and personal activities." onchange="updatePrompt()" checked>
+                            <div class="p-3 border rounded-lg text-xs flex items-start space-x-3 transition-all hover:border-slate-300">
+                                <span class="font-bold text-cnmNavy shrink-0">SLO 1</span>
+                                <span class="text-slate-700">Describe the social impact of information literacy and systems in relation to commerce, education, and personal activities.</span>
+                            </div>
+                        </label>
+
+                        <label class="checkbox-card cursor-pointer block">
+                            <input type="checkbox" class="slo-check hidden" value="SLO 2: Explain how to use the information resources legally, safely, and responsibly in relation to ethical, security, and privacy issues." onchange="updatePrompt()">
+                            <div class="p-3 border rounded-lg text-xs flex items-start space-x-3 transition-all hover:border-slate-300">
+                                <span class="font-bold text-cnmNavy shrink-0">SLO 2</span>
+                                <span class="text-slate-700">Explain how to use information resources legally, safely, and responsibly regarding ethical, security, and privacy issues.</span>
+                            </div>
+                        </label>
+
+                        <label class="checkbox-card cursor-pointer block">
+                            <input type="checkbox" class="slo-check hidden" value="SLO 3: Evaluate bias, accuracy and relevance of information and its sources." onchange="updatePrompt()">
+                            <div class="p-3 border rounded-lg text-xs flex items-start space-x-3 transition-all hover:border-slate-300">
+                                <span class="font-bold text-cnmNavy shrink-0">SLO 3</span>
+                                <span class="text-slate-700">Evaluate bias, accuracy, and relevance of information and its sources (e.g. CRAAP testing).</span>
+                            </div>
+                        </label>
+
+                        <label class="checkbox-card cursor-pointer block">
+                            <input type="checkbox" class="slo-check hidden" value="SLO 4: Use productivity tools for communications, data analysis, information management and decision-making." onchange="updatePrompt()" checked>
+                            <div class="p-3 border rounded-lg text-xs flex items-start space-x-3 transition-all hover:border-slate-300">
+                                <span class="font-bold text-cnmNavy shrink-0">SLO 4</span>
+                                <span class="text-slate-700">Use productivity tools for communications, data analysis, information management, and decision-making (Office 365).</span>
+                            </div>
+                        </label>
+
+                        <label class="checkbox-card cursor-pointer block">
+                            <input type="checkbox" class="slo-check hidden" value="SLO 5: Describe and use current information systems and technologies." onchange="updatePrompt()" checked>
+                            <div class="p-3 border rounded-lg text-xs flex items-start space-x-3 transition-all hover:border-slate-300">
+                                <span class="font-bold text-cnmNavy shrink-0">SLO 5</span>
+                                <span class="text-slate-700">Describe and use current information systems and technologies (Hardware, OS, Cloud, Virtual Desktops).</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex items-center justify-between mb-3 border-b pb-2">
+                        <h2 class="font-semibold text-slate-900 text-lg flex items-center gap-2">
+                            <i class="fa-solid fa-users-gear text-cnmBlue"></i> 3. Collaborative Expert Personas
+                        </h2>
+                        <span class="text-xs text-slate-500 font-medium">Include specialized lenses</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mb-3">Select the expert roles the AI should emulate to craft this activity:</p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5" id="personaContainer">
+                        <!-- Required Personas -->
+                        <label class="checkbox-card cursor-pointer block">
+                            <input type="checkbox" class="persona-check hidden" value="Computer Literacy Subject Matter Expert" onchange="updatePrompt()" checked>
+                            <div class="p-2.5 border rounded-lg text-xs flex items-center gap-2.5">
+                                <i class="fa-solid fa-laptop-code text-slate-500"></i>
+                                <span class="font-medium text-slate-800">Computer Literacy SME</span>
+                            </div>
+                        </label>
+
+                        <label class="checkbox-card cursor-pointer block">
+                            <input type="checkbox" class="persona-check hidden" value="Computer Office Application SME (SIMnet & Office 365)" onchange="updatePrompt()" checked>
+                            <div class="p-2.5 border rounded-lg text-xs flex items-center gap-2.5">
+                                <i class="fa-solid fa-file-excel text-green-600"></i>
+                                <span class="font-medium text-slate-800">Computer Office Application SME</span>
+                            </div>
+                        </label>
+
+                        <label class="checkbox-card cursor-pointer block">
+                            <input type="checkbox" class="persona-check hidden" value="Higher Ed Instructional Designer" onchange="updatePrompt()" checked>
+                            <div class="p-2.5 border rounded-lg text-xs flex items-center gap-2.5">
+                                <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                                <span class="font-medium text-slate-800">Instructional Designer</span>
+                            </div>
+                        </label>
+
+                        <label class="checkbox-card cursor-pointer block">
+                            <input type="checkbox" class="persona-check hidden" value="Webpage & Front-End UI Developer" onchange="updatePrompt()" checked>
+                            <div class="p-2.5 border rounded-lg text-xs flex items-center gap-2.5">
+                                <i class="fa-solid fa-code text-blue-500"></i>
+                                <span class="font-medium text-slate-800">Webpage Developer</span>
+                            </div>
+                        </label>
+
+                        <label class="checkbox-card cursor-pointer block">
+                            <input type="checkbox" class="persona-check hidden" value="ADA & Accessibility Compliance Specialist" onchange="updatePrompt()" checked>
+                            <div class="p-2.5 border rounded-lg text-xs flex items-center gap-2.5">
+                                <i class="fa-solid fa-universal-access text-indigo-600"></i>
+                                <span class="font-medium text-slate-800">ADA & Accessibility Expert</span>
+                            </div>
+                        </label>
+
+                        <!-- 3 Custom Additional Experts -->
+                        <label class="checkbox-card cursor-pointer block">
+                            <input type="checkbox" class="persona-check hidden" value="Cybersecurity & Information Assurance Specialist" onchange="updatePrompt()" checked>
+                            <div class="p-2.5 border rounded-lg text-xs flex items-center gap-2.5">
+                                <i class="fa-solid fa-shield-halved text-red-500"></i>
+                                <span class="font-medium text-slate-800">Cybersecurity Specialist</span>
+                            </div>
+                        </label>
+
+                        <label class="checkbox-card cursor-pointer block">
+                            <input type="checkbox" class="persona-check hidden" value="AI Ethics & Information Literacy Scholar" onchange="updatePrompt()" checked>
+                            <div class="p-2.5 border rounded-lg text-xs flex items-center gap-2.5">
+                                <i class="fa-solid fa-brain text-purple-500"></i>
+                                <span class="font-medium text-slate-800">AI Ethics & Information Scholar</span>
+                            </div>
+                        </label>
+
+                        <label class="checkbox-card cursor-pointer block">
+                            <input type="checkbox" class="persona-check hidden" value="Student Engagement & Universal Design Coach" onchange="updatePrompt()" checked>
+                            <div class="p-2.5 border rounded-lg text-xs flex items-center gap-2.5">
+                                <i class="fa-solid fa-graduation-cap text-teal-600"></i>
+                                <span class="font-medium text-slate-800">Active Learning Coach</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex items-center justify-between mb-3 border-b pb-2">
+                        <h2 class="font-semibold text-slate-900 text-lg flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-cnmBlue"></i> 4. Activity Type (12 Options)
+                        </h2>
+                        <span class="text-xs bg-cnmBlue text-white px-2 py-0.5 rounded-full">Select 1 primary</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5" id="activityTypeContainer">
+                        <!-- 12 Activity Types -->
+                        <label class="radio-card cursor-pointer block">
+                            <input type="radio" name="activityType" value="Guided Software Hands-on Lab Task (Step-by-step MS Office/SIMnet style)" onchange="updatePrompt()" checked class="hidden">
+                            <div class="p-3 border rounded-lg text-xs flex items-start gap-2.5 transition-all">
+                                <i class="fa-solid fa-list-ol text-blue-600 text-base mt-0.5"></i>
+                                <div>
+                                    <div class="font-semibold text-slate-800">1. Guided Software Lab Task</div>
+                                    <div class="text-[11px] text-slate-500">Step-by-step practical software project in MS Office.</div>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="radio-card cursor-pointer block">
+                            <input type="radio" name="activityType" value="Interactive Workplace Scenario & Case Study Analysis" onchange="updatePrompt()" class="hidden">
+                            <div class="p-3 border rounded-lg text-xs flex items-start gap-2.5 transition-all">
+                                <i class="fa-solid fa-briefcase text-emerald-600 text-base mt-0.5"></i>
+                                <div>
+                                    <div class="font-semibold text-slate-800">2. Workplace Case Study</div>
+                                    <div class="text-[11px] text-slate-500">Real-world business decision making scenario.</div>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="radio-card cursor-pointer block">
+                            <input type="radio" name="activityType" value="CRAAP Matrix Information Evaluation Audit" onchange="updatePrompt()" class="hidden">
+                            <div class="p-3 border rounded-lg text-xs flex items-start gap-2.5 transition-all">
+                                <i class="fa-solid fa-magnifying-glass-chart text-purple-600 text-base mt-0.5"></i>
+                                <div>
+                                    <div class="font-semibold text-slate-800">3. CRAAP Evaluation Audit</div>
+                                    <div class="text-[11px] text-slate-500">Critique currency, relevance, authority, accuracy & purpose.</div>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="radio-card cursor-pointer block">
+                            <input type="radio" name="activityType" value="Peer Review & Collaborative Document Critique" onchange="updatePrompt()" class="hidden">
+                            <div class="p-3 border rounded-lg text-xs flex items-start gap-2.5 transition-all">
+                                <i class="fa-solid fa-comments text-amber-600 text-base mt-0.5"></i>
+                                <div>
+                                    <div class="font-semibold text-slate-800">4. Collaborative Peer Review</div>
+                                    <div class="text-[11px] text-slate-500">Critique classmate submissions with rubrics.</div>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="radio-card cursor-pointer block">
+                            <input type="radio" name="activityType" value="Discussion Board Reflection & Strategic Debate" onchange="updatePrompt()" class="hidden">
+                            <div class="p-3 border rounded-lg text-xs flex items-start gap-2.5 transition-all">
+                                <i class="fa-solid fa-message text-indigo-600 text-base mt-0.5"></i>
+                                <div>
+                                    <div class="font-semibold text-slate-800">5. Discussion Board Debate</div>
+                                    <div class="text-[11px] text-slate-500">Prompts with initial post & 2 peer response criteria.</div>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="radio-card cursor-pointer block">
+                            <input type="radio" name="activityType" value="Interactive Diagnostic Quiz & Concept Knowledge Check" onchange="updatePrompt()" class="hidden">
+                            <div class="p-3 border rounded-lg text-xs flex items-start gap-2.5 transition-all">
+                                <i class="fa-solid fa-circle-question text-rose-600 text-base mt-0.5"></i>
+                                <div>
+                                    <div class="font-semibold text-slate-800">6. Diagnostic Knowledge Check</div>
+                                    <div class="text-[11px] text-slate-500">Self-grading quiz with explanations & feedback.</div>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="radio-card cursor-pointer block">
+                            <input type="radio" name="activityType" value="Technical Troubleshooting Simulation & Error Resolution" onchange="updatePrompt()" class="hidden">
+                            <div class="p-3 border rounded-lg text-xs flex items-start gap-2.5 transition-all">
+                                <i class="fa-solid fa-screwdriver-wrench text-slate-600 text-base mt-0.5"></i>
+                                <div>
+                                    <div class="font-semibold text-slate-800">7. Troubleshooting Simulation</div>
+                                    <div class="text-[11px] text-slate-500">Diagnose broken spreadsheet formulas or OS issues.</div>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="radio-card cursor-pointer block">
+                            <input type="radio" name="activityType" value="Visual Infographic / One-Page Executive Summary Creation" onchange="updatePrompt()" class="hidden">
+                            <div class="p-3 border rounded-lg text-xs flex items-start gap-2.5 transition-all">
+                                <i class="fa-solid fa-chart-pie text-teal-600 text-base mt-0.5"></i>
+                                <div>
+                                    <div class="font-semibold text-slate-800">8. Visual Infographic & Summary</div>
+                                    <div class="text-[11px] text-slate-500">Synthesize technology impact into a clear graphic display.</div>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="radio-card cursor-pointer block">
+                            <input type="radio" name="activityType" value="Step-by-Step Video / Screencast Script & Presentation" onchange="updatePrompt()" class="hidden">
+                            <div class="p-3 border rounded-lg text-xs flex items-start gap-2.5 transition-all">
+                                <i class="fa-solid fa-video text-red-600 text-base mt-0.5"></i>
+                                <div>
+                                    <div class="font-semibold text-slate-800">9. Video Screencast Script</div>
+                                    <div class="text-[11px] text-slate-500">Student creates a 2-3 min video walking through a skill.</div>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="radio-card cursor-pointer block">
+                            <input type="radio" name="activityType" value="Role-Play / Help Desk Support Simulation" onchange="updatePrompt()" class="hidden">
+                            <div class="p-3 border rounded-lg text-xs flex items-start gap-2.5 transition-all">
+                                <i class="fa-solid fa-headset text-cyan-600 text-base mt-0.5"></i>
+                                <div>
+                                    <div class="font-semibold text-slate-800">10. Help Desk Support Simulation</div>
+                                    <div class="text-[11px] text-slate-500">Act as IT support guiding a non-technical manager.</div>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="radio-card cursor-pointer block">
+                            <input type="radio" name="activityType" value="AI-Assisted Research & Hallucination Critique Task" onchange="updatePrompt()" class="hidden">
+                            <div class="p-3 border rounded-lg text-xs flex items-start gap-2.5 transition-all">
+                                <i class="fa-solid fa-robot text-purple-700 text-base mt-0.5"></i>
+                                <div>
+                                    <div class="font-semibold text-slate-800">11. AI Interaction & Critique</div>
+                                    <div class="text-[11px] text-slate-500">Prompt AI, evaluate accuracy, cite prompt in APA.</div>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="radio-card cursor-pointer block">
+                            <input type="radio" name="activityType" value="Digital Portfolio Artifact & Reflection Essay" onchange="updatePrompt()" class="hidden">
+                            <div class="p-3 border rounded-lg text-xs flex items-start gap-2.5 transition-all">
+                                <i class="fa-solid fa-folder-open text-orange-600 text-base mt-0.5"></i>
+                                <div>
+                                    <div class="font-semibold text-slate-800">12. E-Portfolio Reflection</div>
+                                    <div class="text-[11px] text-slate-500">Compile project work into a final reflective showcase.</div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- ADA CHECKBOXES -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex items-center justify-between mb-3 border-b pb-2">
+                            <h2 class="font-semibold text-slate-900 text-md flex items-center gap-2">
+                                <i class="fa-solid fa-wheelchair text-cnmBlue"></i> 5. ADA & Accessibility Requirements
+                            </h2>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-2">Ensure inclusive design compliance:</p>
+                        
+                        <div class="space-y-2" id="adaContainer">
+                            <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer">
+                                <input type="checkbox" class="ada-check rounded text-cnmBlue focus:ring-cnmBlue" value="WCAG 2.1 AA High Contrast Color Ratios (Minimum 4.5:1 for standard text)" onchange="updatePrompt()" checked>
+                                <span>High Contrast (WCAG 2.1 AA 4.5:1 ratio)</span>
+                            </label>
+
+                            <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer">
+                                <input type="checkbox" class="ada-check rounded text-cnmBlue focus:ring-cnmBlue" value="Screen Reader Ready HTML Structure (Semantic headings H1-H4, ARIA labels, descriptive link text)" onchange="updatePrompt()" checked>
+                                <span>Screen Reader & Semantic HTML Tags</span>
+                            </label>
+
+                            <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer">
+                                <input type="checkbox" class="ada-check rounded text-cnmBlue focus:ring-cnmBlue" value="Keyboard Navigation & Focus Trapping Avoidance" onchange="updatePrompt()" checked>
+                                <span>Full Keyboard Accessibility Support</span>
+                            </label>
+
+                            <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer">
+                                <input type="checkbox" class="ada-check rounded text-cnmBlue focus:ring-cnmBlue" value="Alternative Text (Alt Text) Prompts for all diagrams, screenshots, and visual media" onchange="updatePrompt()" checked>
+                                <span>Alt Text for Visuals & Screenshots</span>
+                            </label>
+
+                            <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer">
+                                <input type="checkbox" class="ada-check rounded text-cnmBlue focus:ring-cnmBlue" value="Transcripts and Audio Captions Guidance for multimedia content" onchange="updatePrompt()" checked>
+                                <span>Closed Captions & Audio Transcripts</span>
+                            </label>
+
+                            <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer">
+                                <input type="checkbox" class="ada-check rounded text-cnmBlue focus:ring-cnmBlue" value="Low-Bandwidth & Mobile Screen Optimization (Responsive flex layouts, minimal heavy scripts)" onchange="updatePrompt()" checked>
+                                <span>Mobile & Low-Bandwidth Friendly</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- COLOR SCHEME SELECTION -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3 border-b pb-2">
+                                <h2 class="font-semibold text-slate-900 text-md flex items-center gap-2">
+                                    <i class="fa-solid fa-palette text-cnmBlue"></i> 6. Visual Theme / Color Scheme
+                                </h2>
+                            </div>
+                            <p class="text-xs text-slate-500 mb-3">Select the color palette for the rendered activity web page:</p>
+
+                            <div class="space-y-2.5" id="colorSchemeContainer">
+                                <label class="radio-card cursor-pointer block">
+                                    <input type="radio" name="colorScheme" value="CNM Official Brand Blue (#003B71 Primary, #0066B2 Accent, #F8FAFC Light Background, #EAA123 Warm Highlight)" onchange="updatePrompt()" checked class="hidden">
+                                    <div class="p-2.5 border rounded-lg text-xs flex items-center justify-between">
+                                        <span class="font-semibold text-slate-800">CNM Campus Blue & Gold</span>
+                                        <div class="flex space-x-1">
+                                            <span class="w-4 h-4 rounded-full bg-[#003B71]"></span>
+                                            <span class="w-4 h-4 rounded-full bg-[#0066B2]"></span>
+                                            <span class="w-4 h-4 rounded-full bg-[#EAA123]"></span>
+                                            <span class="w-4 h-4 rounded-full bg-slate-100 border"></span>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <label class="radio-card cursor-pointer block">
+                                    <input type="radio" name="colorScheme" value="Modern Academic Slate (#0F172A Deep Slate, #2563EB Royal Blue, #10B981 Emerald Success, #F1F5F9 Neutral)" onchange="updatePrompt()" class="hidden">
+                                    <div class="p-2.5 border rounded-lg text-xs flex items-center justify-between">
+                                        <span class="font-semibold text-slate-800">Modern Slate & Sapphire</span>
+                                        <div class="flex space-x-1">
+                                            <span class="w-4 h-4 rounded-full bg-[#0F172A]"></span>
+                                            <span class="w-4 h-4 rounded-full bg-[#2563EB]"></span>
+                                            <span class="w-4 h-4 rounded-full bg-[#10B981]"></span>
+                                            <span class="w-4 h-4 rounded-full bg-slate-200"></span>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <label class="radio-card cursor-pointer block">
+                                    <input type="radio" name="colorScheme" value="High-Contrast Accessibility Theme (#000000 Pitch Black Text/Headers, #005A9C Deep Blue Links, #FFFF00 Yellow Focus, #FFFFFF Crisp White)" onchange="updatePrompt()" class="hidden">
+                                    <div class="p-2.5 border rounded-lg text-xs flex items-center justify-between">
+                                        <span class="font-semibold text-slate-800">High Contrast Accessible</span>
+                                        <div class="flex space-x-1">
+                                            <span class="w-4 h-4 rounded-full bg-black"></span>
+                                            <span class="w-4 h-4 rounded-full bg-[#005A9C]"></span>
+                                            <span class="w-4 h-4 rounded-full bg-yellow-400"></span>
+                                            <span class="w-4 h-4 rounded-full bg-white border"></span>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <label class="radio-card cursor-pointer block">
+                                    <input type="radio" name="colorScheme" value="Tech Emerald & Security Teal (#064E3B Deep Forest, #059669 Vibrant Teal, #0284C7 Sky Accent, #ECFDF5 Soft Mint)" onchange="updatePrompt()" class="hidden">
+                                    <div class="p-2.5 border rounded-lg text-xs flex items-center justify-between">
+                                        <span class="font-semibold text-slate-800">Tech Emerald & Security Teal</span>
+                                        <div class="flex space-x-1">
+                                            <span class="w-4 h-4 rounded-full bg-[#064E3B]"></span>
+                                            <span class="w-4 h-4 rounded-full bg-[#059669]"></span>
+                                            <span class="w-4 h-4 rounded-full bg-[#0284C7]"></span>
+                                            <span class="w-4 h-4 rounded-full bg-[#ECFDF5] border"></span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t text-right">
+                            <button onclick="resetForm()" class="text-xs text-slate-500 hover:text-slate-800 underline">
+                                <i class="fa-solid fa-rotate-left"></i> Reset Defaults
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="lg:col-span-5 flex flex-col h-full space-y-4">
+                
+                <div class="bg-slate-900 text-white p-5 rounded-xl border border-slate-800 shadow-xl flex flex-col h-full min-h-[600px] sticky top-20">
+                    
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-terminal text-emerald-400"></i>
+                            <h2 class="font-mono text-sm font-semibold text-slate-200">Generated Master AI Prompt</h2>
+                        </div>
+                        <span id="charCount" class="text-[11px] font-mono text-slate-400 bg-slate-800 px-2 py-0.5 rounded">0 chars</span>
+                    </div>
+
+                    <p class="text-xs text-slate-400 mb-3">
+                        This system prompt embeds CNM BCIS 1110 syllabus parameters, expert personas, ADA standards, and activity specifications. Copy and paste into ChatGPT, Claude, or Gemini.
+                    </p>
+
+                    <!-- LIVE PROMPT TEXT DISPLAY AREA -->
+                    <div class="relative flex-grow mb-4">
+                        <textarea id="promptOutput" readonly class="w-full h-full min-h-[420px] bg-slate-950 text-slate-300 font-mono text-xs p-4 rounded-lg border border-slate-800 focus:outline-none focus:ring-1 focus:ring-cnmBlue resize-none leading-relaxed"></textarea>
+                    </div>
+
+                    <!-- ACTION BUTTONS -->
+                    <div class="space-y-2">
+                        <button onclick="copyPromptToClipboard()" id="copyBtn" class="w-full bg-cnmBlue hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-all flex items-center justify-center space-x-2 text-sm">
+                            <i class="fa-solid fa-copy"></i>
+                            <span>Copy Prompt to Clipboard</span>
+                        </button>
+
+                        <button onclick="downloadPromptText()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs py-2 px-3 rounded-lg border border-slate-700 transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-download"></i>
+                            <span>Download Prompt as Text File (.txt)</span>
+                        </button>
+                    </div>
+
+                    <!-- TOAST FEEDBACK NOTIFICATION -->
+                    <div id="toast" class="hidden mt-3 bg-emerald-950 border border-emerald-500/50 text-emerald-200 text-xs p-3 rounded-lg text-center font-medium animate-pulse">
+                        <i class="fa-solid fa-circle-check mr-1 text-emerald-400"></i> Prompt copied to clipboard successfully!
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 mt-12 py-6 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4">
+            <p class="font-medium text-slate-700">BCIS 1110: Fundamentals of Information Literacy and Systems</p>
+            <p class="mt-1">Central New Mexico Community College (CNM) • School of Business, Hospitality & Technology</p>
+            <p class="mt-2 text-slate-400">Designed for Faculty Activity Building & AI System Prompt Generation</p>
+        </div>
+    </footer>
+
+    <script>
+        /* PRESET SYLLABUS DATA LOADER */
+        const presets = {
+            mod1: {
+                topic: "Operating Systems & File Management",
+                concept: "Syllabus Policy Review, Course Orientation & Digital Tool Setup",
+                slos: [0, 4],
+                activityIndex: 4, // Discussion Board Debate
+                personas: [0, 2, 4, 7]
+            },
+            mod2: {
+                topic: "Operating Systems & File Management",
+                concept: "Managing Files and Folders, Directory Hierarchy & Windows 11 Navigation",
+                slos: [3, 4],
+                activityIndex: 6, // Troubleshooting Simulation
+                personas: [0, 1, 2, 3, 4]
+            },
+            mod3: {
+                topic: "Word Processing (MS Word)",
+                concept: "Computer Hardware Concepts & MS Word Chapter 1 Document Formatting",
+                slos: [3, 4],
+                activityIndex: 0, // Guided Software Lab Task
+                personas: [0, 1, 2, 4]
+            },
+            mod4: {
+                topic: "Word Processing (MS Word)",
+                concept: "CNM Library Database Research, APA/MLA Styles & MS Word Chapter 2",
+                slos: [1, 2, 3],
+                activityIndex: 2, // CRAAP Evaluation Audit
+                personas: [0, 2, 4, 6]
+            },
+            mod5: {
+                topic: "Cybersecurity, Malware & Privacy",
+                concept: "Detecting Malware, Social Engineering Phishing & Word Chapter 3 Collaboration",
+                slos: [1, 3, 4],
+                activityIndex: 1, // Workplace Case Study
+                personas: [0, 2, 4, 5, 7]
+            },
+            mod6: {
+                topic: "Information Evaluation & CRAAP Test",
+                concept: "Evaluating Source Credibility (CRAAP Reports) & Word Simulation Review",
+                slos: [1, 2],
+                activityIndex: 2, // CRAAP Evaluation Audit
+                personas: [0, 2, 4, 5, 6]
+            },
+            mod7: {
+                topic: "Generative AI & Tech Ethics",
+                concept: "Generative AI Integrity, Citation & MS Excel Chapter 1 Formulas",
+                slos: [0, 1, 3],
+                activityIndex: 10, // AI Interaction & Critique
+                personas: [0, 1, 2, 4, 6]
+            },
+            mod8: {
+                topic: "Spreadsheets & Data Analysis (MS Excel)",
+                concept: "Internet Architecture & Excel Chapter 2 VLOOKUP, IF Functions & Data Models",
+                slos: [3, 4],
+                activityIndex: 0, // Guided Software Lab Task
+                personas: [0, 1, 2, 3, 4]
+            },
+            mod9: {
+                topic: "Spreadsheets & Data Analysis (MS Excel)",
+                concept: "Networking Systems, Excel Chapter 3 Summary Charts & Communication Evaluation",
+                slos: [3, 4],
+                activityIndex: 7, // Visual Infographic / Summary
+                personas: [0, 1, 2, 4, 7]
+            },
+            mod10: {
+                topic: "Spreadsheets & Data Analysis (MS Excel)",
+                concept: "Comprehensive Financial Data Modeling, PivotTables & Excel Practical Assessment",
+                slos: [3, 4],
+                activityIndex: 5, // Diagnostic Knowledge Check
+                personas: [0, 1, 2, 4]
+            },
+            mod11: {
+                topic: "Database Management (MS Access)",
+                concept: "Relational Database Concepts, Queries, Forms & File Management Review",
+                slos: [3, 4],
+                activityIndex: 0, // Guided Software Lab Task
+                personas: [0, 1, 2, 4]
+            },
+            mod12: {
+                topic: "Networking, Internet & Social Impact",
+                concept: "Social Impact of Info Systems on Commerce & E-Business Web Design",
+                slos: [0, 3, 4],
+                activityIndex: 1, // Workplace Case Study
+                personas: [0, 2, 3, 4, 7]
+            },
+            mod13: {
+                topic: "Presentation Tools (MS PowerPoint)",
+                concept: "The Attention Economy, AI Scam Awareness & PowerPoint Chapter 1 Layouts",
+                slos: [0, 1, 3],
+                activityIndex: 4, // Discussion Board Debate
+                personas: [0, 1, 2, 5, 6]
+            },
+            mod14: {
+                topic: "Presentation Tools (MS PowerPoint)",
+                concept: "Online Learning Ecosystems & PowerPoint Chapter 2 Visual Communication",
+                slos: [0, 3, 4],
+                activityIndex: 8, // Video Screencast Script
+                personas: [0, 1, 2, 3, 4, 7]
+            },
+            mod15: {
+                topic: "Presentation Tools (MS PowerPoint)",
+                concept: "Effective Presentation Design (Avoiding 'Death by PowerPoint') & Final Capstone",
+                slos: [0, 3],
+                activityIndex: 11, // Digital Portfolio Reflection
+                personas: [1, 2, 3, 4, 7]
+            }
+        };
+
+        /* UPDATE & GENERATE MASTER AI PROMPT */
+        function updatePrompt() {
+            /* 1. Get Topic & Concept */
+            const topic = document.getElementById('topicSelect').value;
+            const concept = document.getElementById('majorConcept').value.trim() || 'Core Unit Concepts';
+
+            /* 2. Get Selected SLOs */
+            const selectedSLOs = [];
+            document.querySelectorAll('.slo-check:checked').forEach(cb => {
+                selectedSLOs.push(cb.value);
+            });
+
+            /* 3. Get Selected Personas */
+            const selectedPersonas = [];
+            document.querySelectorAll('.persona-check:checked').forEach(cb => {
+                selectedPersonas.push(cb.value);
+            });
+
+            /* 4. Get Activity Type */
+            const selectedActivityEl = document.querySelector('input[name="activityType"]:checked');
+            const activityType = selectedActivityEl ? selectedActivityEl.value : 'Guided Software Lab Task';
+
+            /* 5. Get ADA Requirements */
+            const selectedADA = [];
+            document.querySelectorAll('.ada-check:checked').forEach(cb => {
+                selectedADA.push(cb.value);
+            });
+
+            /* 6. Get Color Scheme */
+            const colorSchemeEl = document.querySelector('input[name="colorScheme"]:checked');
+            const colorScheme = colorSchemeEl ? colorSchemeEl.value : 'CNM Official Brand Blue';
+
+            /* BUILD SYSTEM PROMPT TEXT */
+            let promptText = `SYSTEM ROLE & EXPERT PERSONA PANEL:
+Act as a collaborative instructional engineering team for Community College Higher Education. Combine the following specialized lenses and expertise:
+${selectedPersonas.map(p => ` - ${p}`).join('\n')}
+
+COURSE CONTEXT:
+ - Institution: Central New Mexico Community College (CNM)
+ - Course: BCIS 1110 - Fundamentals of Information Literacy and Systems (3 Credits, Online Asynchronous)
+ - Primary Tools: Microsoft Office 365 (SIMnet integration), Brightspace LMS, Virtual Desktop.
+
+ACTIVITY TOPIC & CONCEPT:
+ - Topic Focus: ${topic}
+ - Target Major Concept: ${concept}
+
+TARGET STUDENT LEARNING OUTCOMES (SLOs):
+${selectedSLOs.length > 0 ? selectedSLOs.map(slo => ` - ${slo}`).join('\n') : ' - Align with general BCIS 1110 course competencies.'}
+
+ACTIVITY TYPE & STRUCTURAL FORMAT:
+ - Primary Activity Type: ${activityType}
+
+ADA & ACCESSIBILITY MANDATES (WCAG 2.1 AA Compliance):
+${selectedADA.length > 0 ? selectedADA.map(ada => ` - Mandatory: ${ada}`).join('\n') : ' - Ensure standard accessibility features.'}
+
+VISUAL DESIGN & COLOR PALETTE SPECIFICATION:
+ - Color Scheme: ${colorScheme}
+ - Layout Requirements: Clean HTML with inline Tailwind CSS classes, responsive mobile grid layout, crisp typography hierarchy, clear rounded containers, and high contrast.
+
+TASK INSTRUCTIONS FOR THE AI:
+Generate a complete, ready-to-publish student learning activity formatted as a standalone interactive HTML page with embedded Tailwind CSS and JavaScript (or a detailed LMS instructional unit document).
+
+Please include the following sections in your generated activity:
+1. Title & Executive Overview (Targeted at community college business & non-CS students).
+2. Explicit Learning Objectives (Mapped directly to the selected BCIS 1110 SLOs above).
+3. Context Scenario / Problem Statement (Connecting the concept to a real-world workplace or personal scenario).
+4. Step-by-Step Task Instructions (Clear, numbered steps with precise instructions).
+5. Deliverables & Submission Checklist (What students turn in via Brightspace LMS or SIMnet).
+6. Comprehensive Assessment Rubric (Criteria breakdown for grading).
+7. AI Integrity & Citation Guidance (Guidelines on acceptable generative AI tool usage in alignment with CNM policy).
+
+Generate the output to be engaging, encouraging, fully accessible, and professional!`;
+
+            /* Set output text */
+            const outputArea = document.getElementById('promptOutput');
+            outputArea.value = promptText;
+
+            /* Update character count indicator */
+            document.getElementById('charCount').innerText = `${promptText.length} chars`;
+        }
+
+        /* COPY TO CLIPBOARD FUNCTIONALITY */
+        function copyPromptToClipboard() {
+            const promptText = document.getElementById('promptOutput').value;
+            
+            /* Fallback strategy using invisible textarea for iFrame compatibility */
+            const hiddenTextarea = document.createElement('textarea');
+            hiddenTextarea.value = promptText;
+            hiddenTextarea.style.position = 'fixed';
+            hiddenTextarea.style.opacity = '0';
+            document.body.appendChild(hiddenTextarea);
+            hiddenTextarea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if(successful) {
+                    showToast();
+                } else {
+                    alert('Copy command failed. Please manually select and copy the text.');
+                }
+            } catch (err) {
+                console.error('Copy error: ', err);
+                alert('Copy failed. Please select text manually.');
+            }
+            document.body.removeChild(hiddenTextarea);
+        }
+
+        /* SHOW TOAST NOTIFICATION */
+        function showToast() {
+            const toast = document.getElementById('toast');
+            const copyBtn = document.getElementById('copyBtn');
+            
+            toast.classList.remove('hidden');
+            copyBtn.classList.remove('bg-cnmBlue');
+            copyBtn.classList.add('bg-emerald-600');
+            copyBtn.innerHTML = `<i class="fa-solid fa-check"></i> <span>Copied to Clipboard!</span>`;
+
+            setTimeout(() => {
+                toast.classList.add('hidden');
+                copyBtn.classList.remove('bg-emerald-600');
+                copyBtn.classList.add('bg-cnmBlue');
+                copyBtn.innerHTML = `<i class="fa-solid fa-copy"></i> <span>Copy Prompt to Clipboard</span>`;
+            }, 3000);
+        }
+
+        /* DOWNLOAD TEXT FILE */
+        function downloadPromptText() {
+            const promptText = document.getElementById('promptOutput').value;
+            const element = document.createElement('a');
+            const file = new Blob([promptText], {type: 'text/plain'});
+            element.href = URL.createObjectURL(file);
+            element.download = "BCIS_1110_Activity_Prompt.txt";
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        /* LOAD PRESET CONFIGURATION */
+        function loadPreset(key) {
+            if (!key || !presets[key]) return;
+            const p = presets[key];
+
+            // Set topic and concept
+            document.getElementById('topicSelect').value = p.topic;
+            document.getElementById('majorConcept').value = p.concept;
+
+            // Set SLO checkboxes
+            const sloBoxes = document.querySelectorAll('.slo-check');
+            sloBoxes.forEach((cb, idx) => {
+                cb.checked = p.slos.includes(idx);
+            });
+
+            // Set Activity Type Radio
+            const activityRadios = document.querySelectorAll('input[name="activityType"]');
+            if (activityRadios[p.activityIndex]) {
+                activityRadios[p.activityIndex].checked = true;
+            }
+
+            // Set Personas
+            const personaBoxes = document.querySelectorAll('.persona-check');
+            personaBoxes.forEach((cb, idx) => {
+                cb.checked = p.personas.includes(idx);
+            });
+
+            updatePrompt();
+        }
+
+        /* RESET FORM DEFAULTS */
+        function resetForm() {
+            document.getElementById('presetSelector').value = "";
+            document.getElementById('topicSelect').value = "Spreadsheets & Data Analysis (MS Excel)";
+            document.getElementById('majorConcept').value = "Building Financial Models using VLOOKUP, IF functions, and Summary Charts";
+            
+            // Check default SLOs
+            const sloBoxes = document.querySelectorAll('.slo-check');
+            sloBoxes.forEach((cb, idx) => {
+                cb.checked = (idx === 0 || idx === 3 || idx === 4);
+            });
+
+            // Check default Personas
+            const personaBoxes = document.querySelectorAll('.persona-check');
+            personaBoxes.forEach(cb => cb.checked = true);
+
+            // Check default Activity
+            const activityRadios = document.querySelectorAll('input[name="activityType"]');
+            if (activityRadios[0]) activityRadios[0].checked = true;
+
+            // Check default ADA
+            const adaBoxes = document.querySelectorAll('.ada-check');
+            adaBoxes.forEach(cb => cb.checked = true);
+
+            // Check default Color
+            const colorRadios = document.querySelectorAll('input[name="colorScheme"]');
+            if (colorRadios[0]) colorRadios[0].checked = true;
+
+            updatePrompt();
+        }
+
+        /* INITIALIZE ON LOAD */
+        window.onload = function() {
+            updatePrompt();
+        };
+    </script>
+</body>
+</html>
