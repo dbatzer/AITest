@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructional Graphic Prompt Generator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#2563eb',
+                            600: '#1d4ed8',
+                            700: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbars and sleek utility styles */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .graphic-card.selected {
+            border-color: #2563eb;
+            background-color: #eff6ff;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1), 0 2px 4px -1px rgba(37, 99, 235, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Header / Navbar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-md">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-900 text-lg sm:text-xl leading-tight">Instructional Graphic Prompt Generator</h1>
+                    <p class="text-xs text-slate-500 hidden sm:block">Empowering IDs with precise AI prompts for educational media</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="loadPreset('science')" class="px-3 py-1.5 text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors">
+                    <i class="fa-solid fa-vial mr-1 text-emerald-600"></i> Science Preset
+                </button>
+                <button onclick="loadPreset('cybersecurity')" class="px-3 py-1.5 text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors">
+                    <i class="fa-solid fa-shield-halved mr-1 text-indigo-600"></i> Tech/Compliance
+                </button>
+                <button onclick="resetForm()" class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100" title="Reset Generator">
+                    <i class="fa-solid fa-rotate"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        <!-- LEFT COLUMN: Form Inputs (7 cols) -->
+        <section class="lg:col-span-7 space-y-6">
+
+            <!-- STEP 1: Core Instructional Context -->
+            <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
+                <div class="flex items-center space-x-2 border-b border-slate-100 pb-3">
+                    <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-700 text-xs font-bold flex items-center justify-center">1</span>
+                    <h2 class="font-semibold text-slate-800 text-base">Pedagogical Context & Objectives</h2>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="sm:col-span-2">
+                        <label for="lessonTopic" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Lesson Topic / Subject</label>
+                        <input type="text" id="lessonTopic" placeholder="e.g. Cybersecurity Threat Matrix or Plant Photosynthesis" 
+                            class="w-full px-3.5 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition"
+                            oninput="generatePrompt()">
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label for="learningObjectives" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Learning Objective(s)</label>
+                        <textarea id="learningObjectives" rows="2" placeholder="e.g. Learners will be able to differentiate between phishing, ransomware, and social engineering attacks." 
+                            class="w-full px-3.5 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition resize-none"
+                            oninput="generatePrompt()"></textarea>
+                    </div>
+
+                    <div>
+                        <label for="targetAudience" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Target Audience / Level</label>
+                        <select id="targetAudience" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white" onchange="generatePrompt()">
+                            <option value="Higher Education / Undergraduate">Higher Education / Undergraduate</option>
+                            <option value="Corporate / Adult Professional Training">Corporate / Professional Training</option>
+                            <option value="High School (Grades 9-12)">High School (Grades 9-12)</option>
+                            <option value="Middle School (Grades 6-8)">Middle School (Grades 6-8)</option>
+                            <option value="Elementary (Grades K-5)">Elementary (Grades K-5)</option>
+                            <option value="General Public / Technical Audience">General Public / Technical</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="bloomsTaxonomy" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Bloom's Taxonomy Level</label>
+                        <select id="bloomsTaxonomy" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white" onchange="generatePrompt()">
+                            <option value="Understand (Explanations & Summaries)">Understand (Explanations)</option>
+                            <option value="Remember (Identification & Recall)">Remember (Recall)</option>
+                            <option value="Apply (Execution & Workflows)">Apply (Workflows/Tasks)</option>
+                            <option value="Analyze (Comparisons & Structure)">Analyze (Distinctions)</option>
+                            <option value="Evaluate (Decision Making & Assessment)">Evaluate (Decision Trees)</option>
+                            <option value="Create (Design & Synthesis)">Create (Synthesis)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: Graphic Type Selection -->
+            <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-700 text-xs font-bold flex items-center justify-center">2</span>
+                        <h2 class="font-semibold text-slate-800 text-base">Select Instructional Graphic Type (20 Options)</h2>
+                    </div>
+                    <input type="text" id="graphicSearch" placeholder="Filter graphics..." class="text-xs px-2.5 py-1 border border-slate-200 rounded-md focus:outline-none focus:border-brand-500 w-36" onkeyup="filterGraphics()">
+                </div>
+
+                <!-- Graphic Cards Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 max-h-80 overflow-y-auto pr-1" id="graphicTypeGrid">
+                    <!-- Javascript populates this dynamically from graphicTypes array -->
+                </div>
+            </div>
+
+            <!-- STEP 3: Platform, Aesthetic & Technical Specs -->
+            <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
+                <div class="flex items-center space-x-2 border-b border-slate-100 pb-3">
+                    <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-700 text-xs font-bold flex items-center justify-center">3</span>
+                    <h2 class="font-semibold text-slate-800 text-base">Platform, Style & Technical Specs</h2>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label for="llmPlatform" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Target AI Tool / LLM</label>
+                        <select id="llmPlatform" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none bg-white" onchange="generatePrompt()">
+                            <option value="ChatGPT / DALL-E 3">ChatGPT / DALL-E 3</option>
+                            <option value="Midjourney v6">Midjourney v6</option>
+                            <option value="Claude 3.5 Sonnet (Mermaid/SVG)">Claude 3.5 (Mermaid / SVG Code)</option>
+                            <option value="Napkin AI">Napkin AI (Diagram Generator)</option>
+                            <option value="Gamma App">Gamma App (Presentation Visual)</option>
+                            <option value="Canva Magic Studio">Canva Magic Studio</option>
+                            <option value="Stable Diffusion 3">Stable Diffusion 3</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="artStyle" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Visual Art Style</label>
+                        <select id="artStyle" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none bg-white" onchange="generatePrompt()">
+                            <option value="Clean Flat Vector Graphic">Clean Flat Vector Graphic</option>
+                            <option value="3D Isometric Educational Illustration">3D Isometric Diagram</option>
+                            <option value="Modern Corporate Infographic">Modern Corporate Infographic</option>
+                            <option value="Technical Schematic Blueprint">Technical Schematic / Blueprint</option>
+                            <option value="Minimalist Line Art with Color Accents">Minimalist Line Art</option>
+                            <option value="Hand-Drawn / Watercolor Educational Sketch">Hand-Drawn Sketch / Watercolor</option>
+                            <option value="Photorealistic Detailed Rendering">Photorealistic Detailed</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="textDensity" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Text Density & Cues</label>
+                        <select id="textDensity" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none bg-white" onchange="generatePrompt()">
+                            <option value="Minimal Text / Icon & Symbol Driven">Minimal Text / Symbol Driven</option>
+                            <option value="Labeled Key Callouts & Numbers">Labeled Key Callouts & Numbers</option>
+                            <option value="Balanced Titles, Subtitles & Short Text">Balanced Titles & Bullet Points</option>
+                            <option value="High Text Density / Detailed Data Table">Detailed Labels & Descriptions</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="colorScheme" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Color Scheme</label>
+                        <select id="colorScheme" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none bg-white" onchange="generatePrompt()">
+                            <option value="Accessible High Contrast Palette (WCAG Compliant)">High Contrast WCAG Palette</option>
+                            <option value="Corporate Navy, Slate & Electric Blue Accent">Corporate Navy & Blue</option>
+                            <option value="Warm Educational (Amber, Teal, Soft Coral)">Warm Educational (Teal/Amber)</option>
+                            <option value="Tech Monochrome (Dark Slate, Cyan, White)">Tech Cyber Cyan & Slate</option>
+                            <option value="Pastel Soft Tones (Soft Green, Lavender, Cream)">Pastel Soft Tones</option>
+                            <option value="Vibrant Categorical Palette (Distinct Primary Colors)">Vibrant Categorical</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="dimensions" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Aspect Ratio / Size</label>
+                        <select id="dimensions" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none bg-white" onchange="generatePrompt()">
+                            <option value="16:9 Landscape (Slide Deck / LMS Banner)">16:9 Landscape (Slide / LMS)</option>
+                            <option value="1:1 Square (Mobile / Social / Thumbnail)">1:1 Square (Mobile / Tile)</option>
+                            <option value="9:16 Vertical (Mobile Scroll / Story)">9:16 Vertical (Mobile Story)</option>
+                            <option value="4:3 Standard Display">4:3 Standard Presentation</option>
+                            <option value="A4 / Letter Printable Poster (Vertical)">A4 Printable Page / Poster</option>
+                            <option value="1:3 Tall Infographic Banner">1:3 Tall Infographic Banner</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="fileType" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Target Download File</label>
+                        <select id="fileType" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none bg-white" onchange="generatePrompt()">
+                            <option value="PNG (High-Res Transparent / Raster)">PNG Image (Transparent)</option>
+                            <option value="SVG (Scalable Vector Graphics)">SVG Scalable Vector</option>
+                            <option value="PDF (Vector Print Document)">PDF Printable Document</option>
+                            <option value="HTML / CSS Interactive Component">HTML/CSS Code Component</option>
+                            <option value="Mermaid.js Diagram Syntax">Mermaid.js Markup Syntax</option>
+                            <option value="Animated GIF / MP4 Video">Animated GIF / MP4</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 4: ADA & Instructional Enhancements -->
+            <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
+                <div class="flex items-center space-x-2 border-b border-slate-100 pb-3">
+                    <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-700 text-xs font-bold flex items-center justify-center">4</span>
+                    <h2 class="font-semibold text-slate-800 text-base">ADA Compliance & Instructional Safeguards</h2>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <label class="flex items-start space-x-2.5 p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs">
+                        <input type="checkbox" id="adaAltText" checked class="mt-0.5 rounded text-brand-600 focus:ring-brand-500" onchange="generatePrompt()">
+                        <div>
+                            <span class="font-semibold text-slate-800">Generate Comprehensive Screen Reader Alt-Text Prompt</span>
+                            <p class="text-slate-500 text-[11px] mt-0.5">Includes structured textual alternative requirement for LMS/WCAG 2.1 AA.</p>
+                        </div>
+                    </label>
+
+                    <label class="flex items-start space-x-2.5 p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs">
+                        <input type="checkbox" id="adaColorContrast" checked class="mt-0.5 rounded text-brand-600 focus:ring-brand-500" onchange="generatePrompt()">
+                        <div>
+                            <span class="font-semibold text-slate-800">Enforce High Contrast & No Color-Only Cues</span>
+                            <p class="text-slate-500 text-[11px] mt-0.5">Ensures information is distinguishable without relying solely on color indicators.</p>
+                        </div>
+                    </label>
+
+                    <label class="flex items-start space-x-2.5 p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs">
+                        <input type="checkbox" id="cognitiveLoad" checked class="mt-0.5 rounded text-brand-600 focus:ring-brand-500" onchange="generatePrompt()">
+                        <div>
+                            <span class="font-semibold text-slate-800">Apply Cognitive Load Reduction Constraints</span>
+                            <p class="text-slate-500 text-[11px] mt-0.5">Prompts AI to maintain whitespace, clear visual hierarchy, and chunked information.</p>
+                        </div>
+                    </label>
+
+                    <label class="flex items-start space-x-2.5 p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs">
+                        <input type="checkbox" id="dyslexiaFriendly" class="mt-0.5 rounded text-brand-600 focus:ring-brand-500" onchange="generatePrompt()">
+                        <div>
+                            <span class="font-semibold text-slate-800">Dyslexia-Friendly Layout Guidance</span>
+                            <p class="text-slate-500 text-[11px] mt-0.5">Specifies left-aligned text, sans-serif typography, and distinct line spacing.</p>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- RIGHT COLUMN: Output Prompt & ID Specification (5 cols) -->
+        <section class="lg:col-span-5 space-y-6 lg:sticky lg:top-20 h-fit">
+
+            <div class="bg-slate-900 text-slate-100 rounded-xl border border-slate-800 shadow-xl overflow-hidden flex flex-col">
+                <!-- Card Header -->
+                <div class="bg-slate-800/80 px-4 py-3 border-b border-slate-700/60 flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-terminal text-brand-400 text-sm"></i>
+                        <span class="font-semibold text-xs text-slate-200 uppercase tracking-wider">Generated Master AI Prompt</span>
+                    </div>
+                    <span id="targetBadge" class="px-2 py-0.5 text-[10px] font-semibold bg-brand-500/20 text-brand-300 border border-brand-500/30 rounded-full">
+                        ChatGPT / DALL-E 3
+                    </span>
+                </div>
+
+                <!-- Tabs -->
+                <div class="bg-slate-950/50 px-4 pt-2 border-b border-slate-800 flex space-x-4 text-xs font-medium">
+                    <button id="tabMasterBtn" onclick="switchTab('master')" class="text-brand-400 border-b-2 border-brand-400 pb-2 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-code"></i>
+                        <span>AI Prompt</span>
+                    </button>
+                    <button id="tabAltBtn" onclick="switchTab('alt')" class="text-slate-400 hover:text-slate-200 border-b-2 border-transparent pb-2 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-universal-access"></i>
+                        <span>Alt Text / WCAG</span>
+                    </button>
+                    <button id="tabSpecBtn" onclick="switchTab('spec')" class="text-slate-400 hover:text-slate-200 border-b-2 border-transparent pb-2 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-file-invoice"></i>
+                        <span>Design Brief</span>
+                    </button>
+                </div>
+
+                <!-- Output Panel Container -->
+                <div class="p-4 flex-1 font-mono text-xs text-slate-300 bg-slate-950 min-h-[380px] max-h-[500px] overflow-y-auto leading-relaxed relative">
+                    <!-- Notification Toast -->
+                    <div id="toast" class="hidden absolute top-3 right-3 bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg flex items-center space-x-1.5 animate-bounce">
+                        <i class="fa-solid fa-check"></i>
+                        <span>Copied to clipboard!</span>
+                    </div>
+
+                    <!-- Master Prompt Tab -->
+                    <div id="tabMaster" class="space-y-3">
+                        <div id="promptContent" class="whitespace-pre-wrap"></div>
+                    </div>
+
+                    <!-- Alt Text Tab -->
+                    <div id="tabAlt" class="hidden space-y-3">
+                        <div id="altContent" class="whitespace-pre-wrap"></div>
+                    </div>
+
+                    <!-- Design Spec Tab -->
+                    <div id="tabSpec" class="hidden space-y-3">
+                        <div id="specContent" class="whitespace-pre-wrap"></div>
+                    </div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="bg-slate-800/80 px-4 py-3 border-t border-slate-700/60 flex items-center justify-between gap-2">
+                    <button onclick="copyActivePrompt()" class="flex-1 bg-brand-600 hover:bg-brand-500 text-white font-medium text-xs py-2 px-3 rounded-lg transition flex items-center justify-center space-x-1.5 shadow">
+                        <i class="fa-solid fa-copy"></i>
+                        <span>Copy Active Text</span>
+                    </button>
+                    <button onclick="downloadPromptMarkdown()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 font-medium text-xs py-2 px-3 rounded-lg transition flex items-center justify-center space-x-1.5" title="Download as Markdown">
+                        <i class="fa-solid fa-download"></i>
+                        <span>Export .MD</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Graphic Type Info Banner -->
+            <div id="graphicTypeDetailCard" class="bg-brand-50 border border-brand-200 rounded-xl p-4 text-xs text-slate-700 space-y-1">
+                <div class="flex items-center space-x-2 font-semibold text-brand-900">
+                    <i id="selectedIcon" class="fa-solid fa-sitemap text-brand-600"></i>
+                    <span id="selectedTypeName">Mind Map</span>
+                </div>
+                <p id="selectedTypeDesc" class="text-slate-600">Diagrams showing connections between concepts or topics.</p>
+                <div class="pt-1.5 text-slate-500 italic">
+                    <span class="font-medium text-slate-700">Example Pedagogy:</span> <span id="selectedTypeExample">Mapping types of business ownership or causes of World War I.</span>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        /* 
+         * Graphic Types Master Data (20 Types from Instructional Design Specs)
+         */
+        const graphicTypes = [
+            { id: 1, name: "Mind Maps", icon: "fa-sitemap", desc: "Diagrams showing connections between concepts or topics.", example: "Mapping types of business ownership or causes of World War I." },
+            { id: 2, name: "Illustrations", icon: "fa-image", desc: "High-quality images or drawings depicting people, scenes, or systems.", example: "Illustrating the layers of the Earth or parts of a computer." },
+            { id: 3, name: "Timelines", icon: "fa-timeline", desc: "Chronological visuals of events, processes, or developments.", example: "Timeline of the Civil Rights Movement or invention of key technologies." },
+            { id: 4, name: "Maps", icon: "fa-map-location-dot", desc: "Geographic or conceptual visuals with locations or data overlays.", example: "Mapping cybersecurity threats by region or locations of global trade." },
+            { id: 5, name: "Diagrams", icon: "fa-diagram-project", desc: "Simplified visual breakdowns of structures, systems, or cycles.", example: "Diagram of the OSI model, the water cycle, or a supply chain." },
+            { id: 6, name: "Operational Tables", icon: "fa-table-cells", desc: "Structured data tables for comparisons or classifications.", example: "Comparing business types (LLC vs. Corp) or encryption methods." },
+            { id: 7, name: "Infographics", icon: "fa-chart-pie", desc: "Data-rich visuals combining charts, icons, and explanations.", example: "Infographic on social media usage or elements of digital citizenship." },
+            { id: 8, name: "Flowcharts", icon: "fa-route", desc: "Diagrams showing decision-making paths or processes.", example: "Troubleshooting a network issue or coding a function in Python." },
+            { id: 9, name: "Concept Maps", icon: "fa-circle-nodes", desc: "Structured layouts linking a central theme to supporting ideas.", example: "Concept map of human body systems or programming principles." },
+            { id: 10, name: "Flash Cards", icon: "fa-layer-group", desc: "Quick-reference visuals or definitions for study and recall.", example: "Vocabulary cards for biology terms or cybersecurity acronyms." },
+            { id: 11, name: "Posters", icon: "fa-scroll", desc: "Large-format visuals summarizing content or encouraging action.", example: "Poster on lab safety rules or key formulas in algebra." },
+            { id: 12, name: "Step-by-Step Process Charts", icon: "fa-list-ol", desc: "Visual guides for how tasks or systems work.", example: "Steps to conduct a lab experiment or write a persuasive essay." },
+            { id: 13, name: "Interactive Charts", icon: "fa-chart-line", desc: "Clickable/animated visuals that display or update data.", example: "Interactive pie chart of classroom poll results or country GDP." },
+            { id: 14, name: "Process Animations", icon: "fa-film", desc: "Animated sequences showing changes over time or movement.", example: "Animation of a rocket launch sequence or virus infection pathway." },
+            { id: 15, name: "Comparative Charts", icon: "fa-code-compare", desc: "Side-by-side comparisons with structured categories.", example: "Comparing economic systems or types of operating systems." },
+            { id: 16, name: "Annotated Images", icon: "fa-note-sticky", desc: "Visuals with labeled parts or instructional callouts.", example: "Labeling parts of a neuron or components on a circuit board." },
+            { id: 17, name: "Decision Trees", icon: "fa-network-wired", desc: "Logical flowcharts with branches for different outcomes.", example: "Diagnosing ethical dilemmas or selecting troubleshooting steps." },
+            { id: 18, name: "Venn Diagrams", icon: "fa-circles-overlap", desc: "Overlapping circles to show similarities and differences.", example: "Comparing democracy and authoritarianism or animal vs. plant cells." },
+            { id: 19, name: "Storyboard Panels", icon: "fa-clapperboard", desc: "Sequential boxes showing scenes or actions over time.", example: "Storyboarding a lab experiment or historical event timeline." },
+            { id: 20, name: "Role-Based Scenario Charts", icon: "fa-users-gear", desc: "Visuals showing who does what in a system or process.", example: "Roles in a cybersecurity response team or in project management." }
+        ];
+
+        let selectedGraphicId = 5; // Default to Diagram
+        let activeTab = 'master';
+
+        /* 
+         * STREAMING_CHUNK:Initializing application grid and event handlers...
+         */
+        window.addEventListener('DOMContentLoaded', () => {
+            renderGraphicGrid();
+            selectGraphic(selectedGraphicId);
+            generatePrompt();
+        });
+
+        function renderGraphicGrid() {
+            const grid = document.getElementById('graphicTypeGrid');
+            grid.innerHTML = '';
+            
+            graphicTypes.forEach(g => {
+                const card = document.createElement('div');
+                card.className = `graphic-card p-2.5 rounded-lg border border-slate-200 cursor-pointer hover:border-brand-400 transition flex flex-col items-center text-center space-y-1.5 ${g.id === selectedGraphicId ? 'selected' : ''}`;
+                card.id = `graphic-card-${g.id}`;
+                card.onclick = () => selectGraphic(g.id);
+
+                card.innerHTML = `
+                    <i class="fa-solid ${g.icon} text-lg ${g.id === selectedGraphicId ? 'text-brand-600' : 'text-slate-500'}"></i>
+                    <span class="text-[11px] font-medium text-slate-800 leading-tight">${g.name}</span>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterGraphics() {
+            const query = document.getElementById('graphicSearch').value.toLowerCase();
+            graphicTypes.forEach(g => {
+                const card = document.getElementById(`graphic-card-${g.id}`);
+                if (g.name.toLowerCase().includes(query) || g.desc.toLowerCase().includes(query)) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+
+        function selectGraphic(id) {
+            selectedGraphicId = id;
+            document.querySelectorAll('.graphic-card').forEach(c => {
+                c.classList.remove('selected');
+                const icon = c.querySelector('i');
+                if (icon) icon.className = icon.className.replace('text-brand-600', 'text-slate-500');
+            });
+
+            const selectedCard = document.getElementById(`graphic-card-${id}`);
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+                const icon = selectedCard.querySelector('i');
+                if (icon) icon.className = icon.className.replace('text-slate-500', 'text-brand-600');
+            }
+
+            const item = graphicTypes.find(g => g.id === id);
+            if (item) {
+                document.getElementById('selectedTypeName').textContent = item.name;
+                document.getElementById('selectedTypeDesc').textContent = item.desc;
+                document.getElementById('selectedTypeExample').textContent = item.example;
+                document.getElementById('selectedIcon').className = `fa-solid ${item.icon} text-brand-600`;
+            }
+
+            generatePrompt();
+        }
+
+        /* 
+         * STREAMING_CHUNK:Constructing dynamic instructional prompt logic...
+         */
+        function generatePrompt() {
+            const topic = document.getElementById('lessonTopic').value.trim() || "[Insert Lesson Topic Here, e.g., Water Cycle or Phishing Attacks]";
+            const objectives = document.getElementById('learningObjectives').value.trim() || "[Insert Learning Objectives Here, e.g., Identify key components and relationships]";
+            const audience = document.getElementById('targetAudience').value;
+            const bloom = document.getElementById('bloomsTaxonomy').value;
+            const platform = document.getElementById('llmPlatform').value;
+            const style = document.getElementById('artStyle').value;
+            const textDensity = document.getElementById('textDensity').value;
+            const color = document.getElementById('colorScheme').value;
+            const dimensions = document.getElementById('dimensions').value;
+            const fileType = document.getElementById('fileType').value;
+
+            const adaAlt = document.getElementById('adaAltText').checked;
+            const adaContrast = document.getElementById('adaColorContrast').checked;
+            const cognitiveLoad = document.getElementById('cognitiveLoad').checked;
+            const dyslexia = document.getElementById('dyslexiaFriendly').checked;
+
+            const graphic = graphicTypes.find(g => g.id === selectedGraphicId) || graphicTypes[0];
+
+            // Badge update
+            document.getElementById('targetBadge').textContent = platform;
+
+            // Build Master AI Prompt based on selected Platform
+            let masterPrompt = "";
+
+            if (platform.includes("Mermaid") || platform.includes("Claude")) {
+                masterPrompt = `Act as an expert Instructional Designer and Diagram Specialist. Generate clean, syntactically correct Mermaid.js diagram code for a ${graphic.name.toUpperCase()}.\n\n` +
+                    `[PEDAGOGICAL CONTEXT]\n` +
+                    `- Topic: ${topic}\n` +
+                    `- Learning Objective: ${objectives}\n` +
+                    `- Target Audience: ${audience}\n` +
+                    `- Bloom's Level: ${bloom}\n\n` +
+                    `[DIAGRAM REQUIREMENTS]\n` +
+                    `- Graphic Format: ${graphic.name} (${graphic.desc})\n` +
+                    `- Design Structure: Clear visual hierarchy, sub-graphs for logical grouping.\n` +
+                    `- Color / Styling: Use Mermaid classDef for ${color}.\n` +
+                    `- Text Density: ${textDensity}.\n\n` +
+                    `Please output only the runnable Mermaid.js snippet wrapped in triple backticks. Include short explanatory callout nodes to emphasize key learning points.`;
+            } else if (platform.includes("Midjourney")) {
+                const aspectCode = dimensions.includes("16:9") ? "--ar 16:9" : dimensions.includes("1:1") ? "--ar 1:1" : dimensions.includes("9:16") ? "--ar 9:16" : dimensions.includes("4:3") ? "--ar 4:3" : "--ar 2:3";
+                masterPrompt = `An educational ${graphic.name.toLowerCase()} illustrating "${topic}". Designed for ${audience} to meet the objective: "${objectives}". ` +
+                    `Style: ${style}, clean layout, minimal distraction, professional graphic design, ${color}. ` +
+                    `Visual structure: ${graphic.desc}. Text and labeling cues: ${textDensity}. ` +
+                    `Instructional clarity, ultra-crisp vector shapes, isolated neutral background, high contrast visual hierarchy ${aspectCode} --v 6.0 --style raw`;
+            } else if (platform.includes("Napkin") || platform.includes("Gamma")) {
+                masterPrompt = `Create an educational ${graphic.name} visual structure on the topic: "${topic}".\n\n` +
+                    `Audience: ${audience}\n` +
+                    `Goal: ${objectives}\n` +
+                    `Bloom's Level: ${bloom}\n\n` +
+                    `Structure Guidelines:\n` +
+                    `- Format: ${graphic.name}\n` +
+                    `- Visual Style: ${style}\n` +
+                    `- Palette: ${color}\n` +
+                    `- Breakdown: Organize into 3 to 5 clear visual chunks/cards.\n` +
+                    `- Key Text Cues: ${textDensity}.\n\n` +
+                    `Provide a clean outline of text and suggested icons for each section.`;
+            } else {
+                // ChatGPT / DALL-E 3 / Canva Default
+                masterPrompt = `Act as an expert Instructional Media Designer. Create a comprehensive visual graphic of a ${graphic.name.toUpperCase()} for an educational course.\n\n` +
+                    `1. LESSON TOPIC & PEDAGOGY:\n` +
+                    `   - Topic: ${topic}\n` +
+                    `   - Learning Objective: ${objectives}\n` +
+                    `   - Target Learner: ${audience}\n` +
+                    `   - Cognitive Level (Bloom's): ${bloom}\n\n` +
+                    `2. VISUAL SPECIFICATIONS:\n` +
+                    `   - Graphic Type: ${graphic.name} (${graphic.desc})\n` +
+                    `   - Art & Aesthetic Style: ${style}\n` +
+                    `   - Aspect Ratio / Layout: ${dimensions}\n` +
+                    `   - Color Palette: ${color}\n` +
+                    `   - Text Density & Callouts: ${textDensity}\n\n` +
+                    `3. INSTRUCTIONAL & ACCESSIBILITY REQUIREMENTS:\n` +
+                    (adaContrast ? `   - High Contrast: Ensure minimum 4.5:1 text/background contrast ratio.\n` : '') +
+                    (cognitiveLoad ? `   - Cognitive Load: Use generous whitespace, clean grouping, and avoid visual clutter.\n` : '') +
+                    (dyslexia ? `   - Typography: Use sans-serif, left-aligned, highly legible fonts.\n` : '') +
+                    `   - Intended Output Format: ${fileType}\n\n` +
+                    `Please generate the graphic image with high visual fidelity, ensuring all structural pathways, components, and labels directly support the learning objective.`;
+            }
+
+            // Build Alt Text Prompt
+            let altPrompt = `[ADA / WCAG 2.1 AA COMPLIANT ACCESSIBILITY SPECIFICATION]\n\n` +
+                `Graphic Title: ${graphic.name} - ${topic}\n` +
+                `Target Output File: ${fileType}\n\n` +
+                `ALT TEXT (Short - under 125 characters):\n` +
+                `"${graphic.name} showing ${topic} for ${audience}, detailing ${objectives}."\n\n` +
+                `LONG DESCRIPTION (For LMS / Screen Reader Modal):\n` +
+                `"This ${graphic.name.toLowerCase()} illustrates ${topic}. It is organized into distinct logical sections. ` +
+                `The main visual components represent: ${objectives}. ` +
+                (adaContrast ? `Color high-contrast standards are met to ensure visibility. ` : '') +
+                `Text callouts are presented sequentially to support non-visual learners."\n\n` +
+                `TABULAR EQUIVALENT FOR SCREEN READERS:\n` +
+                `| Section / Node | Instructional Meaning | Supporting Details |\n` +
+                `| -------------- | -------------------- | ------------------ |\n` +
+                `| Concept Core   | ${topic}             | Primary objective focus |\n` +
+                `| Step/Branch 1  | Key Component 1       | Detailed description |\n` +
+                `| Step/Branch 2  | Key Component 2       | Detailed description |`;
+
+            // Build Design Brief
+            let specPrompt = `==================================================\n` +
+                `INSTRUCTIONAL GRAPHIC DESIGN BRIEF\n` +
+                `==================================================\n\n` +
+                `Project Topic: ${topic}\n` +
+                `Graphic Type: ${graphic.name} (ID #${graphic.id})\n` +
+                `Pedagogical Objective: ${objectives}\n` +
+                `Target Audience: ${audience}\n` +
+                `Bloom's Level: ${bloom}\n\n` +
+                `DESIGN REQUIREMENTS:\n` +
+                `- Aesthetic Style: ${style}\n` +
+                `- Target Platform / Tool: ${platform}\n` +
+                `- Dimensions / Aspect Ratio: ${dimensions}\n` +
+                `- Color Palette: ${color}\n` +
+                `- Text Density Level: ${textDensity}\n` +
+                `- Target Download Format: ${fileType}\n\n` +
+                `ACCESSIBILITY CHECKLIST:\n` +
+                `- WCAG 2.1 AA Alt-Text Included: ${adaAlt ? 'YES' : 'NO'}\n` +
+                `- High Contrast Colors Enforced: ${adaContrast ? 'YES' : 'NO'}\n` +
+                `- Cognitive Load Optimized: ${cognitiveLoad ? 'YES' : 'NO'}\n` +
+                `- Dyslexia Cues Applied: ${dyslexia ? 'YES' : 'NO'}`;
+
+            document.getElementById('promptContent').textContent = masterPrompt;
+            document.getElementById('altContent').textContent = altPrompt;
+            document.getElementById('specContent').textContent = specPrompt;
+        }
+
+        /* 
+         * STREAMING_CHUNK:Tab switching and clipboard interactions...
+         */
+        function switchTab(tab) {
+            activeTab = tab;
+            ['master', 'alt', 'spec'].forEach(t => {
+                const content = document.getElementById(`tab${t.charAt(0).toUpperCase() + t.slice(1)}`);
+                const btn = document.getElementById(`tab${t.charAt(0).toUpperCase() + t.slice(1)}Btn`);
+                
+                if (t === tab) {
+                    content.classList.remove('hidden');
+                    btn.className = "text-brand-400 border-b-2 border-brand-400 pb-2 flex items-center space-x-1.5";
+                } else {
+                    content.classList.add('hidden');
+                    btn.className = "text-slate-400 hover:text-slate-200 border-b-2 border-transparent pb-2 flex items-center space-x-1.5";
+                }
+            });
+        }
+
+        function copyActivePrompt() {
+            let textToCopy = "";
+            if (activeTab === 'master') {
+                textToCopy = document.getElementById('promptContent').textContent;
+            } else if (activeTab === 'alt') {
+                textToCopy = document.getElementById('altContent').textContent;
+            } else {
+                textToCopy = document.getElementById('specContent').textContent;
+            }
+
+            // Fallback clipboard logic
+            const textarea = document.createElement('textarea');
+            textarea.value = textToCopy;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast();
+            } catch (err) {
+                console.error('Copy failed:', err);
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 2000);
+        }
+
+        function downloadPromptMarkdown() {
+            const topic = document.getElementById('lessonTopic').value.trim() || "Instructional_Graphic";
+            const content = `# Instructional Graphic Prompt Specification\n\n` +
+                `## Master AI Prompt\n\`\`\`\n${document.getElementById('promptContent').textContent}\n\`\`\`\n\n` +
+                `## ADA Alt-Text & Accessibility\n${document.getElementById('altContent').textContent}\n\n` +
+                `## Design Brief\n${document.getElementById('specContent').textContent}`;
+
+            const blob = new Blob([content], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${topic.replace(/[^a-zA-Z0-9]/g, '_')}_Graphic_Prompt.md`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        /* 
+         * STREAMING_CHUNK:Preset loading functions...
+         */
+        function loadPreset(preset) {
+            if (preset === 'science') {
+                document.getElementById('lessonTopic').value = "Layers of the Earth & Tectonic Plates";
+                document.getElementById('learningObjectives').value = "Identify the crust, mantle, outer core, and inner core, and describe how mantle convection drives plate movement.";
+                document.getElementById('targetAudience').value = "Middle School (Grades 6-8)";
+                document.getElementById('bloomsTaxonomy').value = "Understand (Explanations & Summaries)";
+                document.getElementById('llmPlatform').value = "ChatGPT / DALL-E 3";
+                document.getElementById('artStyle').value = "3D Isometric Educational Illustration";
+                document.getElementById('colorScheme').value = "Warm Educational (Amber, Teal, Soft Coral)";
+                document.getElementById('dimensions').value = "16:9 Landscape (Slide Deck / LMS Banner)";
+                document.getElementById('fileType').value = "PNG (High-Res Transparent / Raster)";
+                selectGraphic(2); // Illustration
+            } else if (preset === 'cybersecurity') {
+                document.getElementById('lessonTopic').value = "Incident Response Decision Matrix for Ransomware";
+                document.getElementById('learningObjectives').value = "Determine immediate isolation, escalation, and notification procedures when a ransomware breach is detected.";
+                document.getElementById('targetAudience').value = "Corporate / Adult Professional Training";
+                document.getElementById('bloomsTaxonomy').value = "Evaluate (Decision Making & Assessment)";
+                document.getElementById('llmPlatform').value = "Claude 3.5 Sonnet (Mermaid/SVG)";
+                document.getElementById('artStyle').value = "Technical Schematic Blueprint";
+                document.getElementById('colorScheme').value = "Accessible High Contrast Palette (WCAG Compliant)";
+                document.getElementById('dimensions').value = "4:3 Standard Display";
+                document.getElementById('fileType').value = "Mermaid.js Diagram Syntax";
+                selectGraphic(17); // Decision Tree
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('lessonTopic').value = "";
+            document.getElementById('learningObjectives').value = "";
+            document.getElementById('targetAudience').selectedIndex = 0;
+            document.getElementById('bloomsTaxonomy').selectedIndex = 0;
+            document.getElementById('llmPlatform').selectedIndex = 0;
+            document.getElementById('artStyle').selectedIndex = 0;
+            document.getElementById('textDensity').selectedIndex = 0;
+            document.getElementById('colorScheme').selectedIndex = 0;
+            document.getElementById('dimensions').selectedIndex = 0;
+            document.getElementById('fileType').selectedIndex = 0;
+            document.getElementById('adaAltText').checked = true;
+            document.getElementById('adaColorContrast').checked = true;
+            document.getElementById('cognitiveLoad').checked = true;
+            document.getElementById('dyslexiaFriendly').checked = false;
+            selectGraphic(5);
+        }
+    </script>
+</body>
+</html>

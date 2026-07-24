@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Educational Visual Asset - Prompt Builder</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #3498db;
+            --background: #f4f7f6;
+            --panel: #ffffff;
+            --border: #ddd;
+            --text: #333;
+            --text-light: #666;
+            --success: #27ae60;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--background);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: var(--panel);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        header h1 { color: var(--primary); margin: 0; font-size: 2em; }
+        header p { color: var(--text-light); margin: 5px 0 0; }
+
+        .form-section { margin-bottom: 25px; }
+        legend {
+            font-weight: bold;
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            padding: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        textarea { resize: vertical; min-height: 80px; }
+
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .radio-item, .checkbox-item {
+            display: flex;
+            align-items: center;
+            background: #f9f9f9;
+            border: 1px solid var(--border);
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0;
+            font-weight: 400;
+        }
+
+        .radio-item:hover, .checkbox-item:hover { border-color: var(--accent); }
+
+        .radio-item input, .checkbox-item input {
+            margin: 0;
+            margin-right: 10px;
+            transform: scale(1.1);
+        }
+
+        input[type="radio"]:checked + span,
+        input[type="checkbox"]:checked + span { color: var(--accent); font-weight: 600; }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Color Options */
+        .color-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .color-item {
+            cursor: pointer;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+            transition: transform 0.1s;
+        }
+
+        .color-item:hover { transform: scale(1.03); }
+        .color-item input { display: none; }
+        .color-swatch {
+            width: 100%;
+            height: 25px;
+            border-radius: 4px;
+            margin-bottom: 5px;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        .color-item input:checked + div {
+            border: 2px solid var(--accent);
+            background-color: #e6f7ff;
+            border-radius: 6px;
+        }
+
+        /* Button */
+        .btn-generate {
+            display: block;
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-generate:hover { background-color: var(--secondary); }
+
+        /* Output Area */
+        #output-area {
+            margin-top: 30px;
+            display: none;
+            border-top: 2px solid var(--border);
+            padding-top: 20px;
+        }
+        .output-box {
+            background-color: #fafafa;
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', Courier, monospace;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .btn-copy {
+            background-color: #e0e0e0;
+            color: var(--primary);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .btn-copy:hover { background-color: #d0d0d0; }
+        .copy-success { color: var(--success); display: none; margin-left: 10px; }
+
+        @media (max-width: 768px) {
+            .two-column { grid-template-columns: 1fr; }
+            .color-group { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Educational Image Prompt Builder</h1>
+        <p>Define the parameters, and generate the structured text prompt.</p>
+    </header>
+
+    <div class="form">
+
+        <!-- 1. Persona & Target Audience -->
+        <fieldset class="form-section">
+            <legend>1. Persona & Context</legend>
+            <div class="two-column">
+                <div>
+                    <label>Generator Persona</label>
+                    <input type="text" id="persona" placeholder="e.g., Instructional Designer & Graphic Generator" value="Instructional Designer and Advanced Graphic Generator">
+                </div>
+                <div>
+                    <label>Target Audience/Class</label>
+                    <input type="text" id="audience" placeholder="e.g., College Business Students" value="University Business Students">
+                </div>
+            </div>
+            <div style="margin-top: 15px;">
+                <label>Target Language (Output Text)</label>
+                <input type="text" id="language" value="English" placeholder="English, Spanish, etc.">
+            </div>
+        </fieldset>
+
+        <!-- 2. Core Concept & Details -->
+        <fieldset class="form-section">
+            <legend>2. Content Core</legend>
+            <label>Main Topic / Title</label>
+            <input type="text" id="topic" placeholder="e.g., Types of Business Ownership" value="Types of Business Ownership">
+            
+            <label style="margin-top: 15px;">Required Subtopics (comma separated)</label>
+            <textarea id="subtopics" placeholder="e.g., LLC, Corporation, Partnership">Sole Proprietorship, Partnership, Corporation, LLC, Cooperative, Franchise</textarea>
+
+            <label style="margin-top: 15px;">Comparison Categories (comma separated)</label>
+            <textarea id="categories" placeholder="e.g., Responsibility, Taxation, Cost">Liability, Taxes, Formation Difficulty, Ownership, Example Businesses</textarea>
+        </fieldset>
+
+        <!-- 3. Output Type & Purpose -->
+        <fieldset class="form-section">
+            <legend>3. Structural Goals</legend>
+            <div class="two-column">
+                <div>
+                    <label>Structural Purpose</label>
+                    <select id="structural_purpose">
+                        <option value="high-quality comparison chart">Comparison Chart</option>
+                        <option value="detailed infographic" selected>Infographic</option>
+                        <option value="process flowchart">Process Flowchart</option>
+                        <option value="definitional handout">Definitional Handout</option>
+                        <option value="conceptual map">Conceptual Map</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Formatting Strategy</label>
+                    <select id="formatting_strategy">
+                        <option value="clean, modern, grid-based layout" selected>Modern Grid</option>
+                        <option value="modular section layout">Modular Sections</option>
+                        <option value="linear storytelling timeline">Linear Timeline</option>
+                        <option value="minimalist, single-focus design">Minimalist</option>
+                    </select>
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- 4. Visual Style & Aesthetics -->
+        <fieldset class="form-section">
+            <legend>4. Aesthetics & Style</legend>
+            <label>Primary Visual Strategy</label>
+            <div class="radio-group" id="visual_strategy_group">
+                <label class="radio-item"><input type="radio" name="visual_strategy" value="vector illustration" checked><span>Vector</span></label>
+                <label class="radio-item"><input type="radio" name="visual_strategy" value="flat design with isometric elements"><span>Flat / Isometric</span></label>
+                <label class="radio-item"><input type="radio" name="visual_strategy" value="realistic 3D render"><span>3D Render</span></label>
+                <label class="radio-item"><input type="radio" name="visual_strategy" value="hand-drawn sketch style"><span>Hand-Drawn Sketch</span></label>
+                <label class="radio-item"><input type="radio" name="visual_strategy" value="conceptual photo-manipulation"><span>Conceptual Photo</span></label>
+            </div>
+
+            <label style="margin-top: 15px;">Color Palette Preference</label>
+            <div class="color-group" id="color_palette_group">
+                <!-- Color palette radio buttons inserted here by JS -->
+            </div>
+        </fieldset>
+
+        <!-- 5. Accessibility & Metadata -->
+        <fieldset class="form-section">
+            <legend>5. Accessibility & Output Requirements</legend>
+            <div class="checkbox-group">
+                <label class="checkbox-item"><input type="checkbox" id="generate_alt_text" checked><span>Generate Alternative Text (Alt Text) Proposal</span></label>
+                <label class="checkbox-item"><input type="checkbox" id="print_ready" checked><span>Ensure suitable for Print/PDF (e.g., clear text, sufficient white space)</span></label>
+            </div>
+        </fieldset>
+
+        <button type="button" class="btn-generate" onclick="buildPrompt()">Generate Prompt Structure</button>
+
+    </div>
+
+    <!-- Output Section -->
+    <div id="output-area">
+        <label>Structured Prompt Output:</label>
+        <button class="btn-copy" onclick="copyPrompt()">Copy to Clipboard</button><span class="copy-success" id="copy-msg">Copied!</span>
+        <div class="output-box" id="final-prompt"></div>
+    </div>
+</div>
+
+<script>
+    const colorPalettes = [
+        { id: 'corporate', name: 'Corporate Blue/Grey', swatches: ['#2c3e50', '#34495e', '#3498db', '#ecf0f1'] },
+        { id: 'vibrant', name: 'Modern Vibrant', swatches: ['#8e44ad', '#2980b9', '#27ae60', '#f39c12'] },
+        { id: 'pastel', name: 'Educational Pastel', swatches: ['#a3c1ad', '#a0ced9', '#ffcfab', '#ff9aa2'] },
+        { id: 'highcon', name: 'High Contrast', swatches: ['#000000', '#ffffff', '#ffff00', '#0000ff'] },
+        { id: 'monochrome', name: 'Monochrome Accent', swatches: ['#333333', '#777777', '#cccccc', '#3498db'] }
+    ];
+
+    // Initialize page
+    window.onload = function() {
+        populateColors();
+    };
+
+    function populateColors() {
+        const group = document.getElementById('color_palette_group');
+        colorPalettes.forEach((pal, index) => {
+            const label = document.createElement('label');
+            label.className = 'color-item';
+            
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = 'color_palette';
+            radio.value = pal.name;
+            if (index === 0) radio.checked = true;
+
+            const div = document.createElement('div');
+            const swatches = document.createElement('div');
+            swatches.style.display = 'flex';
+            swatches.style.gap = '2px';
+            pal.swatches.forEach(c => {
+                const s = document.createElement('div');
+                s.className = 'color-swatch';
+                s.style.backgroundColor = c;
+                swatches.appendChild(s);
+            });
+            
+            const nameSpan = document.createElement('span');
+            nameSpan.innerText = pal.name;
+            nameSpan.style.fontSize = '0.9em';
+
+            div.appendChild(swatches);
+            div.appendChild(nameSpan);
+            label.appendChild(radio);
+            label.appendChild(div);
+            group.appendChild(label);
+        });
+    }
+
+    function buildPrompt() {
+        const persona = document.getElementById('persona').value || "Image Generator";
+        const audience = document.getElementById('audience').value || "General Audience";
+        const language = document.getElementById('language').value || "English";
+        const topic = document.getElementById('topic').value || "Undefined Topic";
+        const subtopics = document.getElementById('subtopics').value.split(',').map(s => s.trim()).filter(s => s);
+        const categories = document.getElementById('categories').value.split(',').map(s => s.trim()).filter(s => s);
+        
+        const structuralPurpose = document.getElementById('structural_purpose').value;
+        const formattingStrategy = document.getElementById('formatting_strategy').value;
+        
+        const visualStrategy = document.querySelector('input[name="visual_strategy"]:checked').value;
+        const colorPalette = document.querySelector('input[name="color_palette"]:checked').value;
+        
+        const generateAlt = document.getElementById('generate_alt_text').checked;
+        const printReady = document.getElementById('print_ready').checked;
+
+        // Construct the prompt
+        let prompt = `Act as an ${persona}.\n`;
+        prompt += `Generate a high-quality, professional ${structuralPurpose} suitable for ${audience}.\n\n`;
+        
+        prompt += `### Core Content\n`;
+        prompt += `The visual output must clearly present and compare information regarding:\n`;
+        prompt += `1. **Main Title:** ${topic}\n`;
+        
+        if (language !== "English") {
+            prompt += `2. **Output Language:** ${language}\n`;
+        }
+        
+        if (subtopics.length > 0) {
+            prompt += `3. **Required Entries:** ${subtopics.join(', ')}\n`;
+        }
+        if (categories.length > 0) {
+            prompt += `4. **Required Comparison Categories:** ${categories.join(', ')}\n`;
+        }
+        
+        prompt += `\n### Design & Structure\n`;
+        prompt += `Ensure the output follows these guidelines:\n`;
+        prompt += `-   **Layout:** ${formattingStrategy}.\n`;
+        
+        if (printReady) {
+            prompt += `-   **Format:** Ensure modern formatting, suitable for high-resolution print or PDF delivery (e.g., distinct sections, bold headings, adequate white space for readability).\n`;
+        }
+        
+        prompt += `\n### Visual Style\n`;
+        prompt += `-   **Aesthetic:** ${visualStrategy}.\n`;
+        prompt += `-   **Palette:** Utilize a ${colorPalette} color scheme.\n`;
+        prompt += `-   **Enhancements:** Include conceptually relevant icons and illustrations to enhance the visual storytelling of the complex information presented.\n`;
+
+        if (generateAlt) {
+            prompt += `\n### Accessibility Metadata\n`;
+            prompt += `Along with the image, please generate a detailed, descriptive proposed alternative text (Alt Text) that can be used to describe the core comparison data presented in the image to a visually impaired user.\n`;
+        }
+
+        document.getElementById('final-prompt').innerText = prompt;
+        document.getElementById('output-area').style.display = 'block';
+        document.getElementById('output-area').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function copyPrompt() {
+        const text = document.getElementById('final-prompt').innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            const msg = document.getElementById('copy-msg');
+            msg.style.display = 'inline';
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 2000);
+        });
+    }
+</script>
+
+</body>
+</html>

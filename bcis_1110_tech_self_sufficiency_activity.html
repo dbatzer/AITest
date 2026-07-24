@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCIS 1110: Technical Self-Sufficiency & Communication Mastery</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2pdf.js for Client-Side PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        cnm: {
+                            blue: '#003A70',
+                            gold: '#FFB81C',
+                            darkBlue: '#00264A',
+                            lightBg: '#F3F4F6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .active-tab {
+            border-bottom: 3px solid #003A70;
+            color: #003A70;
+            font-weight: 600;
+        }
+        .option-card {
+            transition: all 0.2s ease-in-out;
+        }
+        .option-card:hover {
+            transform: translateY(-2px);
+        }
+        .selected-card {
+            border-color: #003A70 !important;
+            background-color: #F0F7FF !important;
+            box-shadow: 0 4px 12px rgba(0, 58, 112, 0.15);
+        }
+        /* Custom scrollbar for preview */
+        textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+        textarea::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        textarea::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-cnm-blue text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white p-2 rounded-lg text-cnm-blue font-bold text-xl flex items-center justify-center w-10 h-10 shadow">
+                    <i class="fa-solid fa-laptop-code"></i>
+                </div>
+                <div>
+                    <span class="text-xs uppercase tracking-wider text-blue-200 font-semibold">BCIS 1110 • Essential Skills Activity</span>
+                    <h1 class="text-xl sm:text-2xl font-bold leading-tight">Technical Self-Sufficiency & Digital Communication</h1>
+                </div>
+            </div>
+            <!-- Progress Tracker -->
+            <div class="bg-cnm-darkBlue/80 px-4 py-2 rounded-xl flex items-center space-x-4 border border-blue-400/30">
+                <div class="text-right">
+                    <div class="text-xs text-blue-200 uppercase font-medium">Activity Progress</div>
+                    <div id="progress-text" class="text-sm font-bold text-cnm-gold">0 / 4 Scenarios Completed</div>
+                </div>
+                <div class="w-24 bg-blue-950 rounded-full h-3 border border-blue-400/30 overflow-hidden">
+                    <div id="progress-bar" class="bg-cnm-gold h-3 rounded-full transition-all duration-300 w-0"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Student Details Input Banner -->
+    <section class="bg-white border-b border-gray-200 py-3 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div>
+                    <label for="student-name" class="block font-medium text-gray-700 mb-1">Full Student Name <span class="text-red-500">*</span></label>
+                    <input type="text" id="student-name" placeholder="e.g., Jane Doe" class="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-cnm-blue focus:border-cnm-blue outline-none transition" oninput="updateExportPreview()">
+                </div>
+                <div>
+                    <label for="course-section" class="block font-medium text-gray-700 mb-1">Course & Section <span class="text-red-500">*</span></label>
+                    <input type="text" id="course-section" value="BCIS 1110 - Section D91" class="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-cnm-blue focus:border-cnm-blue outline-none transition" oninput="updateExportPreview()">
+                </div>
+                <div>
+                    <label for="submission-date" class="block font-medium text-gray-700 mb-1">Date</label>
+                    <input type="text" id="submission-date" readonly class="w-full px-3 py-1.5 bg-gray-100 border border-gray-300 rounded-md text-gray-600 cursor-not-allowed">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tab Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-x-auto">
+            <div class="flex space-x-2 sm:space-x-6 min-w-max" id="tabs-header">
+                <button onclick="switchTab('tab-overview')" id="btn-tab-overview" class="py-3 px-2 text-sm sm:text-base font-medium text-gray-600 hover:text-cnm-blue active-tab flex items-center gap-2">
+                    <i class="fa-solid fa-circle-info"></i> Overview
+                </button>
+                <button onclick="switchTab('tab-1')" id="btn-tab-1" class="py-3 px-2 text-sm sm:text-base font-medium text-gray-600 hover:text-cnm-blue flex items-center gap-2">
+                    <i class="fa-solid fa-envelope"></i> 1. Email Etiquette <span id="badge-tab-1" class="hidden text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">✓</span>
+                </button>
+                <button onclick="switchTab('tab-2')" id="btn-tab-2" class="py-3 px-2 text-sm sm:text-base font-medium text-gray-600 hover:text-cnm-blue flex items-center gap-2">
+                    <i class="fa-solid fa-comments"></i> 2. Discussion Boards <span id="badge-tab-2" class="hidden text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">✓</span>
+                </button>
+                <button onclick="switchTab('tab-3')" id="btn-tab-3" class="py-3 px-2 text-sm sm:text-base font-medium text-gray-600 hover:text-cnm-blue flex items-center gap-2">
+                    <i class="fa-solid fa-desktop"></i> 3. Cross-Platform Tech <span id="badge-tab-3" class="hidden text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">✓</span>
+                </button>
+                <button onclick="switchTab('tab-4')" id="btn-tab-4" class="py-3 px-2 text-sm sm:text-base font-medium text-gray-600 hover:text-cnm-blue flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation"></i> 4. Deadline Emergencies <span id="badge-tab-4" class="hidden text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">✓</span>
+                </button>
+                <button onclick="switchTab('tab-export')" id="btn-tab-export" class="py-3 px-2 text-sm sm:text-base font-medium text-gray-600 hover:text-cnm-blue flex items-center gap-2 text-cnm-blue font-bold">
+                    <i class="fa-solid fa-file-export"></i> 5. Summary & Export
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- OVERVIEW TAB -->
+        <section id="tab-overview" class="tab-content space-y-6">
+            <div class="bg-gradient-to-br from-blue-900 to-cnm-blue text-white rounded-2xl p-6 sm:p-8 shadow-lg">
+                <div class="max-w-3xl">
+                    <span class="bg-cnm-gold text-cnm-darkBlue font-bold text-xs uppercase px-3 py-1 rounded-full">Essential Course Skill</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold mt-3 mb-2">Technical Self-Sufficiency & Communication</h2>
+                    <p class="text-blue-100 text-base leading-relaxed mb-4">
+                        In BCIS 1110, earning a good grade requires mastering technical concepts, but real success in college and modern business requires **technical self-sufficiency** and **professional digital etiquette**.
+                    </p>
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="switchTab('tab-1')" class="bg-cnm-gold hover:bg-yellow-400 text-cnm-darkBlue font-bold px-5 py-2.5 rounded-xl shadow transition flex items-center gap-2">
+                            Begin Activity Scenarios <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Skill Pillar 1 -->
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 bg-blue-100 text-cnm-blue rounded-xl flex items-center justify-center text-xl font-bold mb-4">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">1. Professional Digital Communication</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed mb-4">
+                            Mastering structured, polite, and effective emails to instructors and colleagues, as well as maintaining constructive, analytical dialogue in online discussion forums without conflict.
+                        </p>
+                    </div>
+                    <ul class="text-xs text-gray-500 space-y-1.5 border-t border-gray-100 pt-3">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500"></i> Clear subject lines & section numbers</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500"></i> Actionable details & professional tone</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500"></i> Civil, evidence-based discussion board replies</li>
+                    </ul>
+                </div>
+
+                <!-- Skill Pillar 2 -->
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 bg-amber-100 text-amber-700 rounded-xl flex items-center justify-center text-xl font-bold mb-4">
+                            <i class="fa-solid fa-screwdriver-wrench"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">2. Technical Adaptation & Troubleshooting</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed mb-4">
+                            Navigating software and operating system differences across Windows, Mac, and Chromebooks, while using resources like the CNM Virtual Desktop (`virtualdesktop.cnm.edu`) to resolve issues independently.
+                        </p>
+                    </div>
+                    <ul class="text-xs text-gray-500 space-y-1.5 border-t border-gray-100 pt-3">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500"></i> Using CNM Virtual Desktop on non-Windows devices</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500"></i> Creating screenshots & documenting error logs</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500"></i> Backup contingency plans prior to deadline cutoffs</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Instructions Box -->
+            <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5">
+                <h4 class="font-bold text-cnm-blue text-base flex items-center gap-2 mb-2">
+                    <i class="fa-solid fa-list-check"></i> How to Complete This Interactive Module
+                </h4>
+                <ol class="list-decimal list-inside text-sm text-gray-700 space-y-2">
+                    <li>Enter your **Full Student Name** in the field above.</li>
+                    <li>Work through **Tabs 1 through 4**. In each tab, examine the two competing real-world examples.</li>
+                    <li>Select the **better example** (Option A or Option B) and write your justification in the reasoning box provided.</li>
+                    <li>Once all 4 scenarios are finished, proceed to **Tab 5 (Summary & Export)** to view your aggregated responses.</li>
+                    <li>Use the **Copy to Clipboard** or **Download PDF** button to save your report for submission in Brightspace.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- TAB 1: Email Etiquette -->
+        <section id="tab-1" class="tab-content space-y-6 hidden">
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-4">
+                    <div>
+                        <span class="text-xs font-semibold text-cnm-blue uppercase tracking-wider">Scenario 1 of 4</span>
+                        <h2 class="text-xl font-bold text-gray-900">Emailing an Instructor Regarding a SIMnet Technical Issue</h2>
+                    </div>
+                    <span class="text-xs bg-blue-100 text-cnm-blue px-3 py-1 rounded-full font-medium">Topic: Email Communication</span>
+                </div>
+                <p class="text-sm text-gray-600 mb-6">
+                    **Context:** You are working on your SIMnet Guided Project late Wednesday evening and encounter an issue where your uploaded Word document is failing the automated grading check due to a suspected system glitch. You need to contact your instructor, Professor David Batzer.
+                </p>
+
+                <!-- Competing Examples Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <!-- Option A -->
+                    <div id="card-1-A" onclick="selectOption(1, 'A')" class="option-card cursor-pointer border-2 border-gray-200 rounded-2xl p-5 hover:border-blue-400 bg-white relative flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="font-bold text-gray-700 text-sm bg-gray-100 px-3 py-1 rounded-lg">Option A</span>
+                                <span id="radio-1-A" class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center text-xs text-white"></span>
+                            </div>
+                            <!-- Email Mock -->
+                            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-xs font-mono space-y-2 mb-3">
+                                <div><strong class="text-gray-500">To:</strong> dbatzer@cnm.edu</div>
+                                <div><strong class="text-gray-500">Subject:</strong> SIMNET BROKEN HELP</div>
+                                <div class="border-t border-gray-200 pt-2 text-gray-800 font-sans text-xs space-y-2">
+                                    <p>hey professor,</p>
+                                    <p>simnet is glitching and wont accept my word project. i did everything right but it keeps giving me 0 points on step 4. please fix this ASAP because i need my grade updated or i will lose points on friday.</p>
+                                    <p>sent from my iPhone</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-500 italic">Click to select Option A</div>
+                    </div>
+
+                    <!-- Option B -->
+                    <div id="card-1-B" onclick="selectOption(1, 'B')" class="option-card cursor-pointer border-2 border-gray-200 rounded-2xl p-5 hover:border-blue-400 bg-white relative flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="font-bold text-gray-700 text-sm bg-gray-100 px-3 py-1 rounded-lg">Option B</span>
+                                <span id="radio-1-B" class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center text-xs text-white"></span>
+                            </div>
+                            <!-- Email Mock -->
+                            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-xs font-mono space-y-2 mb-3">
+                                <div><strong class="text-gray-500">To:</strong> dbatzer@cnm.edu</div>
+                                <div><strong class="text-gray-500">Subject:</strong> BCIS 1110-D91: SIMnet Word Ch. 2 Guided Project Error - Jane Doe</div>
+                                <div class="border-t border-gray-200 pt-2 text-gray-800 font-sans text-xs space-y-2">
+                                    <p>Dear Professor Batzer,</p>
+                                    <p>I hope your week is going well. I am reaching out regarding Word Chapter 2 Guided Project in section D91.</p>
+                                    <p>When uploading my file, SIMnet flags Step 4 ("Apply Heading 1 Style") as incomplete. I verified the formatting in MS Word 365. I have attached my `.docx` file and a screenshot of the error report for your reference.</p>
+                                    <p>I have also submitted a ticket to SIMnet support (#48291). Please let me know if there are additional troubleshooting steps I should take before Friday's deadline.</p>
+                                    <p>Thank you,<br>Jane Doe<br>CNM ID: 1029384</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-500 italic">Click to select Option B</div>
+                    </div>
+                </div>
+
+                <!-- Reasoning Input -->
+                <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200">
+                    <label for="reason-1" class="block font-semibold text-gray-800 text-sm mb-2">
+                        Justify Your Choice <span class="text-red-500">*</span>
+                    </label>
+                    <p class="text-xs text-gray-500 mb-3">
+                        Explain why your chosen option reflects professional digital communication standards (mention specific elements like subject line, context, tone, identification, or proactive steps).
+                    </p>
+                    <textarea id="reason-1" rows="3" oninput="saveAndValidate(1)" placeholder="Type your reasoning here (at least 15 words)..." class="w-full p-3 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-cnm-blue focus:border-cnm-blue outline-none transition"></textarea>
+                    <div class="flex justify-between items-center mt-2 text-xs">
+                        <span id="word-count-1" class="text-gray-500">0 words (min 15 required)</span>
+                        <span id="status-1" class="font-semibold text-amber-600">Selection & Reasoning Pending</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="flex justify-end pt-4 border-t border-gray-100">
+                    <button onclick="switchTab('tab-2')" class="bg-cnm-blue text-white font-bold px-6 py-2.5 rounded-xl hover:bg-cnm-darkBlue transition flex items-center gap-2 text-sm">
+                        Next: Discussion Boards <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: Discussion Board Netiquette -->
+        <section id="tab-2" class="tab-content space-y-6 hidden">
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-4">
+                    <div>
+                        <span class="text-xs font-semibold text-cnm-blue uppercase tracking-wider">Scenario 2 of 4</span>
+                        <h2 class="text-xl font-bold text-gray-900">Constructive Discussion Board Engagement</h2>
+                    </div>
+                    <span class="text-xs bg-blue-100 text-cnm-blue px-3 py-1 rounded-full font-medium">Topic: Online Netiquette</span>
+                </div>
+                <p class="text-sm text-gray-600 mb-6">
+                    **Context:** In Week 11, the class is discussing *Artificial Intelligence Ethics in Business*. A classmate posts: *"AI tools like ChatGPT should be completely banned in business courses because students just use them to cheat without thinking."* You disagree with this absolute statement and want to offer a counterpoint in your reply.
+                </p>
+
+                <!-- Competing Examples Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <!-- Option A -->
+                    <div id="card-2-A" onclick="selectOption(2, 'A')" class="option-card cursor-pointer border-2 border-gray-200 rounded-2xl p-5 hover:border-blue-400 bg-white relative flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="font-bold text-gray-700 text-sm bg-gray-100 px-3 py-1 rounded-lg">Option A</span>
+                                <span id="radio-2-A" class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center text-xs text-white"></span>
+                            </div>
+                            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-xs font-sans space-y-2 mb-3">
+                                <div class="font-semibold text-gray-700 border-b border-gray-200 pb-1">Discussion Board Reply</div>
+                                <p class="text-gray-800">
+                                    I completely disagree with you. Saying AI should be banned shows you don't understand how modern business works. Everyone in the real world uses AI now, so banning it in college is ridiculous and lazy. If you think students only cheat with it, that's just your opinion.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-500 italic">Click to select Option A</div>
+                    </div>
+
+                    <!-- Option B -->
+                    <div id="card-2-B" onclick="selectOption(2, 'B')" class="option-card cursor-pointer border-2 border-gray-200 rounded-2xl p-5 hover:border-blue-400 bg-white relative flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="font-bold text-gray-700 text-sm bg-gray-100 px-3 py-1 rounded-lg">Option B</span>
+                                <span id="radio-2-B" class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center text-xs text-white"></span>
+                            </div>
+                            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-xs font-sans space-y-2 mb-3">
+                                <div class="font-semibold text-gray-700 border-b border-gray-200 pb-1">Discussion Board Reply</div>
+                                <p class="text-gray-800">
+                                    You raise a valid concern regarding academic integrity and improper reliance on AI tools. 
+                                </p>
+                                <p class="text-gray-800">
+                                    However, another perspective to consider is how AI functions as an assistive tool rather than a total replacement for human reasoning—similar to the policy outlined in our BCIS 1110 syllabus. When students are required to cite their prompts and explain their work orally, AI can enhance learning while keeping accountability intact. How might we structure assignments so AI builds critical thinking rather than replacing it?
+                                </p>
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-500 italic">Click to select Option B</div>
+                    </div>
+                </div>
+
+                <!-- Reasoning Input -->
+                <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200">
+                    <label for="reason-2" class="block font-semibold text-gray-800 text-sm mb-2">
+                        Justify Your Choice <span class="text-red-500">*</span>
+                    </label>
+                    <p class="text-xs text-gray-500 mb-3">
+                        Explain why your selection follows academic Netiquette standards (e.g., respectful phrasing, addressing ideas rather than attacking individuals, asking constructive follow-up questions).
+                    </p>
+                    <textarea id="reason-2" rows="3" oninput="saveAndValidate(2)" placeholder="Type your reasoning here (at least 15 words)..." class="w-full p-3 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-cnm-blue focus:border-cnm-blue outline-none transition"></textarea>
+                    <div class="flex justify-between items-center mt-2 text-xs">
+                        <span id="word-count-2" class="text-gray-500">0 words (min 15 required)</span>
+                        <span id="status-2" class="font-semibold text-amber-600">Selection & Reasoning Pending</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="flex justify-between pt-4 border-t border-gray-100">
+                    <button onclick="switchTab('tab-1')" class="bg-gray-200 text-gray-700 font-bold px-5 py-2.5 rounded-xl hover:bg-gray-300 transition text-sm">
+                        <i class="fa-solid fa-arrow-left"></i> Previous
+                    </button>
+                    <button onclick="switchTab('tab-3')" class="bg-cnm-blue text-white font-bold px-6 py-2.5 rounded-xl hover:bg-cnm-darkBlue transition flex items-center gap-2 text-sm">
+                        Next: Cross-Platform Tech <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: Cross-Platform Tech Troubleshooting -->
+        <section id="tab-3" class="tab-content space-y-6 hidden">
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-4">
+                    <div>
+                        <span class="text-xs font-semibold text-cnm-blue uppercase tracking-wider">Scenario 3 of 4</span>
+                        <h2 class="text-xl font-bold text-gray-900">Working Across Platforms (Mac/Chromebook vs. Windows Virtual Desktop)</h2>
+                    </div>
+                    <span class="text-xs bg-amber-100 text-amber-800 px-3 py-1 rounded-full font-medium">Topic: Technical Adaptation</span>
+                </div>
+                <p class="text-sm text-gray-600 mb-6">
+                    **Context:** You own a Chromebook (or Mac) and need to complete a SIMnet Guided Project in MS Access or advanced MS Word features that require standard Windows desktop software. You realize the web version of Office 365 or Chrome OS lacks these full desktop features.
+                </p>
+
+                <!-- Competing Examples Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <!-- Option A -->
+                    <div id="card-3-A" onclick="selectOption(3, 'A')" class="option-card cursor-pointer border-2 border-gray-200 rounded-2xl p-5 hover:border-blue-400 bg-white relative flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="font-bold text-gray-700 text-sm bg-gray-100 px-3 py-1 rounded-lg">Option A</span>
+                                <span id="radio-3-A" class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center text-xs text-white"></span>
+                            </div>
+                            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-xs font-sans space-y-2 mb-3">
+                                <div class="font-semibold text-gray-700 border-b border-gray-200 pb-1">Student Troubleshooting Strategy</div>
+                                <p class="text-gray-800">
+                                    Since MS Access cannot be installed natively on Chrome OS or macOS, I decided to skip those steps in SIMnet and submit the project half-finished. I added a note to my instructor explaining that my computer doesn't support the software so I should not be penalized.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-500 italic">Click to select Option A</div>
+                    </div>
+
+                    <!-- Option B -->
+                    <div id="card-3-B" onclick="selectOption(3, 'B')" class="option-card cursor-pointer border-2 border-gray-200 rounded-2xl p-5 hover:border-blue-400 bg-white relative flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="font-bold text-gray-700 text-sm bg-gray-100 px-3 py-1 rounded-lg">Option B</span>
+                                <span id="radio-3-B" class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center text-xs text-white"></span>
+                            </div>
+                            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-xs font-sans space-y-2 mb-3">
+                                <div class="font-semibold text-gray-700 border-b border-gray-200 pb-1">Student Troubleshooting Strategy</div>
+                                <p class="text-gray-800">
+                                    I consulted the syllabus resource section and logged into the **CNM Virtual Desktop** (`virtualdesktop.cnm.edu`). This gave me full access to a virtual Windows PC with MS Office 2021 inside my web browser. I was able to complete and download the exact file required by SIMnet without needing a physical Windows laptop.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-500 italic">Click to select Option B</div>
+                    </div>
+                </div>
+
+                <!-- Reasoning Input -->
+                <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200">
+                    <label for="reason-3" class="block font-semibold text-gray-800 text-sm mb-2">
+                        Justify Your Choice <span class="text-red-500">*</span>
+                    </label>
+                    <p class="text-xs text-gray-500 mb-3">
+                        Explain why your chosen strategy demonstrates self-sufficiency, referencing tools available to CNM students like virtual desktops or computer labs.
+                    </p>
+                    <textarea id="reason-3" rows="3" oninput="saveAndValidate(3)" placeholder="Type your reasoning here (at least 15 words)..." class="w-full p-3 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-cnm-blue focus:border-cnm-blue outline-none transition"></textarea>
+                    <div class="flex justify-between items-center mt-2 text-xs">
+                        <span id="word-count-3" class="text-gray-500">0 words (min 15 required)</span>
+                        <span id="status-3" class="font-semibold text-amber-600">Selection & Reasoning Pending</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="flex justify-between pt-4 border-t border-gray-100">
+                    <button onclick="switchTab('tab-2')" class="bg-gray-200 text-gray-700 font-bold px-5 py-2.5 rounded-xl hover:bg-gray-300 transition text-sm">
+                        <i class="fa-solid fa-arrow-left"></i> Previous
+                    </button>
+                    <button onclick="switchTab('tab-4')" class="bg-cnm-blue text-white font-bold px-6 py-2.5 rounded-xl hover:bg-cnm-darkBlue transition flex items-center gap-2 text-sm">
+                        Next: Emergencies & Deadlines <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: Late/Tech Glitch Plan -->
+        <section id="tab-4" class="tab-content space-y-6 hidden">
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-4">
+                    <div>
+                        <span class="text-xs font-semibold text-cnm-blue uppercase tracking-wider">Scenario 4 of 4</span>
+                        <h2 class="text-xl font-bold text-gray-900">Handling Unplanned Technical Errors Near Deadlines</h2>
+                    </div>
+                    <span class="text-xs bg-red-100 text-red-800 px-3 py-1 rounded-full font-medium">Topic: Contingency Planning</span>
+                </div>
+                <p class="text-sm text-gray-600 mb-6">
+                    **Context:** It is Friday night at 11:45 PM (due date is 11:58 PM). As you try to upload your Excel project to Brightspace, your home Wi-Fi drops or Brightspace displays an upload error.
+                </p>
+
+                <!-- Competing Examples Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <!-- Option A -->
+                    <div id="card-4-A" onclick="selectOption(4, 'A')" class="option-card cursor-pointer border-2 border-gray-200 rounded-2xl p-5 hover:border-blue-400 bg-white relative flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="font-bold text-gray-700 text-sm bg-gray-100 px-3 py-1 rounded-lg">Option A</span>
+                                <span id="radio-4-A" class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center text-xs text-white"></span>
+                            </div>
+                            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-xs font-sans space-y-2 mb-3">
+                                <div class="font-semibold text-gray-700 border-b border-gray-200 pb-1">Student Action Protocol</div>
+                                <p class="text-gray-800">
+                                    I closed my laptop and went to sleep. On Monday afternoon, I emailed my instructor saying Brightspace crashed Friday night so I couldn't submit my work, asking for full credit without penalty.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-500 italic">Click to select Option A</div>
+                    </div>
+
+                    <!-- Option B -->
+                    <div id="card-4-B" onclick="selectOption(4, 'B')" class="option-card cursor-pointer border-2 border-gray-200 rounded-2xl p-5 hover:border-blue-400 bg-white relative flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="font-bold text-gray-700 text-sm bg-gray-100 px-3 py-1 rounded-lg">Option B</span>
+                                <span id="radio-4-B" class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center text-xs text-white"></span>
+                            </div>
+                            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-xs font-sans space-y-2 mb-3">
+                                <div class="font-semibold text-gray-700 border-b border-gray-200 pb-1">Student Action Protocol</div>
+                                <p class="text-gray-800">
+                                    I immediately took a full-screen screenshot showing the error message and computer clock (11:47 PM). I used my phone's hotspot to email my completed Excel file and screenshot directly to Professor Batzer before 11:58 PM, and logged a support request with CNM ITS (505-224-4357).
+                                </p>
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-500 italic">Click to select Option B</div>
+                    </div>
+                </div>
+
+                <!-- Reasoning Input -->
+                <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200">
+                    <label for="reason-4" class="block font-semibold text-gray-800 text-sm mb-2">
+                        Justify Your Choice <span class="text-red-500">*</span>
+                    </label>
+                    <p class="text-xs text-gray-500 mb-3">
+                        Explain why documenting technical issues with timestamps and submitting time-stamped proof protects your academic standing under course policies.
+                    </p>
+                    <textarea id="reason-4" rows="3" oninput="saveAndValidate(4)" placeholder="Type your reasoning here (at least 15 words)..." class="w-full p-3 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-cnm-blue focus:border-cnm-blue outline-none transition"></textarea>
+                    <div class="flex justify-between items-center mt-2 text-xs">
+                        <span id="word-count-4" class="text-gray-500">0 words (min 15 required)</span>
+                        <span id="status-4" class="font-semibold text-amber-600">Selection & Reasoning Pending</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="flex justify-between pt-4 border-t border-gray-100">
+                    <button onclick="switchTab('tab-3')" class="bg-gray-200 text-gray-700 font-bold px-5 py-2.5 rounded-xl hover:bg-gray-300 transition text-sm">
+                        <i class="fa-solid fa-arrow-left"></i> Previous
+                    </button>
+                    <button onclick="switchTab('tab-export')" class="bg-emerald-600 text-white font-bold px-6 py-2.5 rounded-xl hover:bg-emerald-700 transition flex items-center gap-2 text-sm">
+                        Proceed to Export <i class="fa-solid fa-file-export"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: Summary & Export -->
+        <section id="tab-export" class="tab-content space-y-6 hidden">
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-100 pb-4 mb-4 gap-4">
+                    <div>
+                        <span class="text-xs font-semibold text-cnm-blue uppercase tracking-wider">Final Step</span>
+                        <h2 class="text-xl font-bold text-gray-900">Activity Summary & Brightspace Export</h2>
+                    </div>
+                    <!-- Action buttons -->
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="copyToClipboard()" class="bg-cnm-blue hover:bg-cnm-darkBlue text-white font-bold text-sm px-4 py-2 rounded-xl transition flex items-center gap-2 shadow">
+                            <i class="fa-solid fa-copy"></i> Copy Text
+                        </button>
+                        <button onclick="downloadPDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-4 py-2 rounded-xl transition flex items-center gap-2 shadow">
+                            <i class="fa-solid fa-file-pdf"></i> Download PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Incomplete Warning Banner if needed -->
+                <div id="export-warning" class="bg-amber-50 border border-amber-200 text-amber-800 rounded-xl p-4 text-sm flex items-center gap-3">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-600 text-lg"></i>
+                    <div>
+                        <strong>Incomplete Fields Detected:</strong> Please ensure you have filled out your **Student Name** and completed all 4 scenario choices and written reasonings for a full grade.
+                    </div>
+                </div>
+
+                <p class="text-xs text-gray-500">
+                    Below is your generated report. You can copy the plain text formatted output directly into a Brightspace assignment submission box, or download the styled PDF document.
+                </p>
+
+                <!-- PDF Printable Wrapper -->
+                <div class="border border-gray-200 rounded-2xl bg-gray-50 p-4 sm:p-6">
+                    <div id="pdf-export-container" class="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-gray-200 font-sans space-y-6">
+                        
+                        <!-- PDF Header -->
+                        <div class="border-b-2 border-cnm-blue pb-4 flex justify-between items-start">
+                            <div>
+                                <h2 class="text-xl font-bold text-cnm-blue uppercase tracking-wide">BCIS 1110 Learning Outcome Report</h2>
+                                <h3 class="text-base font-semibold text-gray-700">Technical Self-Sufficiency & Communication Mastery</h3>
+                            </div>
+                            <div class="text-right text-xs text-gray-500">
+                                <div id="pdf-student-name" class="font-bold text-gray-800 text-sm">Student: [Not Provided]</div>
+                                <div id="pdf-course">BCIS 1110 - Section D91</div>
+                                <div id="pdf-date">Date: --</div>
+                            </div>
+                        </div>
+
+                        <!-- Generated Content Sections -->
+                        <div class="space-y-6 text-sm text-gray-800">
+                            
+                            <!-- Scenario 1 Output -->
+                            <div class="border-b border-gray-100 pb-4">
+                                <div class="flex items-center justify-between font-bold text-cnm-blue mb-1">
+                                    <span>Scenario 1: Professional Email Communication</span>
+                                    <span id="out-choice-1" class="text-xs bg-blue-100 text-cnm-blue px-2.5 py-0.5 rounded-full">Choice: None</span>
+                                </div>
+                                <p class="text-xs text-gray-500 italic mb-2">Topic: Contacting instructor regarding a SIMnet technical issue.</p>
+                                <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                    <strong class="text-xs text-gray-700 block mb-1">Student Justification & Analysis:</strong>
+                                    <p id="out-reason-1" class="text-gray-800 text-xs whitespace-pre-wrap">[No reasoning provided yet]</p>
+                                </div>
+                            </div>
+
+                            <!-- Scenario 2 Output -->
+                            <div class="border-b border-gray-100 pb-4">
+                                <div class="flex items-center justify-between font-bold text-cnm-blue mb-1">
+                                    <span>Scenario 2: Discussion Board Netiquette</span>
+                                    <span id="out-choice-2" class="text-xs bg-blue-100 text-cnm-blue px-2.5 py-0.5 rounded-full">Choice: None</span>
+                                </div>
+                                <p class="text-xs text-gray-500 italic mb-2">Topic: Engaging constructively in online discussion forums.</p>
+                                <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                    <strong class="text-xs text-gray-700 block mb-1">Student Justification & Analysis:</strong>
+                                    <p id="out-reason-2" class="text-gray-800 text-xs whitespace-pre-wrap">[No reasoning provided yet]</p>
+                                </div>
+                            </div>
+
+                            <!-- Scenario 3 Output -->
+                            <div class="border-b border-gray-100 pb-4">
+                                <div class="flex items-center justify-between font-bold text-cnm-blue mb-1">
+                                    <span>Scenario 3: Cross-Platform Adaptation</span>
+                                    <span id="out-choice-3" class="text-xs bg-blue-100 text-cnm-blue px-2.5 py-0.5 rounded-full">Choice: None</span>
+                                </div>
+                                <p class="text-xs text-gray-500 italic mb-2">Topic: Resolving software constraints on Mac/Chromebook via CNM Virtual Desktop.</p>
+                                <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                    <strong class="text-xs text-gray-700 block mb-1">Student Justification & Analysis:</strong>
+                                    <p id="out-reason-3" class="text-gray-800 text-xs whitespace-pre-wrap">[No reasoning provided yet]</p>
+                                </div>
+                            </div>
+
+                            <!-- Scenario 4 Output -->
+                            <div class="pb-2">
+                                <div class="flex items-center justify-between font-bold text-cnm-blue mb-1">
+                                    <span>Scenario 4: Deadline Technical Emergencies</span>
+                                    <span id="out-choice-4" class="text-xs bg-blue-100 text-cnm-blue px-2.5 py-0.5 rounded-full">Choice: None</span>
+                                </div>
+                                <p class="text-xs text-gray-500 italic mb-2">Topic: Handling late tech glitches with timestamped evidence.</p>
+                                <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                    <strong class="text-xs text-gray-700 block mb-1">Student Justification & Analysis:</strong>
+                                    <p id="out-reason-4" class="text-gray-800 text-xs whitespace-pre-wrap">[No reasoning provided yet]</p>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="border-t border-gray-200 pt-3 text-center text-xs text-gray-400">
+                            Central New Mexico Community College • School of Business, Hospitality & Technology
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Raw Text Copy Area -->
+                <div class="space-y-2">
+                    <label for="formatted-report-text" class="block text-xs font-bold text-gray-700 uppercase tracking-wider">
+                        Plain Text Formatted Version (For Direct Paste into Brightspace)
+                    </label>
+                    <textarea id="formatted-report-text" readonly rows="8" class="w-full p-3 font-mono text-xs bg-gray-900 text-green-400 rounded-xl border border-gray-700 outline-none focus:ring-1 focus:ring-green-400"></textarea>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Toast Notification Box -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-gray-900 text-white px-5 py-3 rounded-xl shadow-xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toast-message" class="text-sm font-medium">Notification message</span>
+    </div>
+
+    <!-- Page Footer -->
+    <footer class="bg-white border-t border-gray-200 py-4 mt-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-500">
+            BCIS 1110: Fundamentals of Information Literacy and Systems • CNM Community College
+        </div>
+    </footer>
+
+    <script>
+        // State Object to track answers
+        const state = {
+            studentName: '',
+            courseSection: 'BCIS 1110 - Section D91',
+            date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            answers: {
+                1: { choice: null, reason: '' },
+                2: { choice: null, reason: '' },
+                3: { choice: null, reason: '' },
+                4: { choice: null, reason: '' }
+            }
+        };
+
+        // Initialize Application
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('submission-date').value = state.date;
+            updateExportPreview();
+        });
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            
+            // Remove active classes on buttons
+            document.querySelectorAll('#tabs-header button').forEach(btn => {
+                btn.classList.remove('active-tab');
+            });
+
+            // Show selected content
+            const target = document.getElementById(tabId);
+            if (target) target.classList.remove('hidden');
+
+            // Highlight button
+            const btn = document.getElementById(`btn-${tabId}`);
+            if (btn) btn.classList.add('active-tab');
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Refresh preview if export tab clicked
+            if (tabId === 'tab-export') {
+                updateExportPreview();
+            }
+        }
+
+        // Handle Option Selection
+        function selectOption(scenarioId, optionLetter) {
+            state.answers[scenarioId].choice = optionLetter;
+
+            // Reset cards styling
+            const cardA = document.getElementById(`card-${scenarioId}-A`);
+            const cardB = document.getElementById(`card-${scenarioId}-B`);
+            const radioA = document.getElementById(`radio-${scenarioId}-A`);
+            const radioB = document.getElementById(`radio-${scenarioId}-B`);
+
+            cardA.classList.remove('selected-card');
+            cardB.classList.remove('selected-card');
+            
+            radioA.className = "w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center text-xs text-white";
+            radioA.innerHTML = "";
+            radioB.className = "w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center text-xs text-white";
+            radioB.innerHTML = "";
+
+            // Highlight selected card
+            if (optionLetter === 'A') {
+                cardA.classList.add('selected-card');
+                radioA.className = "w-6 h-6 rounded-full bg-cnm-blue flex items-center justify-center text-xs text-white font-bold";
+                radioA.innerHTML = '<i class="fa-solid fa-check"></i>';
+            } else {
+                cardB.classList.add('selected-card');
+                radioB.className = "w-6 h-6 rounded-full bg-cnm-blue flex items-center justify-center text-xs text-white font-bold";
+                radioB.innerHTML = '<i class="fa-solid fa-check"></i>';
+            }
+
+            saveAndValidate(scenarioId);
+        }
+
+        // Validate individual scenarios
+        function saveAndValidate(scenarioId) {
+            const textarea = document.getElementById(`reason-${scenarioId}`);
+            const text = textarea ? textarea.value.trim() : '';
+            state.answers[scenarioId].reason = text;
+
+            const words = text ? text.split(/\s+/).filter(w => w.length > 0).length : 0;
+            const wordCountEl = document.getElementById(`word-count-${scenarioId}`);
+            const statusEl = document.getElementById(`status-${scenarioId}`);
+            const badgeEl = document.getElementById(`badge-tab-${scenarioId}`);
+
+            if (wordCountEl) {
+                wordCountEl.textContent = `${words} words (min 15 required)`;
+            }
+
+            const hasChoice = state.answers[scenarioId].choice !== null;
+            const hasEnoughWords = words >= 15;
+
+            if (hasChoice && hasEnoughWords) {
+                statusEl.textContent = "✓ Scenario Completed";
+                statusEl.className = "font-semibold text-emerald-600";
+                if (badgeEl) badgeEl.classList.remove('hidden');
+            } else if (hasChoice && !hasEnoughWords) {
+                statusEl.textContent = "Please provide more details in reasoning";
+                statusEl.className = "font-semibold text-amber-600";
+                if (badgeEl) badgeEl.classList.add('hidden');
+            } else {
+                statusEl.textContent = "Selection & Reasoning Pending";
+                statusEl.className = "font-semibold text-amber-600";
+                if (badgeEl) badgeEl.classList.add('hidden');
+            }
+
+            updateProgress();
+            updateExportPreview();
+        }
+
+        // Update overall progress bar
+        function updateProgress() {
+            let completedCount = 0;
+            for (let i = 1; i <= 4; i++) {
+                const words = state.answers[i].reason.split(/\s+/).filter(w => w.length > 0).length;
+                if (state.answers[i].choice && words >= 15) {
+                    completedCount++;
+                }
+            }
+
+            const percent = (completedCount / 4) * 100;
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+
+            if (progressBar) progressBar.style.width = `${percent}%`;
+            if (progressText) progressText.textContent = `${completedCount} / 4 Scenarios Completed`;
+        }
+
+        // Update Export & Preview fields
+        function updateExportPreview() {
+            state.studentName = document.getElementById('student-name').value.trim();
+            state.courseSection = document.getElementById('course-section').value.trim();
+
+            // PDF fields
+            document.getElementById('pdf-student-name').textContent = `Student: ${state.studentName || '[Not Provided]'}`;
+            document.getElementById('pdf-course').textContent = state.courseSection || 'BCIS 1110 - Section D91';
+            document.getElementById('pdf-date').textContent = `Date: ${state.date}`;
+
+            let allValid = true;
+            if (!state.studentName) allValid = false;
+
+            // Scenario 1 - 4 HTML preview updates
+            for (let i = 1; i <= 4; i++) {
+                const choice = state.answers[i].choice;
+                const reason = state.answers[i].reason;
+                const words = reason.split(/\s+/).filter(w => w.length > 0).length;
+
+                const choiceEl = document.getElementById(`out-choice-${i}`);
+                const reasonEl = document.getElementById(`out-reason-${i}`);
+
+                if (choice) {
+                    choiceEl.textContent = `Selected: Option ${choice}`;
+                    choiceEl.className = choice === 'B' ? "text-xs bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full font-bold" : "text-xs bg-blue-100 text-cnm-blue px-2.5 py-0.5 rounded-full font-bold";
+                } else {
+                    choiceEl.textContent = `Choice: Pending`;
+                    choiceEl.className = "text-xs bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-full font-bold";
+                    allValid = false;
+                }
+
+                if (reason) {
+                    reasonEl.textContent = reason;
+                } else {
+                    reasonEl.textContent = "[No justification text entered yet]";
+                    allValid = false;
+                }
+
+                if (words < 15) allValid = false;
+            }
+
+            // Warning Banner
+            const warningEl = document.getElementById('export-warning');
+            if (allValid) {
+                warningEl.classList.add('hidden');
+            } else {
+                warningEl.classList.remove('hidden');
+            }
+
+            // Build Plain Text Version
+            let rawText = `========================================================\n`;
+            rawText += `BCIS 1110: TECHNICAL SELF-SUFFICIENCY & COMMUNICATION\n`;
+            rawText += `STUDENT LEARNING OUTCOME REPORT\n`;
+            rawText += `========================================================\n\n`;
+            rawText += `Student Name: ${state.studentName || 'N/A'}\n`;
+            rawText += `Course/Section: ${state.courseSection}\n`;
+            rawText += `Date: ${state.date}\n\n`;
+
+            rawText += `--------------------------------------------------------\n`;
+            rawText += `SCENARIO 1: Professional Email Communication\n`;
+            rawText += `Selected Option: ${state.answers[1].choice ? 'Option ' + state.answers[1].choice : 'None'}\n`;
+            rawText += `Student Reasoning:\n${state.answers[1].reason || 'N/A'}\n\n`;
+
+            rawText += `--------------------------------------------------------\n`;
+            rawText += `SCENARIO 2: Constructive Discussion Board Engagement\n`;
+            rawText += `Selected Option: ${state.answers[2].choice ? 'Option ' + state.answers[2].choice : 'None'}\n`;
+            rawText += `Student Reasoning:\n${state.answers[2].reason || 'N/A'}\n\n`;
+
+            rawText += `--------------------------------------------------------\n`;
+            rawText += `SCENARIO 3: Cross-Platform Adaptation (Mac/Chromebook/Virtual Desktop)\n`;
+            rawText += `Selected Option: ${state.answers[3].choice ? 'Option ' + state.answers[3].choice : 'None'}\n`;
+            rawText += `Student Reasoning:\n${state.answers[3].reason || 'N/A'}\n\n`;
+
+            rawText += `--------------------------------------------------------\n`;
+            rawText += `SCENARIO 4: Deadline Technical Glitch Contingency Plan\n`;
+            rawText += `Selected Option: ${state.answers[4].choice ? 'Option ' + state.answers[4].choice : 'None'}\n`;
+            rawText += `Student Reasoning:\n${state.answers[4].reason || 'N/A'}\n`;
+            rawText += `========================================================\n`;
+
+            document.getElementById('formatted-report-text').value = rawText;
+        }
+
+        // Copy to Clipboard Utility
+        function copyToClipboard() {
+            const copyArea = document.getElementById("formatted-report-text");
+            copyArea.select();
+            copyArea.setSelectionRange(0, 99999);
+
+            try {
+                document.execCommand('copy');
+                showToast("Formatted text copied to clipboard!");
+            } catch (err) {
+                // Fallback
+                navigator.clipboard.writeText(copyArea.value).then(() => {
+                    showToast("Formatted text copied to clipboard!");
+                }).catch(() => {
+                    showToast("Failed to copy. Please select text manually.", true);
+                });
+            }
+        }
+
+        // Generate and Download PDF File
+        function downloadPDF() {
+            const studentName = state.studentName || 'Student';
+            const element = document.getElementById('pdf-export-container');
+            
+            showToast("Generating PDF document...", false);
+
+            const opt = {
+                margin:       [0.4, 0.4, 0.4, 0.4],
+                filename:     `BCIS1110_Tech_Self_Sufficiency_${studentName.replace(/\s+/g, '_')}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, logging: false },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                showToast("PDF downloaded successfully!");
+            }).catch(err => {
+                showToast("Error generating PDF. Copying text instead...", true);
+            });
+        }
+
+        // Toast Notification Helper
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+
+            toastMsg.textContent = message;
+            
+            if (isError) {
+                toastIcon.className = "fa-solid fa-circle-exclamation text-amber-400";
+            } else {
+                toastIcon.className = "fa-solid fa-circle-check text-emerald-400";
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>

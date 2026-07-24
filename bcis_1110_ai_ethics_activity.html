@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCIS 1110: Intent Architecting & Generative AI Critique | CNM</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cnm: {
+                            primary: '#003B71',
+                            accent: '#0066B2',
+                            bg: '#F8FAFC',
+                            gold: '#EAA123',
+                            goldDark: '#C7830F',
+                            dark: '#0F172A',
+                            cardBg: '#FFFFFF',
+                            border: '#CBD5E1'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Custom Focus Styles for Accessibility */
+        *:focus-visible {
+            outline: 3px solid #EAA123 !important;
+            outline-offset: 3px !important;
+        }
+        
+        /* High Contrast Mode Toggle Styles */
+        .high-contrast {
+            background-color: #000000 !important;
+            color: #FFFFFF !important;
+        }
+        .high-contrast .bg-white, .high-contrast .bg-cnm-bg, .high-contrast .bg-slate-50, .high-contrast .bg-blue-50 {
+            background-color: #121212 !important;
+            color: #FFFFFF !important;
+            border-color: #FFFFFF !important;
+        }
+        .high-contrast .text-slate-600, .high-contrast .text-slate-700, .high-contrast .text-slate-800 {
+            color: #E2E8F0 !important;
+        }
+        .high-contrast .text-cnm-primary {
+            color: #38BDF8 !important;
+        }
+        .high-contrast button, .high-contrast input, .high-contrast textarea, .high-contrast select {
+            border: 2px solid #FFFFFF !important;
+        }
+
+        /* Print styles for offline study or PDF saving */
+        @media print {
+            .no-print { display: none !important; }
+            body { font-size: 12pt; color: #000; background: #fff; }
+            .print-full { width: 100% !important; margin: 0 !important; padding: 0 !important; }
+        }
+    </style>
+</head>
+<body class="bg-cnm-bg text-slate-800 font-sans antialiased min-h-screen flex flex-col transition-colors duration-200" id="app-body">
+
+    <!-- Skip to Main Content Link for Keyboard Accessibility -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-cnm-gold focus:text-cnm-dark focus:font-bold focus:rounded-md focus:shadow-lg">
+        Skip to main content
+    </a>
+
+    <!-- Top Accessibility & Utility Control Bar -->
+    <div class="bg-cnm-dark text-white text-xs py-2 px-4 no-print border-b border-slate-700" role="region" aria-label="Accessibility & Display Controls">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
+            <div class="flex items-center space-x-2">
+                <span class="font-semibold text-cnm-gold"><i class="fa-solid fa-universal-access mr-1" aria-hidden="true"></i> Accessibility Tools:</span>
+                <span id="screen-reader-status" class="sr-only" aria-live="polite">Accessibility toolbar loaded.</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+                <!-- Text Resizer -->
+                <div class="flex items-center space-x-1" role="group" aria-label="Text Size Controls">
+                    <span class="text-slate-300">Text Size:</span>
+                    <button onclick="changeFontSize(-1)" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded border border-slate-600 focus:ring-2 focus:ring-cnm-gold" aria-label="Decrease text size">A-</button>
+                    <button onclick="resetFontSize()" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded border border-slate-600 focus:ring-2 focus:ring-cnm-gold" aria-label="Reset text size">Reset</button>
+                    <button onclick="changeFontSize(1)" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded border border-slate-600 focus:ring-2 focus:ring-cnm-gold" aria-label="Increase text size">A+</button>
+                </div>
+                <!-- High Contrast Toggle -->
+                <button onclick="toggleHighContrast()" class="px-2.5 py-0.5 bg-slate-800 hover:bg-slate-700 rounded border border-slate-600 text-cnm-gold font-medium focus:ring-2 focus:ring-cnm-gold flex items-center gap-1" aria-pressed="false" id="contrast-toggle-btn">
+                    <i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i>
+                    <span>High Contrast</span>
+                </button>
+                <!-- Print Page Button -->
+                <button onclick="window.print()" class="px-2.5 py-0.5 bg-slate-800 hover:bg-slate-700 rounded border border-slate-600 text-slate-200 hover:text-white focus:ring-2 focus:ring-cnm-gold flex items-center gap-1" aria-label="Print or Save Activity as PDF">
+                    <i class="fa-solid fa-print" aria-hidden="true"></i>
+                    <span>Print / PDF</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header / Branding Navigation -->
+    <header class="bg-cnm-primary text-white shadow-md border-b-4 border-cnm-gold no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div class="flex items-center gap-4">
+                <div class="bg-white p-2.5 rounded-lg shadow-sm border border-slate-200 flex items-center justify-center">
+                    <div class="text-cnm-primary font-black text-2xl tracking-tighter leading-none border-b-2 border-cnm-gold pb-0.5">CNM</div>
+                </div>
+                <div>
+                    <span class="inline-block px-2 py-0.5 text-xs font-semibold uppercase tracking-wider bg-cnm-accent text-white rounded mb-1">Brightspace LMS Learning Unit</span>
+                    <h1 class="text-xl md:text-2xl font-bold text-white tracking-tight leading-tight">BCIS 1110: Fundamentals of Information Literacy & Systems</h1>
+                    <p class="text-xs md:text-sm text-slate-200 font-medium">Unit 4: Generative AI Ethics & Intent Architecting</p>
+                </div>
+            </div>
+            <div class="bg-slate-900/40 backdrop-blur-sm p-3 rounded-lg border border-white/10 text-right self-stretch md:self-auto flex flex-col justify-center">
+                <div class="text-xs text-cnm-gold font-semibold uppercase tracking-wider">Format & Time</div>
+                <div class="text-sm font-medium text-white"><i class="fa-solid fa-laptop-code mr-1" aria-hidden="true"></i> Asynchronous Online Lab</div>
+                <div class="text-xs text-slate-300"><i class="fa-regular fa-clock mr-1" aria-hidden="true"></i> Estimated Completion: 60-75 mins</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs for Activity Sections -->
+    <nav class="bg-slate-900 text-slate-200 sticky top-0 z-40 shadow-md no-print border-b border-slate-700" aria-label="Activity Sections Navigation">
+        <div class="max-w-7xl mx-auto px-4 flex overflow-x-auto scrollbar-thin py-1 gap-1" role="tablist" id="nav-tabs">
+            <button role="tab" aria-selected="true" aria-controls="section-overview" id="tab-overview" onclick="switchTab('overview')" class="tab-btn px-4 py-2.5 text-sm font-semibold rounded-t-md border-b-2 border-cnm-gold text-white bg-cnm-primary flex items-center gap-2 whitespace-nowrap focus:outline-none">
+                <i class="fa-solid fa-compass" aria-hidden="true"></i>
+                <span>1. Overview & SLOs</span>
+            </button>
+            <button role="tab" aria-selected="false" aria-controls="section-scenario" id="tab-scenario" onclick="switchTab('scenario')" class="tab-btn px-4 py-2.5 text-sm font-medium rounded-t-md border-b-2 border-transparent text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2 whitespace-nowrap focus:outline-none">
+                <i class="fa-solid fa-briefcase" aria-hidden="true"></i>
+                <span>2. Workplace Scenario</span>
+            </button>
+            <button role="tab" aria-selected="false" aria-controls="section-instructions" id="tab-instructions" onclick="switchTab('instructions')" class="tab-btn px-4 py-2.5 text-sm font-medium rounded-t-md border-b-2 border-transparent text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2 whitespace-nowrap focus:outline-none">
+                <i class="fa-solid fa-list-check" aria-hidden="true"></i>
+                <span>3. Step-by-Step Task</span>
+            </button>
+            <button role="tab" aria-selected="false" aria-controls="section-sandbox" id="tab-sandbox" onclick="switchTab('sandbox')" class="tab-btn px-4 py-2.5 text-sm font-medium rounded-t-md border-b-2 border-transparent text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2 whitespace-nowrap focus:outline-none">
+                <i class="fa-solid fa-vial-circle-check text-cnm-gold" aria-hidden="true"></i>
+                <span>4. Interactive Workbench</span>
+            </button>
+            <button role="tab" aria-selected="false" aria-controls="section-rubric" id="tab-rubric" onclick="switchTab('rubric')" class="tab-btn px-4 py-2.5 text-sm font-medium rounded-t-md border-b-2 border-transparent text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2 whitespace-nowrap focus:outline-none">
+                <i class="fa-solid fa-table-list" aria-hidden="true"></i>
+                <span>5. Grading Rubric</span>
+            </button>
+            <button role="tab" aria-selected="false" aria-controls="section-submission" id="tab-submission" onclick="switchTab('submission')" class="tab-btn px-4 py-2.5 text-sm font-medium rounded-t-md border-b-2 border-transparent text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2 whitespace-nowrap focus:outline-none">
+                <i class="fa-solid fa-paper-plane text-emerald-400" aria-hidden="true"></i>
+                <span>6. Submission & Checklist</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main id="main-content" class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8" tabIndex="-1">
+
+        <!-- SECTION 1: OVERVIEW & SLOs -->
+        <section id="section-overview" role="tabpanel" aria-labelledby="tab-overview" class="tab-content space-y-6">
+            <!-- Hero Card -->
+            <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-cnm-primary to-cnm-accent p-6 sm:p-8 text-white relative">
+                    <div class="max-w-3xl">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-cnm-gold text-cnm-dark mb-3">
+                            <i class="fa-solid fa-brain" aria-hidden="true"></i> AI Ethics & Information Literacy Task
+                        </span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">
+                            Intent Architecting: The Dangers of "Poor Wishes" & AI Hallucination
+                        </h2>
+                        <p class="text-slate-100 text-base sm:text-lg leading-relaxed">
+                            In modern business and computing, Generative AI acts like a literal genie: it grants exactly what you request, not necessarily what you meant. Poorly constructed prompts ("poor wishes") produce subtle hallucinations, factual distortions, and dangerous organizational bias.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="p-6 sm:p-8 space-y-6">
+                    <div class="grid md:grid-cols-3 gap-4 text-sm">
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 flex flex-col justify-between">
+                            <div>
+                                <div class="text-xs font-bold text-cnm-accent uppercase tracking-wider mb-1">Target Concept</div>
+                                <div class="font-bold text-slate-900 text-base mb-1">Intent Architecting</div>
+                                <p class="text-slate-600 text-xs">Transforming vague requests into structured, constrained, and verifiable prompts that force AI models to produce accurate, unbiased outputs.</p>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 flex flex-col justify-between">
+                            <div>
+                                <div class="text-xs font-bold text-amber-700 uppercase tracking-wider mb-1">Core Skill Evaluated</div>
+                                <div class="font-bold text-slate-900 text-base mb-1">Hallucination Critique</div>
+                                <p class="text-slate-600 text-xs">Cross-referencing AI outputs against trusted academic & enterprise sources (SIMnet, O365, CNM Library Databases) to catch false citations.</p>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 flex flex-col justify-between">
+                            <div>
+                                <div class="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-1">Primary Tools Used</div>
+                                <div class="font-bold text-slate-900 text-base mb-1">Microsoft Office 365 & Copilot</div>
+                                <p class="text-slate-600 text-xs">Using Office 365 apps, Microsoft Copilot/ChatGPT, CNM Library EBSCO/Gale databases, and Brightspace LMS.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alignment Matrix & Target SLOs -->
+                    <div class="border-t border-slate-200 pt-6">
+                        <h3 class="text-lg font-bold text-cnm-primary mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-bullseye text-cnm-gold" aria-hidden="true"></i> Mapped Student Learning Outcomes (SLOs)
+                        </h3>
+                        <p class="text-sm text-slate-600 mb-4">
+                            This learning activity directly satisfies three official course SLOs required for BCIS 1110 at Central New Mexico Community College:
+                        </p>
+                        
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="p-4 bg-blue-50/60 rounded-lg border-l-4 border-cnm-primary">
+                                <span class="text-xs font-bold uppercase tracking-wider text-cnm-primary">SLO 1: Social & Economic Impact</span>
+                                <h4 class="font-bold text-slate-900 text-sm mt-1">Commerce & Personal Activity Impact</h4>
+                                <p class="text-xs text-slate-700 mt-2 leading-relaxed">
+                                    Describe the social and financial impact of generative AI automation, algorithmic bias, and misinformed decision-making in real-world business systems.
+                                </p>
+                            </div>
+
+                            <div class="p-4 bg-amber-50/60 rounded-lg border-l-4 border-cnm-gold">
+                                <span class="text-xs font-bold uppercase tracking-wider text-amber-800">SLO 2: Legal, Safe & Responsible Use</span>
+                                <h4 class="font-bold text-slate-900 text-sm mt-1">Ethics, Security & Privacy</h4>
+                                <p class="text-xs text-slate-700 mt-2 leading-relaxed">
+                                    Explain how to handle enterprise data legally and responsibly, protecting sensitive corporate information and adhering to CNM AI Integrity policies.
+                                </p>
+                            </div>
+
+                            <div class="p-4 bg-emerald-50/60 rounded-lg border-l-4 border-emerald-600">
+                                <span class="text-xs font-bold uppercase tracking-wider text-emerald-800">SLO 3: Information Evaluation</span>
+                                <h4 class="font-bold text-slate-900 text-sm mt-1">Bias, Accuracy & Source Verification</h4>
+                                <p class="text-xs text-slate-700 mt-2 leading-relaxed">
+                                    Evaluate generative text for factual hallucinations, unverified claims, tone bias, and logical non-sequiturs against authoritative primary research.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Action -->
+                    <div class="bg-slate-100 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <div class="text-xs text-slate-600">
+                            <strong>Ready to start?</strong> Read the real-world scenario on the next tab to understand the stakes of a "poor wish."
+                        </div>
+                        <button onclick="switchTab('scenario')" class="px-5 py-2.5 bg-cnm-primary hover:bg-cnm-accent text-white font-bold text-sm rounded-lg shadow transition flex items-center gap-2 focus:ring-2 focus:ring-cnm-gold">
+                            <span>Proceed to Workplace Scenario</span>
+                            <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: WORKPLACE SCENARIO -->
+        <section id="section-scenario" role="tabpanel" aria-labelledby="tab-scenario" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-xl shadow-md border border-slate-200 p-6 sm:p-8 space-y-6">
+                
+                <div class="flex items-center gap-3 border-b border-slate-200 pb-4">
+                    <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-user-tie" aria-hidden="true"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-amber-700">Real-World Business Case Study</span>
+                        <h2 class="text-2xl font-bold text-cnm-primary">The Case of the "Poor Wish" at Sol Southwest Logistics</h2>
+                        <p class="text-xs text-slate-500">Location: Albuquerque, NM | Role: Junior Business Operations Analyst</p>
+                    </div>
+                </div>
+
+                <!-- Scenario Narrative -->
+                <div class="prose max-w-none text-slate-700 text-sm sm:text-base space-y-4">
+                    <p class="leading-relaxed">
+                        You recently landed an entry-level position as an Operations Specialist at <strong>Sol Southwest Logistics</strong>, a growing regional shipping and warehousing company based in Albuquerque, New Mexico. Your supervisor, Alex, needs an urgent market assessment report on implementing automated electric cargo fleets for regional delivery across New Mexico and West Texas.
+                    </p>
+
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg my-4 text-xs sm:text-sm">
+                        <h3 class="font-bold text-red-900 text-sm uppercase tracking-wide flex items-center gap-2 mb-1">
+                            <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> The "Poor Wish" Incident
+                        </h3>
+                        <p class="text-red-950 mb-2">
+                            Pressed for time, a former intern drafted a prompt in ChatGPT/Copilot asking:
+                        </p>
+                        <blockquote class="bg-white p-3 rounded border border-red-200 text-slate-800 font-mono text-xs italic">
+                            "Write me a 1-page report proving that switching our delivery trucks to electric vehicles in New Mexico will save us 40% in costs this year, and list 3 local NM laws that mandate this transition."
+                        </blockquote>
+                        <p class="text-red-900 mt-2">
+                            The AI gave the intern <em>exactly what they asked for</em>—a convincing, polished report filled with fabricated statutes (such as the made-up "New Mexico Clean Freight Act of 2024"), false cost projections, and completely invented local utility incentives.
+                        </p>
+                    </div>
+
+                    <h3 class="font-bold text-cnm-primary text-lg">Why This is a Dangerous "Poor Wish"</h3>
+                    <p class="leading-relaxed">
+                        In AI theory, this is the classic <strong>Monkey’s Paw / Poor Wish failure</strong>. The prompt was flawed in three critical ways:
+                    </p>
+
+                    <ul class="grid md:grid-cols-3 gap-4 list-none p-0">
+                        <li class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                            <div class="text-xs font-bold text-red-600 uppercase mb-1"><i class="fa-solid fa-xmark mr-1"></i> Confirmation Bias</div>
+                            <strong class="text-slate-900 text-sm block mb-1">Demanded a Specific Outcome</strong>
+                            <p class="text-xs text-slate-600">The prompt forced the AI to "prove 40% savings" rather than objectively evaluating financial feasibility.</p>
+                        </li>
+                        <li class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                            <div class="text-xs font-bold text-red-600 uppercase mb-1"><i class="fa-solid fa-xmark mr-1"></i> Prompt Hallucination</div>
+                            <strong class="text-slate-900 text-sm block mb-1">Assumed Law Existence</strong>
+                            <p class="text-xs text-slate-600">It instructed the AI to "list 3 statutes," causing the LLM to invent plausible-sounding legal citations to fulfill the request.</p>
+                        </li>
+                        <li class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                            <div class="text-xs font-bold text-red-600 uppercase mb-1"><i class="fa-solid fa-xmark mr-1"></i> Missing Verification</div>
+                            <strong class="text-slate-900 text-sm block mb-1">Zero Guardrails or Sources</strong>
+                            <p class="text-xs text-slate-600">It provided no constraints, role persona, geographic boundary, or requirement to cite verified primary sources.</p>
+                        </li>
+                    </ul>
+
+                    <div class="bg-blue-50 p-5 rounded-lg border border-blue-200 mt-6">
+                        <h4 class="font-bold text-cnm-primary text-base flex items-center gap-2 mb-2">
+                            <i class="fa-solid fa-user-shield text-cnm-gold" aria-hidden="true"></i> Your Role & Mission
+                        </h4>
+                        <p class="text-sm text-slate-700">
+                            Alex caught the errors before the executive meeting and has reassigned the project to <strong>you</strong>. As a BCIS 1110 student trained in Information Literacy, your mission is to deconstruct the "poor wish," refactor the prompt using professional <em>Intent Architecting</em> techniques, perform empirical source verification via CNM Libraries/SIMnet, and present an ethical audit report.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center border-t border-slate-200 pt-6">
+                    <button onclick="switchTab('overview')" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold text-sm rounded-lg transition flex items-center gap-2 focus:ring-2 focus:ring-slate-400">
+                        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back
+                    </button>
+                    <button onclick="switchTab('instructions')" class="px-5 py-2.5 bg-cnm-primary hover:bg-cnm-accent text-white font-bold text-sm rounded-lg shadow transition flex items-center gap-2 focus:ring-2 focus:ring-cnm-gold">
+                        <span>View Step-by-Step Task</span>
+                        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: STEP-BY-STEP TASK INSTRUCTIONS -->
+        <section id="section-instructions" role="tabpanel" aria-labelledby="tab-instructions" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-xl shadow-md border border-slate-200 p-6 sm:p-8 space-y-6">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-cnm-accent">Instructional Workflow</span>
+                    <h2 class="text-2xl font-bold text-cnm-primary">Four-Phase Research & Refactoring Task</h2>
+                    <p class="text-sm text-slate-600 mt-1">
+                        Follow these steps sequentially. You can use the embedded Interactive Workbench in Section 4 to test your prompts before drafting your final submission document.
+                    </p>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Phase 1 -->
+                    <div class="border border-slate-200 rounded-lg p-5 bg-slate-50/50 hover:border-cnm-accent transition">
+                        <div class="flex items-start gap-4">
+                            <span class="w-8 h-8 rounded-full bg-cnm-primary text-white font-extrabold flex items-center justify-center shrink-0 text-sm">1</span>
+                            <div class="space-y-2 flex-grow">
+                                <div class="flex justify-between items-center">
+                                    <h3 class="font-bold text-slate-900 text-base">Phase 1: Critique the "Poor Wish" Output</h3>
+                                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded bg-blue-100 text-blue-800">SLO 3 Focus</span>
+                                </div>
+                                <p class="text-sm text-slate-600">
+                                    Run the original vague prompt in Copilot, ChatGPT, or the Interactive Workbench (Section 4). Document at least <strong>two distinct hallucinations</strong> (e.g., fabricated law citation, unrealistic percentage claim, or false local policy).
+                                </p>
+                                <div class="bg-white p-3 rounded border border-slate-200 text-xs text-slate-700">
+                                    <strong>Required Action:</strong> Identify the logical fallback where the model fills missing context with plausible sounding falsehoods. Explain why this occurs technically (LLMs predicting tokens rather than retrieving verified facts).
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phase 2 -->
+                    <div class="border border-slate-200 rounded-lg p-5 bg-slate-50/50 hover:border-cnm-accent transition">
+                        <div class="flex items-start gap-4">
+                            <span class="w-8 h-8 rounded-full bg-cnm-primary text-white font-extrabold flex items-center justify-center shrink-0 text-sm">2</span>
+                            <div class="space-y-2 flex-grow">
+                                <div class="flex justify-between items-center">
+                                    <h3 class="font-bold text-slate-900 text-base">Phase 2: Perform "Intent Architecting" Refactoring</h3>
+                                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded bg-amber-100 text-amber-800">Prompt Engineering</span>
+                                </div>
+                                <p class="text-sm text-slate-600">
+                                    Rewrite the prompt using the <strong>C-P-C-V Architectural Framework</strong> (Context, Persona, Constraints, Verification). Your refactored prompt must eliminate confirmation bias.
+                                </p>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs pt-1">
+                                    <div class="p-2 bg-white rounded border border-slate-200 text-center">
+                                        <span class="font-bold text-cnm-primary block">C - Context</span>
+                                        Logistics firm in NM
+                                    </div>
+                                    <div class="p-2 bg-white rounded border border-slate-200 text-center">
+                                        <span class="font-bold text-cnm-primary block">P - Persona</span>
+                                        Unbiased Business Analyst
+                                    </div>
+                                    <div class="p-2 bg-white rounded border border-slate-200 text-center">
+                                        <span class="font-bold text-cnm-primary block">C - Constraints</span>
+                                        Specify risks, costs, state laws
+                                    </div>
+                                    <div class="p-2 bg-white rounded border border-slate-200 text-center">
+                                        <span class="font-bold text-cnm-primary block">V - Verification</span>
+                                        Require citation sources
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phase 3 -->
+                    <div class="border border-slate-200 rounded-lg p-5 bg-slate-50/50 hover:border-cnm-accent transition">
+                        <div class="flex items-start gap-4">
+                            <span class="w-8 h-8 rounded-full bg-cnm-primary text-white font-extrabold flex items-center justify-center shrink-0 text-sm">3</span>
+                            <div class="space-y-2 flex-grow">
+                                <div class="flex justify-between items-center">
+                                    <h3 class="font-bold text-slate-900 text-base">Phase 3: Source Verification via CNM Libraries / Academic Databases</h3>
+                                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded bg-emerald-100 text-emerald-800">SLO 3 Verification</span>
+                                </div>
+                                <p class="text-sm text-slate-600">
+                                    Use the <strong>CNM Library Databases</strong> (e.g., EBSCOhost, Business Source Complete) or official state government websites (.gov) to find <strong>one real, verified fact or statistic</strong> regarding electric vehicle fleet adoption or incentives in New Mexico.
+                                </p>
+                                <div class="bg-white p-3 rounded border border-slate-200 text-xs text-slate-700">
+                                    <strong>Comparison Rule:</strong> Contrast the AI’s generated claim against the real source document. Highlight discrepancies in numbers, scope, or applicability.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phase 4 -->
+                    <div class="border border-slate-200 rounded-lg p-5 bg-slate-50/50 hover:border-cnm-accent transition">
+                        <div class="flex items-start gap-4">
+                            <span class="w-8 h-8 rounded-full bg-cnm-primary text-white font-extrabold flex items-center justify-center shrink-0 text-sm">4</span>
+                            <div class="space-y-2 flex-grow">
+                                <div class="flex justify-between items-center">
+                                    <h3 class="font-bold text-slate-900 text-base">Phase 4: Synthesize & Draft Academic/Business Report</h3>
+                                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded bg-purple-100 text-purple-800">SLO 1 & 2 Ethics</span>
+                                </div>
+                                <p class="text-sm text-slate-600">
+                                    Compile your findings into Microsoft Word (via your CNM O365 account) or paste into the Brightspace Submission Template provided in Section 6. Include full AI prompt transparency disclosure as required by CNM AI Policy.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center border-t border-slate-200 pt-6">
+                    <button onclick="switchTab('scenario')" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold text-sm rounded-lg transition flex items-center gap-2 focus:ring-2 focus:ring-slate-400">
+                        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back
+                    </button>
+                    <button onclick="switchTab('sandbox')" class="px-5 py-2.5 bg-cnm-gold hover:bg-cnm-goldDark text-cnm-dark font-extrabold text-sm rounded-lg shadow transition flex items-center gap-2 focus:ring-2 focus:ring-cnm-primary">
+                        <span>Launch Interactive Workbench</span>
+                        <i class="fa-solid fa-flask" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: INTERACTIVE PROMPT WORKBENCH & CRITIQUE TOOL -->
+        <section id="section-sandbox" role="tabpanel" aria-labelledby="tab-sandbox" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-xl shadow-md border border-slate-200 p-6 sm:p-8 space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-cnm-accent">Interactive Learning Lab</span>
+                        <h2 class="text-2xl font-bold text-cnm-primary">Intent Architecting Prompt Simulator & Critique Lab</h2>
+                        <p class="text-xs text-slate-500">Test the "Poor Wish" vs. "Architected Wish" and inspect hallucination flags in real-time.</p>
+                    </div>
+                    <div class="bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-200 text-amber-900 text-xs flex items-center gap-2">
+                        <i class="fa-solid fa-lightbulb text-cnm-gold text-lg" aria-hidden="true"></i>
+                        <span>Practice crafting your refactored prompts here before submitting!</span>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-6">
+                    <!-- Left Column: Prompt Input & Engineering Sandbox -->
+                    <div class="space-y-4">
+                        <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-cnm-accent" aria-hidden="true"></i> Prompt Architecting Studio
+                        </h3>
+
+                        <div>
+                            <label for="prompt-preset-select" class="block text-xs font-bold text-slate-700 uppercase mb-1">
+                                Select a Preset Prompt Scenario to Test:
+                            </label>
+                            <select id="prompt-preset-select" onchange="loadPresetPrompt()" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-800 focus:ring-2 focus:ring-cnm-accent">
+                                <option value="poor">❌ "Poor Wish" Prompt (Vague, Biased, Unconstrained)</option>
+                                <option value="better">⚠️ Partially Improved Prompt (Missing Verification Framework)</option>
+                                <option value="architected">✅ Fully Architected Prompt (C-P-C-V Compliant)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="custom-prompt-input" class="block text-xs font-bold text-slate-700 uppercase mb-1">
+                                Your Prompt Text (Editable):
+                            </label>
+                            <textarea id="custom-prompt-input" rows="6" class="w-full p-3 font-mono text-xs bg-slate-900 text-green-400 rounded-lg border border-slate-700 focus:ring-2 focus:ring-cnm-gold" placeholder="Type or refine your prompt here..."></textarea>
+                        </div>
+
+                        <!-- C-P-C-V Checklist Evaluator -->
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                            <span class="text-xs font-bold text-slate-700 uppercase block mb-2">Live C-P-C-V Architectural Check:</span>
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <div id="check-c1" class="flex items-center gap-1.5 text-slate-500">
+                                    <i class="fa-solid fa-circle-xmark text-red-500"></i> Context Defined
+                                </div>
+                                <div id="check-p" class="flex items-center gap-1.5 text-slate-500">
+                                    <i class="fa-solid fa-circle-xmark text-red-500"></i> Role/Persona Set
+                                </div>
+                                <div id="check-c2" class="flex items-center gap-1.5 text-slate-500">
+                                    <i class="fa-solid fa-circle-xmark text-red-500"></i> Constraints Included
+                                </div>
+                                <div id="check-v" class="flex items-center gap-1.5 text-slate-500">
+                                    <i class="fa-solid fa-circle-xmark text-red-500"></i> Verification Required
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="simulateAIResponse()" class="w-full py-3 bg-cnm-primary hover:bg-cnm-accent text-white font-bold rounded-lg shadow-md transition flex items-center justify-center gap-2 text-sm focus:ring-2 focus:ring-cnm-gold">
+                            <i class="fa-solid fa-play" aria-hidden="true"></i> Run Simulated AI Output Analysis
+                        </button>
+                    </div>
+
+                    <!-- Right Column: Simulated Output & Critique Breakdown -->
+                    <div class="space-y-4">
+                        <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                            <i class="fa-solid fa-microscope text-cnm-gold" aria-hidden="true"></i> Simulated Output & Hallucination Critique
+                        </h3>
+
+                        <div class="border border-slate-300 rounded-lg overflow-hidden bg-white shadow-inner min-h-[300px] flex flex-col">
+                            <div class="bg-slate-100 px-4 py-2 border-b border-slate-200 flex justify-between items-center text-xs text-slate-600 font-mono">
+                                <span><i class="fa-solid fa-robot mr-1"></i> LLM Output Inspector</span>
+                                <span id="output-badge" class="px-2 py-0.5 rounded bg-red-100 text-red-800 font-bold">High Risk: Unverified Claims</span>
+                            </div>
+                            <div id="ai-output-container" class="p-4 font-sans text-xs sm:text-sm leading-relaxed text-slate-800 flex-grow space-y-3">
+                                <!-- Populated dynamically by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Critique Breakdown Panel -->
+                        <div id="critique-analysis-panel" class="bg-blue-50 p-4 rounded-lg border border-blue-200 text-xs space-y-2">
+                            <div class="font-bold text-cnm-primary text-sm flex items-center gap-1.5">
+                                <i class="fa-solid fa-magnifying-glass-chart"></i> Instructional Critique Breakdown
+                            </div>
+                            <p id="critique-text" class="text-slate-700 leading-relaxed">
+                                Click "Run Simulated AI Output Analysis" above to evaluate how prompt structure influences accuracy, tone bias, and citation reliability.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center border-t border-slate-200 pt-6">
+                    <button onclick="switchTab('instructions')" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold text-sm rounded-lg transition flex items-center gap-2 focus:ring-2 focus:ring-slate-400">
+                        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back
+                    </button>
+                    <button onclick="switchTab('rubric')" class="px-5 py-2.5 bg-cnm-primary hover:bg-cnm-accent text-white font-bold text-sm rounded-lg shadow transition flex items-center gap-2 focus:ring-2 focus:ring-cnm-gold">
+                        <span>View Grading Rubric</span>
+                        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: COMPREHENSIVE ASSESSMENT RUBRIC -->
+        <section id="section-rubric" role="tabpanel" aria-labelledby="tab-rubric" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-xl shadow-md border border-slate-200 p-6 sm:p-8 space-y-6">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-cnm-accent">Assessment & Grading Standard</span>
+                    <h2 class="text-2xl font-bold text-cnm-primary">Comprehensive Activity Rubric (100 Points Total)</h2>
+                    <p class="text-xs text-slate-500 mt-1">Evaluated against BCIS 1110 Course Outcomes. Minimum passing grade: 70%.</p>
+                </div>
+
+                <!-- Rubric Table -->
+                <div class="overflow-x-auto border border-slate-200 rounded-lg">
+                    <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                        <thead>
+                            <tr class="bg-cnm-primary text-white font-bold">
+                                <th class="p-3.5 border-b border-slate-300 w-1/4">Criteria & SLO Alignment</th>
+                                <th class="p-3.5 border-b border-slate-300 bg-emerald-950 text-emerald-200">Exemplary (90-100%)</th>
+                                <th class="p-3.5 border-b border-slate-300 bg-blue-950 text-blue-200">Proficient (75-89%)</th>
+                                <th class="p-3.5 border-b border-slate-300 bg-amber-950 text-amber-200">Developing (60-74%)</th>
+                                <th class="p-3.5 border-b border-slate-300 bg-red-950 text-red-200">Unacceptable (&lt;60%)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 text-slate-700">
+                            <!-- Criterion 1 -->
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3.5 font-bold bg-slate-50">
+                                    1. Hallucination & Bias Critique
+                                    <span class="block font-normal text-xs text-cnm-accent mt-0.5">SLO 3 (30 Points)</span>
+                                </td>
+                                <td class="p-3.5 bg-emerald-50/30">Identifies 2+ distinct hallucinations with detailed explanation of LLM token-prediction fallbacks. Excellent critique.</td>
+                                <td class="p-3.5 bg-blue-50/30">Identifies 2 hallucinations with basic explanation of why the errors occurred in the original prompt.</td>
+                                <td class="p-3.5 bg-amber-50/30">Identifies 1 hallucination; lacks clear explanation of underlying AI cause or bias.</td>
+                                <td class="p-3.5 bg-red-50/30">Fails to identify hallucinations or accepts AI output as factually accurate without critique.</td>
+                            </tr>
+                            <!-- Criterion 2 -->
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3.5 font-bold bg-slate-50">
+                                    2. Intent Architecting Refactoring
+                                    <span class="block font-normal text-xs text-cnm-accent mt-0.5">Prompt Design (30 Points)</span>
+                                </td>
+                                <td class="p-3.5 bg-emerald-50/30">Prompt seamlessly applies all C-P-C-V elements (Context, Persona, Constraints, Verification); removes all confirmation bias.</td>
+                                <td class="p-3.5 bg-blue-50/30">Prompt includes at least 3 C-P-C-V elements; significantly reduces confirmation bias.</td>
+                                <td class="p-3.5 bg-amber-50/30">Prompt is slightly modified but retains leading questions or lacks essential constraints.</td>
+                                <td class="p-3.5 bg-red-50/30">Prompt remains vague, leading, or unchanged from the original "poor wish."</td>
+                            </tr>
+                            <!-- Criterion 3 -->
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3.5 font-bold bg-slate-50">
+                                    3. Empirical Library Source Verification
+                                    <span class="block font-normal text-xs text-cnm-accent mt-0.5">SLO 3 & CNM Library (20 Points)</span>
+                                </td>
+                                <td class="p-3.5 bg-emerald-50/30">Provides verified data point from CNM Library / .gov database; provides thorough side-by-side comparative analysis.</td>
+                                <td class="p-3.5 bg-blue-50/30">Provides verified data point with clear contrast to AI hallucination; source is cited correctly.</td>
+                                <td class="p-3.5 bg-amber-50/30">Source is provided but lacks formal academic credibility or comparative detail.</td>
+                                <td class="p-3.5 bg-red-50/30">No credible source provided, or uses another unverified AI generation as proof.</td>
+                            </tr>
+                            <!-- Criterion 4 -->
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3.5 font-bold bg-slate-50">
+                                    4. Business Ethics & Security Analysis
+                                    <span class="block font-normal text-xs text-cnm-accent mt-0.5">SLO 1 & 2 (10 Points)</span>
+                                </td>
+                                <td class="p-3.5 bg-emerald-50/30">Articulates profound business risks (financial, legal, brand reputation) of unverified AI deployment in regional operations.</td>
+                                <td class="p-3.5 bg-blue-50/30">Explains business risks clearly with realistic corporate examples.</td>
+                                <td class="p-3.5 bg-amber-50/30">Mentions risk superficially without linking to corporate decision-making or ethics.</td>
+                                <td class="p-3.5 bg-red-50/30">Fails to discuss ethics, corporate liability, or data privacy risks.</td>
+                            </tr>
+                            <!-- Criterion 5 -->
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3.5 font-bold bg-slate-50">
+                                    5. Citation & AI Transparency Disclosure
+                                    <span class="block font-normal text-xs text-cnm-accent mt-0.5">SLO 2 & CNM Policy (10 Points)</span>
+                                </td>
+                                <td class="p-3.5 bg-emerald-50/30">Includes complete AI Prompt Log, model version, timestamp, and standard APA/IEEE citation block. Fully transparent.</td>
+                                <td class="p-3.5 bg-blue-50/30">Includes AI disclosure with prompt text and model name. Minor citation formatting errors.</td>
+                                <td class="p-3.5 bg-amber-50/30">Incomplete disclosure statement or missing exact prompt logs.</td>
+                                <td class="p-3.5 bg-red-50/30">No AI usage disclosure provided; violates academic integrity guidelines.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex justify-between items-center border-t border-slate-200 pt-6">
+                    <button onclick="switchTab('sandbox')" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold text-sm rounded-lg transition flex items-center gap-2 focus:ring-2 focus:ring-slate-400">
+                        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back
+                    </button>
+                    <button onclick="switchTab('submission')" class="px-5 py-2.5 bg-cnm-primary hover:bg-cnm-accent text-white font-bold text-sm rounded-lg shadow transition flex items-center gap-2 focus:ring-2 focus:ring-cnm-gold">
+                        <span>Submission & Checklist</span>
+                        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: SUBMISSION & CHECKLIST -->
+        <section id="section-submission" role="tabpanel" aria-labelledby="tab-submission" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-xl shadow-md border border-slate-200 p-6 sm:p-8 space-y-6">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-600">Final Deliverable Workstation</span>
+                    <h2 class="text-2xl font-bold text-cnm-primary">Student Deliverable & Brightspace Submission</h2>
+                    <p class="text-xs text-slate-500 mt-1">Complete your checklist below, fill out or copy the submission template, and upload to Brightspace LMS.</p>
+                </div>
+
+                <!-- Interactive Readiness Checklist -->
+                <div class="bg-slate-50 p-5 rounded-lg border border-slate-200 space-y-3">
+                    <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-square-check text-cnm-accent" aria-hidden="true"></i> Pre-Submission Interactive Checklist
+                    </h3>
+                    <div class="space-y-2 text-xs sm:text-sm">
+                        <label class="flex items-center gap-2.5 p-2 bg-white rounded border border-slate-200 hover:bg-slate-100 cursor-pointer">
+                            <input type="checkbox" onchange="updateChecklistProgress()" class="chk-item rounded text-cnm-primary focus:ring-cnm-gold w-4 h-4">
+                            <span>I have identified at least two specific hallucinations in the original "poor wish" prompt.</span>
+                        </label>
+                        <label class="flex items-center gap-2.5 p-2 bg-white rounded border border-slate-200 hover:bg-slate-100 cursor-pointer">
+                            <input type="checkbox" onchange="updateChecklistProgress()" class="chk-item rounded text-cnm-primary focus:ring-cnm-gold w-4 h-4">
+                            <span>My refactored prompt incorporates the C-P-C-V architectural framework (Context, Persona, Constraints, Verification).</span>
+                        </label>
+                        <label class="flex items-center gap-2.5 p-2 bg-white rounded border border-slate-200 hover:bg-slate-100 cursor-pointer">
+                            <input type="checkbox" onchange="updateChecklistProgress()" class="chk-item rounded text-cnm-primary focus:ring-cnm-gold w-4 h-4">
+                            <span>I verified one real-world fact or law using CNM Library databases or an official government website.</span>
+                        </label>
+                        <label class="flex items-center gap-2.5 p-2 bg-white rounded border border-slate-200 hover:bg-slate-100 cursor-pointer">
+                            <input type="checkbox" onchange="updateChecklistProgress()" class="chk-item rounded text-cnm-primary focus:ring-cnm-gold w-4 h-4">
+                            <span>I included the mandatory CNM AI Disclosure log with prompt text, date, and model used.</span>
+                        </label>
+                    </div>
+                    
+                    <!-- Progress bar -->
+                    <div class="pt-2">
+                        <div class="flex justify-between text-xs font-semibold text-slate-600 mb-1">
+                            <span>Checklist Readiness:</span>
+                            <span id="checklist-percentage">0% Completed</span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                            <div id="checklist-bar" class="bg-emerald-500 h-2.5 rounded-full transition-all duration-300 w-0"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submission Form / Copyable Template -->
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-bold text-slate-900 text-base">Deliverable Drafting Template</h3>
+                        <button onclick="copySubmissionTemplate()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-cnm-gold text-xs font-bold rounded flex items-center gap-1.5 focus:ring-2 focus:ring-cnm-gold">
+                            <i class="fa-solid fa-copy" aria-hidden="true"></i>
+                            <span>Copy Template Text</span>
+                        </button>
+                    </div>
+
+                    <p class="text-xs text-slate-600">
+                        You may draft your report directly below and copy it into Microsoft Word or the Brightspace LMS text box:
+                    </p>
+
+                    <textarea id="submission-template-text" rows="14" class="w-full p-4 font-mono text-xs bg-slate-900 text-slate-100 rounded-lg border border-slate-700 focus:ring-2 focus:ring-cnm-gold leading-relaxed" aria-label="Student Deliverable Submission Draft Box">
+=== BCIS 1110: GENERATIVE AI ETHICS & INTENT ARCHITECTING REPORT ===
+Student Name: [Insert Full Name]
+Date: [Insert Date]
+Course Section: BCIS 1110 (Online Asynchronous)
+
+--- 1. CRITIQUE OF THE "POOR WISH" PROMPT ---
+Original Prompt Analyzed: "Write me a 1-page report proving that switching our delivery trucks to electric vehicles in New Mexico will save us 40% in costs this year, and list 3 local NM laws that mandate this transition."
+
+Hallucination #1 (Fabricated Statute/Law):
+[Describe the fake law generated by the AI and why the LLM invented it]
+
+Hallucination #2 (Flawed/Biased Financial Claim):
+[Describe how asking the AI to "prove 40% savings" caused confirmation bias]
+
+--- 2. REFACTORED INTENT ARCHITECTED PROMPT (C-P-C-V FRAMEWORK) ---
+Architected Prompt Text:
+"Act as an objective Business Logistics Analyst for Sol Southwest Logistics in Albuquerque, NM. Evaluate the operational feasibility, cost factors, and current New Mexico state regulatory incentives for transitioning 15% of regional delivery fleets to electric vehicles over a 3-year period. Highlight both financial benefits and potential infrastructure risks (charging availability, cold weather range). Do not invent statutes; cite verified state or federal energy publications."
+
+C-P-C-V Breakdown:
+- Context: Regional logistics firm operating in NM.
+- Persona: Objective Business Analyst.
+- Constraints: Balanced pros/cons, 3-year timeline, no made-up statutes.
+- Verification: Requires verified publication sources.
+
+--- 3. EMPIRICAL LIBRARY SOURCE VERIFICATION ---
+Verified Fact/Statistic Found:
+[Insert verified statistic found via CNM Library EBSCO/Gale database or NM state website]
+
+Source Citation (APA/IEEE):
+[Insert source title, author, URL/DOI, date accessed]
+
+Comparison against AI Claim:
+[Explain how the real source differs from the initial AI hallucination]
+
+--- 4. BUSINESS RISK & ETHICS ANALYSIS ---
+Organizational Risks of Unverified AI Usage:
+[Explain financial, legal, or operational dangers if Sol Southwest Logistics relied on the unverified report]
+
+--- 5. CNM AI TRANSPARENCY DISCLOSURE ---
+AI Tool Used: [e.g., Microsoft Copilot / ChatGPT 4o / Claude]
+Date Prompted: [Insert Date]
+Usage Statement: I used Generative AI as an iterative analysis and prompt architecting simulator in accordance with CNM Academic Ethics Guidelines.
+============================================================</textarea>
+                </div>
+
+                <div id="copy-toast" class="hidden p-3 bg-emerald-100 border border-emerald-400 text-emerald-800 text-xs font-bold rounded-lg flex items-center justify-between">
+                    <span><i class="fa-solid fa-check-circle mr-1"></i> Template text copied to clipboard! Paste into Word or Brightspace LMS.</span>
+                    <button onclick="document.getElementById('copy-toast').classList.add('hidden')" class="text-emerald-900 font-bold">&times;</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 7: AI POLICY & CITATION GUIDANCE (ALWAYS ACCESSIBLE BOTTOM CARD) -->
+        <section class="mt-8 bg-slate-900 text-white rounded-xl p-6 sm:p-8 shadow-lg border-t-4 border-cnm-gold">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-cnm-gold text-cnm-dark flex items-center justify-center font-bold text-lg">
+                        <i class="fa-solid fa-scale-balanced" aria-hidden="true"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-white">CNM Academic AI Integrity & Citation Guidance</h3>
+                        <p class="text-xs text-slate-300">Central New Mexico Community College Academic Honesty Standards</p>
+                    </div>
+                </div>
+                <span class="px-3 py-1 bg-blue-900/60 border border-blue-400/30 text-blue-200 text-xs rounded-full font-semibold">
+                    Policy Grade: Authorized Activity Guidance
+                </span>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 text-xs text-slate-300 leading-relaxed">
+                <div class="space-y-2 bg-slate-800/50 p-4 rounded-lg border border-slate-700">
+                    <h4 class="font-bold text-cnm-gold text-sm flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-check text-emerald-400"></i> Permitted & Encouraged AI Use
+                    </h4>
+                    <p>
+                        In BCIS 1110, Generative AI tools are permitted <strong>specifically when explicitly directed by the assignment</strong>. You are encouraged to use AI as a brain-storming partner, prompt refactoring sandbox, and critique subject.
+                    </p>
+                </div>
+
+                <div class="space-y-2 bg-slate-800/50 p-4 rounded-lg border border-slate-700">
+                    <h4 class="font-bold text-cnm-gold text-sm flex items-center gap-1.5">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-400"></i> Citation & Transparency Mandate
+                    </h4>
+                    <p>
+                        Passing off AI-generated text as your own unassisted writing without full disclosure constitutes academic dishonesty. Always attach the <strong>CNM AI Transparency Log</strong> detailing prompt strings, model name, and version date.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Institutional Footer -->
+    <footer class="bg-cnm-dark text-slate-400 text-xs py-8 px-4 border-t border-slate-800 mt-12 no-print">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+            <div>
+                <p class="font-bold text-slate-200 text-sm">Central New Mexico Community College (CNM)</p>
+                <p class="mt-1">School of Business, Healthcare & Technology | BCIS 1110</p>
+                <p class="text-slate-500 text-[11px] mt-1">Designed with Universal Design for Learning (UDL) & WCAG 2.1 AA Compliance standards.</p>
+            </div>
+            <div class="flex items-center gap-4 text-slate-300">
+                <a href="https://www.cnm.edu" target="_blank" rel="noopener noreferrer" class="hover:text-cnm-gold focus:ring-1 focus:ring-cnm-gold p-1">CNM Main Web</a>
+                <span>|</span>
+                <a href="https://mylearning.cnm.edu" target="_blank" rel="noopener noreferrer" class="hover:text-cnm-gold focus:ring-1 focus:ring-cnm-gold p-1">Brightspace LMS</a>
+                <span>|</span>
+                <a href="https://www.cnm.edu/depts/libraries" target="_blank" rel="noopener noreferrer" class="hover:text-cnm-gold focus:ring-1 focus:ring-cnm-gold p-1">CNM Libraries</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Application JavaScript Logic -->
+    <script>
+        // Font Resizing Logic for Accessibility
+        let currentFontSize = 100;
+        function changeFontSize(delta) {
+            currentFontSize = Math.max(80, Math.min(140, currentFontSize + (delta * 10)));
+            document.body.style.fontSize = currentFontSize + '%';
+            announceAccessibility(`Text size set to ${currentFontSize} percent`);
+        }
+        function resetFontSize() {
+            currentFontSize = 100;
+            document.body.style.fontSize = '100%';
+            announceAccessibility("Text size reset to default");
+        }
+
+        // High Contrast Mode Toggle
+        function toggleHighContrast() {
+            const body = document.getElementById('app-body');
+            const btn = document.getElementById('contrast-toggle-btn');
+            body.classList.toggle('high-contrast');
+            const isHighContrast = body.classList.contains('high-contrast');
+            btn.setAttribute('aria-pressed', isHighContrast);
+            announceAccessibility(isHighContrast ? "High contrast mode enabled" : "High contrast mode disabled");
+        }
+
+        // Screen Reader Live Announcements
+        function announceAccessibility(text) {
+            const status = document.getElementById('screen-reader-status');
+            if (status) {
+                status.textContent = text;
+            }
+        }
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            // Hide all tab content
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.add('hidden'));
+
+            // De-select all tab buttons
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => {
+                btn.setAttribute('aria-selected', 'false');
+                btn.classList.remove('bg-cnm-primary', 'text-white', 'border-cnm-gold');
+                btn.classList.add('text-slate-300', 'border-transparent');
+            });
+
+            // Show target content
+            const targetContent = document.getElementById(`section-${tabId}`);
+            if (targetContent) {
+                targetContent.classList.remove('hidden');
+            }
+
+            // Highlight target button
+            const targetBtn = document.getElementById(`tab-${tabId}`);
+            if (targetBtn) {
+                targetBtn.setAttribute('aria-selected', 'true');
+                targetBtn.classList.add('bg-cnm-primary', 'text-white', 'border-cnm-gold');
+                targetBtn.classList.remove('text-slate-300', 'border-transparent');
+            }
+
+            // Scroll to top of section on mobile
+            window.scrollTo({ top: 120, behavior: 'smooth' });
+            announceAccessibility(`Switched to section ${tabId}`);
+        }
+
+        const PRESETS = {
+            poor: {
+                prompt: "Write me a 1-page report proving that switching our delivery trucks to electric vehicles in New Mexico will save us 40% in costs this year, and list 3 local NM laws that mandate this transition.",
+                c1: false, p: false, c2: false, v: false,
+                outputHtml: `
+                    <div class="p-3 bg-red-50 border-l-4 border-red-500 rounded text-slate-800 space-y-2">
+                        <strong class="text-red-900 block text-xs uppercase"><i class="fa-solid fa-triangle-exclamation"></i> Generated Output (Hallucinated & Biased):</strong>
+                        <p><strong>Executive Summary:</strong> Transitioning Sol Southwest Logistics to an electric fleet in New Mexico will immediately lower operational expenditures by 40.2% in 2026 through fuel elimination and reduced maintenance.</p>
+                        <p><strong>Mandatory Legal Statutes in New Mexico:</strong></p>
+                        <ol class="list-decimal pl-4 space-y-1 text-xs">
+                            <li><span class="bg-red-200 px-1 rounded font-mono text-red-950 font-bold" title="HALLUCINATION">NM Clean Freight Mandate of 2024 (§ 62-8-12):</span> Requires commercial fleets over 10 vehicles to transition 30% to zero-emissions by 2027. [FABRICATED LAW]</li>
+                            <li><span class="bg-red-200 px-1 rounded font-mono text-red-950 font-bold" title="HALLUCINATION">Albuquerque Commercial Fleet Decarbonization Act:</span> Mandates EV purchase rebates up to $15,000 per medium-duty truck. [FABRICATED CITY ORDINANCE]</li>
+                            <li><span class="bg-red-200 px-1 rounded font-mono text-red-950 font-bold" title="HALLUCINATION">NM Utility Fleet Charging Credit:</span> Guarantees free night charging rates for all logistics hubs. [EXAGGERATED CLAIM]</li>
+                        </ol>
+                    </div>
+                `,
+                badge: "High Risk: Multiple Fabricated Statutes",
+                badgeClass: "bg-red-100 text-red-800",
+                critique: "<strong>Failure Analysis:</strong> Because the user forced a leading outcome ('prove 40% savings') and assumed specific statutes existed, the AI model hallucinated plausible-sounding statutory codes and numbers to satisfy the user's wish. This creates severe legal and financial risk for the business."
+            },
+            better: {
+                prompt: "Write a summary of electric delivery vehicle fleet adoption in New Mexico. What are the potential savings and local statutes?",
+                c1: true, p: false, c2: false, v: false,
+                outputHtml: `
+                    <div class="p-3 bg-amber-50 border-l-4 border-amber-500 rounded text-slate-800 space-y-2">
+                        <strong class="text-amber-900 block text-xs uppercase"><i class="fa-solid fa-triangle-exclamation"></i> Generated Output (Vague & Unconstrained):</strong>
+                        <p>Electric fleet adoption in New Mexico offers significant environmental and long-term cost benefits. EV trucks generally lower fuel expenses by 20% to 50% depending on electricity rates and diesel prices.</p>
+                        <p>In New Mexico, tax credits such as the Clean Transportation Tax Credit provide financial incentives, though specific mandates depend on regional utility programs like PNM's EV grid initiatives.</p>
+                    </div>
+                `,
+                badge: "Moderate Risk: General Claims, Lacks Specific Sources",
+                badgeClass: "bg-amber-100 text-amber-800",
+                critique: "<strong>Analysis:</strong> Removing the biased 40% requirement prevented explicit hallucination, but the output remains overly generalized. Without a persona, geographical boundary, or verification mandate, the report lacks actionable business insights."
+            },
+            architected: {
+                prompt: "Act as an objective Business Logistics Analyst for a regional fleet operating in Albuquerque, NM. Evaluate the operational feasibility, cost factors, and verified state/federal incentives for transitioning 15% of regional delivery fleets to electric vehicles over a 3-year period. Include potential risks (charging infrastructure, battery range in winter) and cite verified government or academic sources. Do not invent statutory codes.",
+                c1: true, p: true, c2: true, v: true,
+                outputHtml: `
+                    <div class="p-3 bg-emerald-50 border-l-4 border-emerald-500 rounded text-slate-800 space-y-2">
+                        <strong class="text-emerald-900 block text-xs uppercase"><i class="fa-solid fa-circle-check"></i> Generated Output (Architected & Balanced):</strong>
+                        <p><strong>Feasibility Brief: Fleet Electrification in Central New Mexico</strong></p>
+                        <p><strong>Cost & Operational Factors:</strong> Transitioning 15% of short-haul delivery vehicles over 3 years offers an estimated 18%-25% reduction in lifetime fuel costs. However, upfront capital expenditure for Level 3 DC fast-charging infrastructure at Albuquerque hubs requires significant initial investment ($45,000–$80,000 per charger).</p>
+                        <p><strong>Verified Regulatory Context:</strong> Federal Inflation Reduction Act (IRA) Commercial Clean Vehicle Credits (Section 45W) offer up to $40,000 for qualified heavy-duty EVs. PNM (Public Service Company of New Mexico) offers commercial grid readiness rebates under approved PRC filings.</p>
+                        <p><strong>Operational Risks:</strong> Range degradation during hot New Mexico summers (A/C load) and winter cold snaps can reduce battery capacity by 12-18%.</p>
+                    </div>
+                `,
+                badge: "Low Risk: Balanced, Verifiable & Constrained",
+                badgeClass: "bg-emerald-100 text-emerald-800",
+                critique: "<strong>Architectural Success:</strong> By applying C-P-C-V (Context, Persona, Constraints, Verification), you forced the AI to act as a neutral analyst, highlight operational risks alongside benefits, and restrict claims to real, verifiable incentive programs."
+            }
+        };
+
+        function loadPresetPrompt() {
+            const select = document.getElementById('prompt-preset-select');
+            const key = select.value;
+            const preset = PRESETS[key];
+            if (preset) {
+                document.getElementById('custom-prompt-input').value = preset.prompt;
+                updateCpcvChecklist(preset.c1, preset.p, preset.c2, preset.v);
+            }
+        }
+
+        function updateCpcvChecklist(c1, p, c2, v) {
+            const setUI = (id, active, label) => {
+                const el = document.getElementById(id);
+                if (active) {
+                    el.className = "flex items-center gap-1.5 text-emerald-700 font-bold";
+                    el.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i> ${label}`;
+                } else {
+                    el.className = "flex items-center gap-1.5 text-slate-400";
+                    el.innerHTML = `<i class="fa-solid fa-circle-xmark text-red-500"></i> ${label}`;
+                }
+            };
+            setUI('check-c1', c1, 'Context Defined');
+            setUI('check-p', p, 'Role/Persona Set');
+            setUI('check-c2', c2, 'Constraints Included');
+            setUI('check-v', v, 'Verification Required');
+        }
+
+        function simulateAIResponse() {
+            const key = document.getElementById('prompt-preset-select').value;
+            const preset = PRESETS[key] || PRESETS.poor;
+            
+            const container = document.getElementById('ai-output-container');
+            const badge = document.getElementById('output-badge');
+            const critiqueText = document.getElementById('critique-text');
+
+            container.innerHTML = `<div class="p-4 text-center text-slate-500 font-mono text-xs"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Running prompt evaluation through LLM simulator...</div>`;
+
+            setTimeout(() => {
+                container.innerHTML = preset.outputHtml;
+                badge.className = `px-2 py-0.5 rounded font-bold text-xs ${preset.badgeClass}`;
+                badge.textContent = preset.badge;
+                critiqueText.innerHTML = preset.critique;
+                announceAccessibility("AI Simulation completed and critique updated.");
+            }, 400);
+        }
+
+        function updateChecklistProgress() {
+            const items = document.querySelectorAll('.chk-item');
+            let checkedCount = 0;
+            items.forEach(item => {
+                if (item.checked) checkedCount++;
+            });
+            const percent = Math.round((checkedCount / items.length) * 100);
+            document.getElementById('checklist-percentage').textContent = `${percent}% Completed`;
+            document.getElementById('checklist-bar').style.width = `${percent}%`;
+        }
+
+        function copySubmissionTemplate() {
+            const text = document.getElementById('submission-template-text').value;
+            
+            // Native clipboard copy with fallback
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showCopyToast();
+                }).catch(() => {
+                    fallbackCopy(text);
+                });
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textarea = document.getElementById('submission-template-text');
+            textarea.select();
+            document.execCommand('copy');
+            showCopyToast();
+        }
+
+        function showCopyToast() {
+            const toast = document.getElementById('copy-toast');
+            toast.classList.remove('hidden');
+            announceAccessibility("Template copied to clipboard successfully.");
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 4000);
+        }
+
+        // Initialize default view on load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadPresetPrompt();
+            simulateAIResponse();
+        });
+    </script>
+</body>
+</html>

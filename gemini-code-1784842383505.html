@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mastering IPv6 Address Compression</title>
+  <style>
+    /* CSS Variables for Theming */
+    :root {
+      --user-primary: #205db1;
+      --user-accent: #e5c41f;
+      --user-background: #ffffff;
+      --primary-dark: #164382;
+      --primary-light: #e8f1fd;
+      --text-main: #1a202c;
+      --text-muted: #4a5568;
+      --border-color: #cbd5e1;
+      --card-bg: #f8fafc;
+      --success-bg: #dcfce7;
+      --success-border: #22c55e;
+      --success-text: #14532d;
+      --error-bg: #fee2e2;
+      --error-border: #ef4444;
+      --error-text: #7f1d1d;
+      --warning-bg: #fef9c3;
+      --warning-border: #ca8a04;
+      --warning-text: #713f12;
+      --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-dyslexic: "Atkinson Hyperlegible", "Comic Sans MS", "OpenDyslexic", sans-serif;
+      --radius: 8px;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      --focus-ring: 3px solid #e5c41f;
+    }
+
+    /* Dyslexia Friendly Toggle */
+    body.dyslexic-mode {
+      font-family: var(--font-dyslexic) !important;
+      letter-spacing: 0.05em;
+      word-spacing: 0.1em;
+      line-height: 1.8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--user-background);
+      color: var(--text-main);
+      line-height: 1.6;
+      font-size: 1rem;
+      padding-bottom: 3rem;
+    }
+
+    /* Accessibility Focus Styles */
+    a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: var(--focus-ring);
+      outline-offset: 2px;
+    }
+
+    /* Header & Navigation */
+    header {
+      background-color: var(--user-primary);
+      color: #ffffff;
+      padding: 2rem 1.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    .header-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .header-container {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    header p {
+      font-size: 1rem;
+      color: #e2e8f0;
+      margin-top: 0.25rem;
+    }
+
+    .accessibility-tools {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .toggle-btn {
+      background-color: #ffffff;
+      color: var(--user-primary);
+      border: 2px solid var(--user-accent);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius);
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    .toggle-btn:hover {
+      background-color: var(--user-accent);
+      color: #000000;
+    }
+
+    .toggle-btn[aria-pressed="true"] {
+      background-color: var(--user-accent);
+      color: #000000;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Section Styling */
+    section {
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+    }
+
+    h2 {
+      color: var(--user-primary);
+      font-size: 1.4rem;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    h3 {
+      font-size: 1.15rem;
+      color: var(--primary-dark);
+      margin: 1.25rem 0 0.5rem 0;
+    }
+
+    p {
+      margin-bottom: 1rem;
+    }
+
+    ul, ol {
+      margin-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+    }
+
+    /* Bloom Badges */
+    .bloom-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      background-color: var(--primary-light);
+      color: var(--user-primary);
+      margin-left: auto;
+    }
+
+    /* Code & Address Blocks */
+    .address-box {
+      font-family: "Courier New", Courier, monospace;
+      background-color: #0f172a;
+      color: #38bdf8;
+      padding: 1rem;
+      border-radius: var(--radius);
+      overflow-x: auto;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin: 1rem 0;
+      border-left: 4px solid var(--user-accent);
+    }
+
+    .address-highlight {
+      color: #facc15;
+      text-decoration: underline;
+    }
+
+    /* Worked Example Cards */
+    .step-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--user-primary);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin: 1rem 0;
+    }
+
+    .step-number {
+      font-weight: 700;
+      color: var(--user-primary);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      margin-bottom: 0.25rem;
+    }
+
+    /* Callout Boxes */
+    .callout {
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius);
+      margin: 1rem 0;
+      border-left: 4px solid;
+    }
+
+    .callout-warning {
+      background-color: var(--warning-bg);
+      border-color: var(--warning-border);
+      color: var(--warning-text);
+    }
+
+    .callout-info {
+      background-color: var(--primary-light);
+      border-color: var(--user-primary);
+      color: var(--primary-dark);
+    }
+
+    /* Interactive Compression Tool */
+    .interactive-tool {
+      background-color: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .input-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      min-width: 280px;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      font-family: "Courier New", Courier, monospace;
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius);
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--user-primary);
+    }
+
+    .btn {
+      background-color: var(--user-primary);
+      color: #ffffff;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-dark);
+    }
+
+    .btn-secondary {
+      background-color: #64748b;
+    }
+
+    .btn-secondary:hover {
+      background-color: #475569;
+    }
+
+    /* Feedback Banner */
+    .feedback {
+      padding: 1rem;
+      border-radius: var(--radius);
+      margin-top: 1rem;
+      display: none;
+      font-weight: 500;
+    }
+
+    .feedback[aria-hidden="false"] {
+      display: block;
+    }
+
+    .feedback-success {
+      background-color: var(--success-bg);
+      border: 1px solid var(--success-border);
+      color: var(--success-text);
+    }
+
+    .feedback-error {
+      background-color: var(--error-bg);
+      border: 1px solid var(--error-border);
+      color: var(--error-text);
+    }
+
+    /* Practice Quiz Cards */
+    .quiz-card {
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .quiz-question {
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .options-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background-color 0.15s;
+    }
+
+    .option-label:hover {
+      background-color: var(--primary-light);
+    }
+
+    .option-label input[type="radio"] {
+      width: 1.2rem;
+      height: 1.2rem;
+      accent-color: var(--user-primary);
+    }
+
+    /* Verification Note for Research / SMEs */
+    .research-note {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-top: 1px dashed var(--border-color);
+      padding-top: 0.75rem;
+      margin-top: 1.5rem;
+      font-style: italic;
+    }
+
+    /* Responsive Tweaks */
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.95rem;
+      }
+      section {
+        padding: 1.25rem;
+      }
+      .address-box {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Section -->
+  <header role="banner">
+    <div class="header-container">
+      <div>
+        <h1>IPv6 Address Compression</h1>
+        <p>Interactive Learning Module for Networking & Computer Science</p>
+      </div>
+      <div class="accessibility-tools">
+        <button id="fontToggleBtn" class="toggle-btn" aria-pressed="false" onclick="toggleDyslexicFont()">
+          Dyslexia-Friendly Font: OFF
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main role="main">
+
+    <!-- Learning Objectives -->
+    <section aria-labelledby="obj-heading">
+      <h2 id="obj-heading">
+        <span>🎯 Learning Objectives</span>
+      </h2>
+      <p>By the end of this self-paced module, you will be able to:</p>
+      <ul>
+        <li><strong>Understand</strong> the structural layout of a standard 128-bit IPv6 address.</li>
+        <li><strong>Apply Rule 1:</strong> Identify and eliminate leading zeros within each 16-bit hex block (hextet).</li>
+        <li><strong>Apply Rule 2:</strong> Use the double colon (<code>::</code>) zero-compression shortcut correctly without creating ambiguous addresses.</li>
+        <li><strong>Recognize</strong> common pitfalls such as omitting trailing zeros or using <code>::</code> more than once.</li>
+      </ul>
+    </section>
+
+    <!-- Step 1: IPv6 Structure -->
+    <section aria-labelledby="step1-heading">
+      <h2 id="step1-heading">
+        1. Anatomy of an IPv6 Address
+        <span class="bloom-badge">Remember / Understand</span>
+      </h2>
+      <p>
+        An IPv6 address consists of <strong>128 bits</strong> written in <strong>hexadecimal format</strong>. 
+        It is divided into <strong>8 groups of 4 hexadecimal digits</strong> (often called "hextets" or "blocks"), separated by colons.
+      </p>
+      
+      <p>Here is an example of an uncompressed (full format) IPv6 address:</p>
+      <div class="address-box" aria-label="Uncompressed IPv6 Address Example">
+        2001 : 0db8 : 0000 : 0000 : 0008 : 0800 : 200c : 417a
+      </div>
+
+      <p>Notice how long this address is! Writing full 39-character addresses increases the risk of typing mistakes. To make IPv6 easier to read and write, the Internet Engineering Task Force (IETF) defined two compression rules (RFC 5952).</p>
+    </section>
+
+    <!-- Step 2: The Two Compression Rules -->
+    <section aria-labelledby="step2-heading">
+      <h2 id="step2-heading">
+        2. The Compression Rules
+        <span class="bloom-badge">Understand</span>
+      </h2>
+
+      <h3>Rule 1: Omit Leading Zeros</h3>
+      <p>In any hextet (4-digit group), you can drop all <strong>leading zeros</strong> (zeros at the start of a block).</p>
+      <ul>
+        <li><code>0db8</code> becomes <code>db8</code></li>
+        <li><code>0000</code> becomes <code>0</code></li>
+        <li><code>0008</code> becomes <code>8</code></li>
+        <li><code>0800</code> becomes <code>800</code> (Note: Trailing zeros stay!)</li>
+      </ul>
+
+      <div class="callout callout-warning" role="note">
+        <strong>⚠️ Critical Pitfall:</strong> Never omit <em>trailing</em> zeros! <code>0800</code> becomes <code>800</code>, NOT <code>8</code>. Omitting trailing zeros completely changes the numerical value of the address.
+      </div>
+
+      <h3>Rule 2: Double Colon (<code>::</code>) Zero Compression</h3>
+      <p>
+        You can replace a single continuous sequence of <strong>two or more blocks of all zeros (<code>:0:0:</code>)</strong> with a double colon (<code>::</code>).
+      </p>
+
+      <div class="callout callout-warning" role="alert">
+        <strong>⚠️ Golden Rule:</strong> You may use the double colon (<code>::</code>) <strong>ONLY ONCE</strong> per IPv6 address!
+        If used twice, it becomes impossible to determine how many zero blocks belong to each <code>::</code>, rendering the address invalid.
+      </div>
+    </section>
+
+    <!-- Worked Example -->
+    <section aria-labelledby="worked-heading">
+      <h2 id="worked-heading">
+        3. Fully Worked Step-by-Step Example
+        <span class="bloom-badge">Apply</span>
+      </h2>
+      <p>Let's compress the uncompressed address below step-by-step:</p>
+      <div class="address-box">
+        2001:0db8:0000:0000:0000:ff00:0042:8329
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">Step 1: Apply Rule 1 (Omit Leading Zeros)</div>
+        <p>Go through each hextet from left to right and remove leading zeros:</p>
+        <ul>
+          <li><code>2001</code> → <code>2001</code> (No leading zero)</li>
+          <li><code>0db8</code> → <code>db8</code></li>
+          <li><code>0000</code> → <code>0</code></li>
+          <li><code>0000</code> → <code>0</code></li>
+          <li><code>0000</code> → <code>0</code></li>
+          <li><code>ff00</code> → <code>ff00</code> (Keep trailing zeros!)</li>
+          <li><code>0042</code> → <code>42</code></li>
+          <li><code>8329</code> → <code>8329</code></li>
+        </ul>
+        <p><strong>Result after Rule 1:</strong></p>
+        <div class="address-box">2001:db8:0:0:0:ff00:42:8329</div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">Step 2: Apply Rule 2 (Compress Contiguous Zero Blocks)</div>
+        <p>Identify the continuous run of all-zero blocks: <code>:0:0:0:</code></p>
+        <p>Replace this sequence with a single <code>::</code>.</p>
+        <p><strong>Final Compressed Result:</strong></p>
+        <div class="address-box" style="border-left-color: #22c55e;">2001:db8::ff00:42:8329</div>
+      </div>
+    </section>
+
+    <!-- Interactive Compression Sandbox -->
+    <section aria-labelledby="tool-heading">
+      <h2 id="tool-heading">
+        4. Interactive IPv6 Compression Sandbox
+        <span class="bloom-badge">Practice</span>
+      </h2>
+      <p>Try compressing IPv6 addresses yourself, or test your own uncompressed addresses to see real-time verification!</p>
+
+      <div class="interactive-tool">
+        <div class="form-group">
+          <label for="inputAddress">Enter an uncompressed or partially compressed IPv6 Address:</label>
+          <div class="input-row">
+            <input type="text" id="inputAddress" value="fe80:0000:0000:0000:0204:00ff:fe00:0001" aria-describedby="inputHelp">
+            <button class="btn" onclick="processAddress()">Compress Address</button>
+            <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+          </div>
+          <small id="inputHelp" style="color: var(--text-muted); margin-top: 0.25rem;">
+            Format: 8 blocks separated by colons (e.g., 2001:0db8:0000:0000:0000:0000:0000:0001)
+          </small>
+        </div>
+
+        <div id="interactiveOutput" style="display: none;">
+          <h3>Step-by-Step Breakdown:</h3>
+          <div class="step-card">
+            <strong>Rule 1 (Leading Zeros Removed):</strong>
+            <div id="rule1Output" class="address-box" style="font-size: 1rem;"></div>
+          </div>
+          <div class="step-card">
+            <strong>Rule 2 (Double Colon Applied):</strong>
+            <div id="rule2Output" class="address-box" style="font-size: 1rem; border-left-color: #22c55e;"></div>
+          </div>
+        </div>
+
+        <div id="toolFeedback" class="feedback" role="region" aria-live="polite" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <!-- Self-Check Worksheet / Quiz -->
+    <section aria-labelledby="quiz-heading">
+      <h2 id="quiz-heading">
+        5. Self-Check Knowledge Verification
+        <span class="bloom-badge">Check Understanding</span>
+      </h2>
+      <p>Test your understanding before moving on. Instant feedback is provided for each question.</p>
+
+      <form id="quizForm" onsubmit="event.preventDefault(); evaluateQuiz();">
+        
+        <!-- Question 1 -->
+        <div class="quiz-card">
+          <p class="quiz-question">Q1: Which of the following is the correctly compressed version of <code>2001:0db8:0000:0000:0001:0000:0000:0001</code>?</p>
+          <div class="options-group">
+            <label class="option-label">
+              <input type="radio" name="q1" value="A">
+              <span>A) <code>2001:db8::1::1</code></span>
+            </label>
+            <label class="option-label">
+              <input type="radio" name="q1" value="B">
+              <span>B) <code>2001:db8::1:0:0:1</code></span>
+            </label>
+            <label class="option-label">
+              <input type="radio" name="q1" value="C">
+              <span>C) <code>2001:db8:0:0:1::1</code></span>
+            </label>
+          </div>
+          <div id="q1Feedback" class="feedback" role="region" aria-live="polite" aria-hidden="true"></div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="quiz-card">
+          <p class="quiz-question">Q2: Why is <code>fe80::1::45</code> an INVALID IPv6 address?</p>
+          <div class="options-group">
+            <label class="option-label">
+              <input type="radio" name="q2" value="A">
+              <span>A) It omits the <code>0x</code> prefix required for hexadecimal numbers.</span>
+            </label>
+            <label class="option-label">
+              <input type="radio" name="q2" value="B">
+              <span>B) The double colon (<code>::</code>) is used twice, creating ambiguity about how many zero blocks each represents.</span>
+            </label>
+            <label class="option-label">
+              <input type="radio" name="q2" value="C">
+              <span>C) Hexadecimal digits above 'f' are present.</span>
+            </label>
+          </div>
+          <div id="q2Feedback" class="feedback" role="region" aria-live="polite" aria-hidden="true"></div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="quiz-card">
+          <p class="quiz-question">Q3: How does <code>0a00</code> compress under Rule 1 (omitting leading zeros)?</p>
+          <div class="options-group">
+            <label class="option-label">
+              <input type="radio" name="q3" value="A">
+              <span>A) <code>a</code></span>
+            </label>
+            <label class="option-label">
+              <input type="radio" name="q3" value="B">
+              <span>B) <code>a00</code></span>
+            </label>
+            <label class="option-label">
+              <input type="radio" name="q3" value="C">
+              <span>C) <code>0a</code></span>
+            </label>
+          </div>
+          <div id="q3Feedback" class="feedback" role="region" aria-live="polite" aria-hidden="true"></div>
+        </div>
+
+        <button type="submit" class="btn" style="width: 100%; max-width: 300px; display: block; margin: 1rem auto 0 auto;">
+          Check My Answers
+        </button>
+      </form>
+    </section>
+
+    <!-- Research & SME Validation Section -->
+    <div class="research-note" role="contentinfo">
+      <strong>Research & SME Validation Note:</strong> Content aligns with RFC 4291 (IPv6 Addressing Architecture) and RFC 5952 (A Recommendation for IPv6 Address Text Representation). Standard recommendations specify choosing the longest consecutive string of zero blocks when applying <code>::</code> compression. In the case of equal length zero sequences, standard RFC 5952 dictates compressing the first sequence. Verify specific local curriculum guidelines before classroom deployment.
+    </div>
+
+  </main>
+
+  <!-- Embedded JavaScript -->
+  <script>
+    // Dyslexia Font Toggle Functionality
+    function toggleDyslexicFont() {
+      const body = document.body;
+      const btn = document.getElementById('fontToggleBtn');
+      const isDyslexic = body.classList.toggle('dyslexic-mode');
+      
+      btn.setAttribute('aria-pressed', isDyslexic ? 'true' : 'false');
+      btn.textContent = `Dyslexia-Friendly Font: ${isDyslexic ? 'ON' : 'OFF'}`;
+    }
+
+    // Sample Loader
+    const samples = [
+      "fe80:0000:0000:0000:0204:00ff:fe00:0001",
+      "2001:0db8:0000:0000:0000:0000:1428:57ab",
+      "0000:0000:0000:0000:0000:0000:0000:0001",
+      "2001:0db8:0000:0001:0000:0000:0000:1000"
+    ];
+    let sampleIdx = 0;
+
+    function loadSample() {
+      sampleIdx = (sampleIdx + 1) % samples.length;
+      document.getElementById('inputAddress').value = samples[sampleIdx];
+      processAddress();
+    }
+
+    // IPv6 Compression Logic
+    function compressIPv6(ip) {
+      // Basic split and clean
+      let blocks = ip.trim().toLowerCase().split(':');
+      if (blocks.length !== 8) {
+        return { error: "An uncompressed IPv6 address must have exactly 8 blocks separated by colons." };
+      }
+
+      // Check valid hex
+      for (let b of blocks) {
+        if (!/^[0-9a-f]{1,4}$/.test(b)) {
+          return { error: `Invalid hex block: "${b}". Each block must contain 1-4 hex characters (0-9, a-f).` };
+        }
+      }
+
+      // Rule 1: Omit leading zeros
+      let rule1Blocks = blocks.map(b => b.replace(/^0+/, '') || '0');
+      let rule1Str = rule1Blocks.join(':');
+
+      // Rule 2: Find longest sequence of '0' blocks
+      let bestStart = -1;
+      let bestLen = 0;
+      let curStart = -1;
+      let curLen = 0;
+
+      for (let i = 0; i < rule1Blocks.length; i++) {
+        if (rule1Blocks[i] === '0') {
+          if (curStart === -1) curStart = i;
+          curLen++;
+          if (curLen > bestLen) {
+            bestLen = curLen;
+            bestStart = curStart;
+          }
+        } else {
+          curStart = -1;
+          curLen = 0;
+        }
+      }
+
+      let rule2Str = rule1Str;
+      // Double colon compression applies only if length >= 2 per RFC 5952
+      if (bestLen >= 2) {
+        let head = rule1Blocks.slice(0, bestStart).join(':');
+        let tail = rule1Blocks.slice(bestStart + bestLen).join(':');
+        rule2Str = (head ? head : '') + '::' + (tail ? tail : '');
+      }
+
+      return {
+        rule1: rule1Str,
+        rule2: rule2Str
+      };
+    }
+
+    function processAddress() {
+      const input = document.getElementById('inputAddress').value;
+      const feedback = document.getElementById('toolFeedback');
+      const outputDiv = document.getElementById('interactiveOutput');
+
+      feedback.setAttribute('aria-hidden', 'true');
+      feedback.className = 'feedback';
+      feedback.style.display = 'none';
+
+      const result = compressIPv6(input);
+
+      if (result.error) {
+        feedback.textContent = result.error;
+        feedback.className = 'feedback feedback-error';
+        feedback.setAttribute('aria-hidden', 'false');
+        outputDiv.style.display = 'none';
+      } else {
+        document.getElementById('rule1Output').textContent = result.rule1;
+        document.getElementById('rule2Output').textContent = result.rule2;
+        outputDiv.style.display = 'block';
+      }
+    }
+
+    // Quiz Evaluation Logic
+    function evaluateQuiz() {
+      // Q1 Check
+      const q1Val = document.querySelector('input[name="q1"]:checked')?.value;
+      const q1Fb = document.getElementById('q1Feedback');
+      if (q1Val === 'B') {
+        q1Fb.className = 'feedback feedback-success';
+        q1Fb.textContent = 'Correct! Since there are two separate zero sequences of equal length (2 blocks each), Rule 2 compresses the first sequence (RFC 5952 standard), leaving the second as explicit zeros.';
+      } else {
+        q1Fb.className = 'feedback feedback-error';
+        q1Fb.textContent = 'Incorrect. Option A uses :: twice (invalid). Option C compresses the second sequence instead of the first. Option B correctly compresses the first sequence.';
+      }
+      q1Fb.setAttribute('aria-hidden', 'false');
+
+      // Q2 Check
+      const q2Val = document.querySelector('input[name="q2"]:checked')?.value;
+      const q2Fb = document.getElementById('q2Feedback');
+      if (q2Val === 'B') {
+        q2Fb.className = 'feedback feedback-success';
+        q2Fb.textContent = 'Correct! Using :: twice introduces ambiguity because routers cannot know how many zero blocks were removed from each location.';
+      } else {
+        q2Fb.className = 'feedback feedback-error';
+        q2Fb.textContent = 'Incorrect. The key issue is that :: appears twice in the same address, which violates Rule 2.';
+      }
+      q2Fb.setAttribute('aria-hidden', 'false');
+
+      // Q3 Check
+      const q3Val = document.querySelector('input[name="q3"]:checked')?.value;
+      const q3Fb = document.getElementById('q3Feedback');
+      if (q3Val === 'B') {
+        q3Fb.className = 'feedback feedback-success';
+        q3Fb.textContent = 'Correct! Only the LEADING zero is removed. The trailing zeros MUST remain to preserve the value (a00).';
+      } else {
+        q3Fb.className = 'feedback feedback-error';
+        q3Fb.textContent = 'Incorrect. Only leading zeros are removed. Removing trailing zeros alters the actual hex value of the hextet.';
+      }
+      q3Fb.setAttribute('aria-hidden', 'false');
+    }
+  </script>
+</body>
+</html>
