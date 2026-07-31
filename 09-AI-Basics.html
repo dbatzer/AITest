@@ -184,7 +184,7 @@
                         <span>Central New Mexico Community College • Information Literacy & Systems</span>
                     </div>
                     <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-2">
-                        Mastering AI: <span class="bg-gradient-to-r from-cnm-gold via-amber-300 to-cnm-accent bg-clip-text text-transparent">Concepts, Prompting, Verification & Academic Honesty</span>
+                        AI Basics: <span class="bg-gradient-to-r from-cnm-gold via-amber-300 to-cnm-accent bg-clip-text text-transparent">Concepts, Prompting, Verification & Academic Honesty</span>
                     </h2>
                     <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
                         Learn how Generative AI operates, how to craft high-impact prompts for work, school, and personal productivity, how to audit AI outputs for factual hallucinations, and how to stay 100% compliant with CNM's <strong>Assistance, Not Substitution</strong> Academic Integrity Policy.
@@ -261,18 +261,99 @@
                     </div>
 
                     <!-- Token Prediction Visualizer -->
-                    <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-3 font-mono text-xs">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-slate-200">Interactive Token Probability Simulator:</span>
-                            <span class="text-[10px] text-cnm-gold">Try typing a prompt prefix!</span>
+                    <div class="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3 font-mono text-xs">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                            <span class="text-xs font-bold text-slate-200 flex items-center gap-2">
+                                <i class="fa-solid fa-calculator text-cnm-gold"></i>
+                                Visualizing LLM Token Prediction
+                            </span>
+                            <span class="text-[10px] text-cnm-accent px-2 py-0.5 rounded bg-slate-950 border border-slate-800">Next-Token Probability Model</span>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <input type="text" id="tokenInput" value="Central New Mexico Community" oninput="updateTokenPredictor()" 
-                                class="flex-grow bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cnm-accent">
+
+                        <!-- Prompt Input Banner -->
+                        <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center gap-2 text-xs">
+                            <span class="text-slate-400 font-bold">Prompt Prefix:</span>
+                            <span class="text-cnm-gold font-bold text-sm bg-slate-900 px-3 py-1 rounded-lg border border-slate-700">"It is raining cats and ____"</span>
                         </div>
-                        <div id="tokenOutput" class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-[11px] text-slate-300 flex flex-wrap gap-2">
-                            <!-- Populated dynamically -->
+
+                        <!-- Calculated Probabilities Distribution -->
+                        <div class="space-y-2 pt-1 text-[11px]">
+                            <div class="text-slate-400 font-sans text-[11px]">LLM calculates neural probabilities for the single most likely next word (token):</div>
+
+                            <!-- Token Choice 1: dogs -->
+                            <div class="p-2 rounded-xl bg-slate-950 border border-emerald-500/40 flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold">1st CHOICE</span>
+                                    <span class="text-white font-bold text-xs">"dogs"</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-32 bg-slate-800 h-2 rounded-full overflow-hidden hidden sm:block">
+                                        <div class="bg-emerald-400 h-full w-[94.2%]"></div>
+                                    </div>
+                                    <span class="text-emerald-400 font-bold">94.2%</span>
+                                </div>
+                            </div>
+
+                            <!-- Token Choice 2: birds -->
+                            <div class="p-2 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between text-slate-300">
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-400">2nd Choice</span>
+                                    <span class="font-semibold text-xs">"birds"</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-32 bg-slate-800 h-2 rounded-full overflow-hidden hidden sm:block">
+                                        <div class="bg-cnm-accent h-full w-[4.1%]"></div>
+                                    </div>
+                                    <span class="text-cnm-accent font-semibold">4.1%</span>
+                                </div>
+                            </div>
+
+                            <!-- Token Choice 3: mice -->
+                            <div class="p-2 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between text-slate-400">
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-500">3rd Choice</span>
+                                    <span class="text-xs">"mice"</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-32 bg-slate-800 h-2 rounded-full overflow-hidden hidden sm:block">
+                                        <div class="bg-amber-400 h-full w-[1.2%]"></div>
+                                    </div>
+                                    <span class="text-slate-400">1.2%</span>
+                                </div>
+                            </div>
+
+                            <!-- Token Choice 4: elephants -->
+                            <div class="p-2 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between text-slate-400">
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-500">4th Choice</span>
+                                    <span class="text-xs">"elephants"</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-32 bg-slate-800 h-2 rounded-full overflow-hidden hidden sm:block">
+                                        <div class="bg-purple-400 h-full w-[0.3%]"></div>
+                                    </div>
+                                    <span class="text-slate-400">0.3%</span>
+                                </div>
+                            </div>
+
+                            <!-- Token Choice 5: pineapples -->
+                            <div class="p-2 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between text-slate-500 opacity-60">
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-600">5th Choice</span>
+                                    <span class="text-xs">"pineapples"</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-32 bg-slate-800 h-2 rounded-full overflow-hidden hidden sm:block">
+                                        <div class="bg-rose-400 h-full w-[0.01%]"></div>
+                                    </div>
+                                    <span class="text-slate-500">0.01%</span>
+                                </div>
+                            </div>
                         </div>
+
+                        <p class="text-[10px] text-slate-400 font-sans leading-relaxed pt-1">
+                            💡 <strong>Key Takeaway:</strong> The AI chooses <strong>"dogs"</strong> not because it understands weather or animals, but because "cats and dogs" is statistically overwhelmingly frequent in its training text.
+                        </p>
                     </div>
                 </div>
 
@@ -303,25 +384,69 @@
                         <span>The C-P-T-F Prompting Framework Workbench</span>
                     </h3>
                     <p class="text-xs text-slate-300">
-                        To get clear, reliable, professional responses from Generative AI, construct your prompt using four structural building blocks: <strong>Context</strong>, <strong>Persona</strong>, <strong>Task</strong>, and <strong>Format</strong>.
+                        To get clear, reliable, and highly accurate responses from Generative AI, construct your prompt using four structural building blocks: <strong>Context</strong>, <strong>Persona</strong>, <strong>Task</strong>, and <strong>Format & Constraints</strong>.
                     </p>
                 </div>
 
-                <!-- Quick Preset Selector -->
-                <div class="flex flex-wrap items-center gap-2 pt-2">
-                    <span class="text-xs font-mono text-slate-400 mr-2">Load Practical Scenario:</span>
-                    <button onclick="loadPromptPreset('work')" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs hover:border-cnm-gold flex items-center gap-1.5">
-                        <i class="fa-solid fa-briefcase text-cnm-accent"></i> Work (Project Status Email)
-                    </button>
-                    <button onclick="loadPromptPreset('school')" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs hover:border-cnm-gold flex items-center gap-1.5">
-                        <i class="fa-solid fa-graduation-cap text-amber-400"></i> School (BCIS Exam Study Guide)
-                    </button>
-                    <button onclick="loadPromptPreset('personal')" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs hover:border-cnm-gold flex items-center gap-1.5">
-                        <i class="fa-solid fa-house text-emerald-400"></i> Personal (Budget Meal Planner)
-                    </button>
+                <!-- Guided Instructions Box -->
+                <div class="p-4 rounded-2xl bg-slate-900/90 border border-cnm-gold/30 text-xs space-y-1.5">
+                    <div class="font-bold text-cnm-gold flex items-center gap-2 text-xs">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>How to Use the Prompt Workbench:</span>
+                    </div>
+                    <p class="text-slate-300 text-[11px] leading-relaxed">
+                        Click through the <strong>10 scenario preset buttons</strong> below to examine how real-world prompts are constructed across school, work, personal, and career contexts. Pay close attention to how specific <strong>Constraints</strong> (word count limits, output structure, audience, negative rules) guide the AI's output. To draft your own prompt from scratch, select <strong class="text-cnm-gold font-mono">1. Custom (Create Your Own)</strong>, fill in the textboxes, and click <strong class="text-cnm-accent font-mono">Copy Prompt</strong> to test it in ChatGPT, Copilot, or Gemini!
+                    </p>
                 </div>
 
-                <!-- 4 Block Interactive Grid -->
+                <!-- 10 Quick Preset Selector Buttons -->
+                <div>
+                    <span class="text-xs font-mono text-slate-400 block mb-2 font-bold uppercase tracking-wider">Select Scenario Preset (10 Examples):</span>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 text-xs font-mono">
+                        <button onclick="loadPromptPreset('custom')" class="p-2.5 rounded-xl bg-cnm-gold/20 border border-cnm-gold/50 text-cnm-gold hover:bg-cnm-gold hover:text-slate-950 font-bold transition-all text-left flex items-center gap-2">
+                            <i class="fa-solid fa-pen-to-square text-sm"></i>
+                            <span class="truncate">1. Custom (Blank)</span>
+                        </button>
+                        <button onclick="loadPromptPreset('school_study')" class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 hover:border-cnm-gold transition-all text-left flex items-center gap-2">
+                            <i class="fa-solid fa-graduation-cap text-amber-400 text-sm"></i>
+                            <span class="truncate">2. School: Study Guide</span>
+                        </button>
+                        <button onclick="loadPromptPreset('school_essay')" class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 hover:border-cnm-gold transition-all text-left flex items-center gap-2">
+                            <i class="fa-solid fa-book-open text-cnm-accent text-sm"></i>
+                            <span class="truncate">3. School: Essay Outline</span>
+                        </button>
+                        <button onclick="loadPromptPreset('work_email')" class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 hover:border-cnm-gold transition-all text-left flex items-center gap-2">
+                            <i class="fa-solid fa-briefcase text-emerald-400 text-sm"></i>
+                            <span class="truncate">4. Work: Status Email</span>
+                        </button>
+                        <button onclick="loadPromptPreset('work_excel')" class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 hover:border-cnm-gold transition-all text-left flex items-center gap-2">
+                            <i class="fa-solid fa-file-excel text-emerald-500 text-sm"></i>
+                            <span class="truncate">5. Work: Excel Formula</span>
+                        </button>
+                        <button onclick="loadPromptPreset('work_meeting')" class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 hover:border-cnm-gold transition-all text-left flex items-center gap-2">
+                            <i class="fa-solid fa-users text-purple-400 text-sm"></i>
+                            <span class="truncate">6. Work: Meeting Summary</span>
+                        </button>
+                        <button onclick="loadPromptPreset('personal_budget')" class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 hover:border-cnm-gold transition-all text-left flex items-center gap-2">
+                            <i class="fa-solid fa-utensils text-pink-400 text-sm"></i>
+                            <span class="truncate">7. Personal: Meal Plan</span>
+                        </button>
+                        <button onclick="loadPromptPreset('personal_fitness')" class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 hover:border-cnm-gold transition-all text-left flex items-center gap-2">
+                            <i class="fa-solid fa-dumbbell text-cyan-400 text-sm"></i>
+                            <span class="truncate">8. Personal: Fitness Plan</span>
+                        </button>
+                        <button onclick="loadPromptPreset('tech_troubleshoot')" class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 hover:border-cnm-gold transition-all text-left flex items-center gap-2">
+                            <i class="fa-solid fa-wrench text-orange-400 text-sm"></i>
+                            <span class="truncate">9. Tech: Network Fix</span>
+                        </button>
+                        <button onclick="loadPromptPreset('career_resume')" class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 hover:border-cnm-gold transition-all text-left flex items-center gap-2">
+                            <i class="fa-solid fa-id-card text-cnm-gold text-sm"></i>
+                            <span class="truncate">10. Career: Resume Help</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4 Block Interactive Grid with Large Textareas -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
                     
                     <!-- Context -->
@@ -329,35 +454,36 @@
                         <label class="font-bold text-cnm-gold flex items-center gap-2">
                             <i class="fa-solid fa-compass"></i> 1. Context (Background Situation)
                         </label>
-                        <textarea id="promptContext" oninput="buildFinalPrompt()" rows="3" placeholder="Provide background info... (e.g. 'I am a BCIS 1110 student preparing for an Excel formulas exam on Friday...')"
-                            class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-cnm-gold"></textarea>
+                        <textarea id="promptContext" oninput="buildFinalPrompt()" rows="4" placeholder="Provide background info... (e.g., 'I am a BCIS 1110 student preparing for a Microsoft Excel exam on VLOOKUP and IF formulas...')"
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-cnm-gold leading-relaxed"></textarea>
                     </div>
 
                     <!-- Persona -->
                     <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
                         <label class="font-bold text-cnm-accent flex items-center gap-2">
-                            <i class="fa-solid fa-user-tie"></i> 2. Persona (AI Role)
+                            <i class="fa-solid fa-user-tie"></i> 2. Persona (AI Role & Perspective)
                         </label>
-                        <input type="text" id="promptPersona" oninput="buildFinalPrompt()" placeholder="Who should AI act as? (e.g. 'Act as an encouraging college tutor specializing in Microsoft Excel...')"
-                            class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-cnm-accent">
+                        <textarea id="promptPersona" oninput="buildFinalPrompt()" rows="4" placeholder="Who should AI act as? (e.g., 'Act as an encouraging college tutor who specializes in clear, beginner-friendly computer science instruction...')"
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-cnm-accent leading-relaxed"></textarea>
                     </div>
 
                     <!-- Task -->
                     <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
                         <label class="font-bold text-emerald-400 flex items-center gap-2">
-                            <i class="fa-solid fa-list-check"></i> 3. Task (Specific Action)
+                            <i class="fa-solid fa-list-check"></i> 3. Task (Specific Action Required)
                         </label>
-                        <textarea id="promptTask" oninput="buildFinalPrompt()" rows="3" placeholder="What specific action should AI take? (e.g. 'Create a 5-question practice drill focusing on VLOOKUP, IF functions, and relative cell referencing...')"
-                            class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-emerald-400"></textarea>
+                        <textarea id="promptTask" oninput="buildFinalPrompt()" rows="4" placeholder="What specific action should AI perform? (e.g., 'Create a 5-question practice quiz testing the difference between relative and absolute cell references...')"
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-emerald-400 leading-relaxed"></textarea>
                     </div>
 
-                    <!-- Format -->
+                    <!-- Format & Constraints -->
                     <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
-                        <label class="font-bold text-purple-400 flex items-center gap-2">
-                            <i class="fa-solid fa-table"></i> 4. Format & Constraints
+                        <label class="font-bold text-purple-400 flex items-center justify-between">
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-filter"></i> 4. Format & Detailed Constraints</span>
+                            <span class="text-[10px] text-purple-300 font-normal">Rules, Tone, Word Counts, Limits</span>
                         </label>
-                        <input type="text" id="promptFormat" oninput="buildFinalPrompt()" placeholder="How should output look? (e.g. 'Format as a numbered markdown table with questions in Column A and explanations hidden in Column B...')"
-                            class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-purple-400">
+                        <textarea id="promptFormat" oninput="buildFinalPrompt()" rows="4" placeholder="How should output look and what rules must AI follow? (e.g., 'Format as a numbered Markdown table with Question in Col A and Hidden Answer in Col B. Constraint: Keep under 300 words. Do NOT use technical jargon.')"
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-purple-400 leading-relaxed"></textarea>
                     </div>
                 </div>
 
@@ -367,19 +493,13 @@
                         <span class="text-xs font-bold text-cnm-gold uppercase tracking-wider flex items-center gap-2">
                             <i class="fa-solid fa-terminal"></i> Engineered Master Prompt Preview
                         </span>
-                        <button onclick="copyMasterPrompt()" class="px-3 py-1 rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700 transition-colors text-xs flex items-center gap-1.5">
-                            <i class="fa-solid fa-copy text-cnm-accent"></i> Copy Prompt
+                        <button onclick="copyMasterPrompt()" class="px-3.5 py-1.5 rounded-xl bg-cnm-gold text-slate-950 font-bold hover:bg-yellow-400 transition-colors text-xs flex items-center gap-1.5 shadow-md">
+                            <i class="fa-solid fa-copy"></i> Copy Prompt
                         </button>
                     </div>
 
-                    <div id="compiledPrompt" class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300 leading-relaxed min-h-[100px] whitespace-pre-wrap">
+                    <div id="compiledPrompt" class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300 leading-relaxed min-h-[120px] whitespace-pre-wrap select-text">
                         <!-- Compiled string appears here -->
-                    </div>
-
-                    <div class="flex justify-end pt-2">
-                        <button onclick="markPromptLabDone()" id="btnPromptDone" class="px-4 py-2 rounded-xl bg-cnm-gold text-slate-950 font-bold text-xs hover:bg-yellow-400 transition-colors flex items-center gap-2">
-                            <i class="fa-solid fa-circle-check"></i> Validate Prompt Structure
-                        </button>
                     </div>
                 </div>
             </div>
@@ -488,6 +608,55 @@
 
         <!-- PILLAR 4: ETHICS & APA CITATION -->
         <div id="tab4" class="tab-content hidden space-y-6">
+            <!-- Official CNM Policy Header Banner -->
+            <div class="p-5 rounded-3xl glass-panel border border-cnm-gold/40 space-y-3">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2.5 rounded-2xl bg-cnm-gold/20 text-cnm-gold border border-cnm-gold/40 text-xl shrink-0">
+                            <i class="fa-solid fa-scale-balanced"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-white">CNM Dean of Students Academic Integrity Policy</h3>
+                            <p class="text-xs text-slate-300">Central New Mexico Community College Official Guidelines on Generative AI Usage</p>
+                        </div>
+                    </div>
+
+                    <a href="https://www.cnm.edu/depts/dean-of-students/academic-integrity-policy" target="_blank" rel="noopener" class="px-3.5 py-1.5 rounded-xl bg-slate-900 border border-cnm-gold/50 text-cnm-gold hover:bg-cnm-gold hover:text-slate-950 font-mono text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0">
+                        <span>Read Full CNM Policy</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 text-xs font-mono">
+                    <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800">
+                        <span class="text-cnm-gold font-bold block mb-1 flex items-center gap-1.5">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-400"></i> Cheating
+                        </span>
+                        <p class="text-slate-400 font-sans text-[11px] leading-relaxed">
+                            Using unauthorized AI assistance during exams, quizzes, or graded individual coursework without explicit instructor permission.
+                        </p>
+                    </div>
+
+                    <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800">
+                        <span class="text-cnm-accent font-bold block mb-1 flex items-center gap-1.5">
+                            <i class="fa-solid fa-quote-left text-cnm-accent"></i> Plagiarism
+                        </span>
+                        <p class="text-slate-400 font-sans text-[11px] leading-relaxed">
+                            Submitting AI-generated text, formulas, or computer code as your own human work without proper APA 7th prompt attribution.
+                        </p>
+                    </div>
+
+                    <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800">
+                        <span class="text-emerald-400 font-bold block mb-1 flex items-center gap-1.5">
+                            <i class="fa-solid fa-bug text-emerald-400"></i> Fabrication
+                        </span>
+                        <p class="text-slate-400 font-sans text-[11px] leading-relaxed">
+                            Submitting non-existent research citations, fabricated URLs, or hallucinated dataset statistics produced by Generative AI.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 
                 <!-- APA 7th AI Citation Generator -->
@@ -730,23 +899,65 @@
 
         // Pillar 2 Prompt Workbench
         const promptPresets = {
-            work: {
-                context: "I am a project assistant at an Albuquerque logistics firm preparing a quarterly review for my manager...",
-                persona: "Act as a professional corporate communications executive...",
-                task: "Write a concise project update email explaining a 2-day delivery delay caused by weather in Interstate 40...",
-                format: "Format as a formal email with Subject Line, bulleted impact summary, and proposed resolution steps."
+            custom: {
+                context: "",
+                persona: "",
+                task: "",
+                format: ""
             },
-            school: {
-                context: "I am a BCIS 1110 student studying Module 7 covering Microsoft Excel formulas and functions...",
-                persona: "Act as an encouraging college computer instructor specializing in information systems...",
-                task: "Generate a 5-question practice study quiz testing VLOOKUP, IF functions, and absolute cell references...",
-                format: "Format as a numbered markdown list with answers hidden under spoiler tags at the bottom."
+            school_study: {
+                context: "I am a BCIS 1110 student studying Module 7 covering Microsoft Excel formulas, VLOOKUP, and IF statements for my mid-term exam.",
+                persona: "Act as an encouraging college information systems tutor with expertise in Microsoft Office certifications.",
+                task: "Generate a 5-question multiple-choice practice study guide testing relative vs. absolute cell referencing ($A$1).",
+                format: "FORMAT: Numbered list with questions and options A-D.\nCONSTRAINTS:\n- Hide answer key with brief explanations at the very bottom.\n- Do NOT use complex nested functions.\n- Total response length must be under 350 words."
             },
-            personal: {
-                context: "I am planning weekly meal preparation for a family of four on a $120 weekly budget in New Mexico...",
-                persona: "Act as a practical nutritionist and budget meal planning consultant...",
-                task: "Design a 5-day dinner meal plan utilizing affordable staple ingredients available at local grocery stores...",
-                format: "Format as a 2-column table with Day/Meal in Column 1 and Estimated Prep Time + Cost in Column 2."
+            school_essay: {
+                context: "I am writing a 3-page research essay for a business ethics class on the topic of corporate data privacy and social media algorithms.",
+                persona: "Act as an academic writing consultant specializing in technical communication and APA 7th style formatting.",
+                task: "Outline a 4-section essay structure with strong thesis statements and topic sentences for each body paragraph.",
+                format: "FORMAT: Standard Roman numeral outline (I, II, III, IV).\nCONSTRAINTS:\n- Keep output focused only on outline structure.\n- Do NOT write the actual essay content.\n- Include 1 sample APA prompt citation placeholder."
+            },
+            work_email: {
+                context: "I am a project supervisor at an Albuquerque logistics firm. Heavy snow on Interstate 40 has delayed our regional truck shipments by 24 hours.",
+                persona: "Act as a seasoned corporate executive communications specialist.",
+                task: "Write a concise, professional status update email to inform key client stakeholders about the delay.",
+                format: "FORMAT: Professional email layout (Subject Line, Salutation, Body, Sign-off).\nCONSTRAINTS:\n- Maximum 150 words.\n- Tone must be reassuring, polite, and solution-focused.\n- Include bullet points for key impact metrics."
+            },
+            work_excel: {
+                context: "I have a monthly sales spreadsheet in Excel where Column A contains Employee ID, Column B has Sales Amount, and Column C needs to calculate a 5% bonus only if Sales exceed $10,000.",
+                persona: "Act as a senior Microsoft Certified Excel Data Analyst.",
+                task: "Provide the exact Excel formula to place in cell C2, and explain how each part of the formula works step-by-step.",
+                format: "FORMAT: Bold code block for the formula, followed by numbered explanation bullets.\nCONSTRAINTS:\n- Provide both standard IF formula and alternative IFS formula.\n- Use plain, non-jargon language suitable for a beginner."
+            },
+            work_meeting: {
+                context: "I took rough notes during a 45-minute team brainstorming meeting regarding our upcoming website redesign project.",
+                persona: "Act as an efficient project manager and administrative executive.",
+                task: "Synthesize the raw notes into clean, actionable meeting minutes with clearly assigned responsibilities.",
+                format: "FORMAT: Markdown document with headers (Key Decisions, Action Items Table, Next Steps).\nCONSTRAINTS:\n- Table columns: [Task | Assignee | Due Date].\n- Keep summary under 250 words.\n- Do NOT make up missing details."
+            },
+            personal_budget: {
+                context: "I am planning weekly meal preparation for a family of four on a $120 weekly grocery budget in New Mexico.",
+                persona: "Act as a practical budget culinary consultant and nutritionist.",
+                task: "Design a 5-day dinner meal plan utilizing affordable staple ingredients available at local grocery stores.",
+                format: "FORMAT: 2-column table [Day & Recipe | Estimated Prep Time & Cost].\nCONSTRAINTS:\n- Total ingredient cost must remain under $120.\n- Every meal must require under 35 minutes prep time.\n- Include 1 batch-cooked leftover night."
+            },
+            personal_fitness: {
+                context: "I am a beginner wanting to start a 3-day per week home workout routine with no equipment other than bodyweight.",
+                persona: "Act as a certified personal trainer specializing in safe home workout routines for beginners.",
+                task: "Create a balanced 3-day weekly workout schedule covering upper body, lower body, and core conditioning.",
+                format: "FORMAT: Day-by-day structured workout schedule with exercise names, sets, and repetitions.\nCONSTRAINTS:\n- Include 5-minute warm-up and cool-down routines.\n- Do NOT include high-impact or advanced exercises.\n- Total workout time must be 30 minutes max."
+            },
+            tech_troubleshoot: {
+                context: "My home Wi-Fi network suddenly dropped connection on my laptop while connected to my home router in Albuquerque.",
+                persona: "Act as a friendly IT Helpdesk technician.",
+                task: "Provide a logical, step-by-step diagnostic checklist to troubleshoot and restore my network connection.",
+                format: "FORMAT: Numbered sequential steps ordered from simplest fix (restart) to advanced (DNS flush).\nCONSTRAINTS:\n- Maximum 5 primary steps.\n- Use bold text for key commands (e.g., ipconfig /renew).\n- Avoid overly technical acronyms without quick definitions."
+            },
+            career_resume: {
+                context: "I am a college student applying for an entry-level IT Support Specialist job at a local technology company.",
+                persona: "Act as a tech industry hiring manager and resume strategist.",
+                task: "Rewrite my bullet point: 'Handled computer problems for students at the helpdesk' into 3 high-impact resume bullet points.",
+                format: "FORMAT: Bulleted list highlighting quantifiable action verbs and tech skills.\nCONSTRAINTS:\n- Begin every bullet with a strong action verb (e.g., Resolved, Diagnosed).\n- Incorporate metrics/percentages.\n- Keep each bullet point under 25 words."
             }
         };
 
@@ -760,7 +971,16 @@
             document.getElementById('promptFormat').value = p.format;
 
             buildFinalPrompt();
-            showToast(`Loaded ${key.toUpperCase()} prompt preset!`);
+
+            // Auto progress tracking when interacting with Pillar 2
+            progressState.p2Prompt = true;
+            updateOverallProgress();
+
+            if (key === 'custom') {
+                showToast("Custom prompt builder cleared! Fill in your prompt blocks above.");
+            } else {
+                showToast(`Loaded Preset: ${key.replace('_', ' ').toUpperCase()}`);
+            }
         }
 
         function buildFinalPrompt() {
@@ -769,9 +989,14 @@
             const t = document.getElementById('promptTask').value.trim();
             const f = document.getElementById('promptFormat').value.trim();
 
-            const compiled = `[CONTEXT]:\n${c || '(Enter context above)'}\n\n[PERSONA]:\n${p || '(Enter persona above)'}\n\n[TASK]:\n${t || '(Enter task above)'}\n\n[FORMAT & CONSTRAINTS]:\n${f || '(Enter format constraints above)'}`;
+            const compiled = `[CONTEXT]:\n${c || '(Enter context above)'}\n\n[PERSONA]:\n${p || '(Enter persona above)'}\n\n[TASK]:\n${t || '(Enter task above)'}\n\n[FORMAT & CONSTRAINTS]:\n${f || '(Enter format & constraints above)'}`;
 
             document.getElementById('compiledPrompt').innerText = compiled;
+
+            if (c || p || t || f) {
+                progressState.p2Prompt = true;
+                updateOverallProgress();
+            }
         }
 
         function copyMasterPrompt() {
@@ -782,13 +1007,11 @@
             temp.select();
             document.execCommand('copy');
             document.body.removeChild(temp);
-            showToast("Copied engineered prompt to clipboard!");
-        }
-
-        function markPromptLabDone() {
+            
             progressState.p2Prompt = true;
             updateOverallProgress();
-            showToast("Prompting structure validated!");
+
+            showToast("Copied engineered prompt to clipboard!");
         }
 
         // Pillar 3 Hallucinations & CRAAP
@@ -932,7 +1155,6 @@
             }
 
             renderP1Quiz();
-            updateTokenPredictor();
             loadPromptPreset('school');
             generateApaCitation();
         });
