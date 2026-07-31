@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCIS 1110: AI Fundamentals, Prompting & Ethics | CNM</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cnm: {
+                            blue: '#002B49',
+                            gold: '#FFC72C',
+                            accent: '#00A3E0',
+                            dark: '#0B1120',
+                            card: '#161F33',
+                            border: '#1E293B',
+                            winHeader: '#1c2230',
+                            winSidebar: '#131927',
+                            winHover: '#26334d'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Segoe UI', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b1120;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FFC72C;
+        }
+
+        .glass-panel {
+            background: rgba(22, 31, 51, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .tab-btn.active {
+            background-color: #FFC72C;
+            color: #0b1120;
+            font-weight: 700;
+            box-shadow: 0 4px 14px rgba(255, 199, 44, 0.3);
+        }
+
+        /* Light Theme Comprehensive Overrides */
+        html:not(.dark) body {
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        html:not(.dark) header {
+            background-color: #ffffff !important;
+            border-color: #e2e8f0 !important;
+        }
+        html:not(.dark) header .text-white {
+            color: #0f172a !important;
+        }
+        html:not(.dark) header .text-slate-300, 
+        html:not(.dark) header .text-slate-400 {
+            color: #475569 !important;
+        }
+        html:not(.dark) header .bg-slate-800 {
+            background-color: #f1f5f9 !important;
+            border-color: #cbd5e1 !important;
+            color: #334155 !important;
+        }
+        html:not(.dark) .glass-panel {
+            background: #ffffff !important;
+            border-color: #e2e8f0 !important;
+            color: #0f172a !important;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+        html:not(.dark) .glass-panel .text-slate-200,
+        html:not(.dark) .glass-panel .text-slate-300 {
+            color: #1e293b !important;
+        }
+        html:not(.dark) .glass-panel .text-slate-400 {
+            color: #475569 !important;
+        }
+        html:not(.dark) .bg-slate-900\/90,
+        html:not(.dark) .bg-slate-900,
+        html:not(.dark) .bg-slate-950\/80 {
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+            border-color: #cbd5e1 !important;
+        }
+        html:not(.dark) input,
+        html:not(.dark) select,
+        html:not(.dark) textarea {
+            background-color: #ffffff !important;
+            color: #0f172a !important;
+            border-color: #cbd5e1 !important;
+        }
+        html:not(.dark) .text-white {
+            color: #0f172a !important;
+        }
+        html:not(.dark) .text-slate-400 {
+            color: #475569 !important;
+        }
+        html:not(.dark) .bg-slate-800 {
+            background-color: #e2e8f0 !important;
+            color: #0f172a !important;
+        }
+    </style>
+</head>
+<body class="bg-cnm-dark text-slate-100 font-sans min-h-screen relative flex flex-col select-none overflow-x-hidden">
+
+    <!-- Navigation / Header Bar -->
+    <header class="sticky top-0 z-40 bg-cnm-dark/95 border-b border-slate-800 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="flex items-center gap-2 group text-slate-300 hover:text-cnm-gold transition-colors">
+                    <i class="fa-solid fa-chevron-left text-xs"></i>
+                    <span class="text-xs font-mono font-semibold">Content Hub</span>
+                </a>
+                <span class="text-slate-700">|</span>
+                <div class="flex items-center gap-2">
+                    <span class="px-2 py-0.5 rounded bg-cnm-gold/20 text-cnm-gold text-xs font-mono font-bold border border-cnm-gold/30">AI LAB</span>
+                    <h1 class="text-sm font-bold text-white tracking-tight hidden sm:block">BCIS 1110: AI Fundamentals & Responsible Prompting</h1>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4 text-xs font-mono">
+                <!-- Lab Progress Tracker -->
+                <div class="hidden md:flex items-center gap-2 bg-slate-900 px-3 py-1 rounded-full border border-slate-800">
+                    <span class="text-slate-400 text-[11px]">Lab Progress:</span>
+                    <div class="w-24 bg-slate-800 h-2 rounded-full overflow-hidden">
+                        <div id="overallProgressBar" class="bg-gradient-to-r from-cnm-accent to-cnm-gold h-full w-0 transition-all duration-300"></div>
+                    </div>
+                    <span id="overallProgressText" class="text-cnm-gold font-bold">0%</span>
+                </div>
+
+                <span class="hidden lg:inline text-slate-400"><i class="fa-solid fa-graduation-cap text-cnm-accent mr-1"></i> SLO 5: Info Systems</span>
+
+                <!-- Light / Dark Mode Toggle Button -->
+                <button onclick="toggleTheme()" id="themeToggleBtn" class="px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 hover:text-white hover:border-cnm-gold transition-colors flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-sun text-cnm-gold" id="themeIcon"></i>
+                    <span id="themeText">Light</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
+        
+        <!-- Hero Overview Banner -->
+        <div class="p-6 rounded-3xl glass-panel relative overflow-hidden shadow-2xl border border-slate-700/60">
+            <div class="absolute -top-20 -right-20 w-80 h-80 bg-cnm-accent/15 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-20 -left-20 w-80 h-80 bg-cnm-gold/15 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div class="max-w-3xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cnm-blue border border-cnm-accent/40 text-xs text-cnm-accent font-mono mb-3">
+                        <i class="fa-solid fa-robot text-cnm-gold"></i>
+                        <span>Central New Mexico Community College • Information Literacy & Systems</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-2">
+                        Mastering AI: <span class="bg-gradient-to-r from-cnm-gold via-amber-300 to-cnm-accent bg-clip-text text-transparent">Concepts, Prompting, Verification & Academic Honesty</span>
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                        Learn how Generative AI operates, how to craft high-impact prompts for work, school, and personal productivity, how to audit AI outputs for factual hallucinations, and how to stay 100% compliant with CNM's <strong>Assistance, Not Substitution</strong> Academic Integrity Policy.
+                    </p>
+                </div>
+
+                <div class="bg-slate-900/90 p-4 rounded-2xl border border-slate-800 text-xs font-mono w-full md:w-auto shrink-0 space-y-2">
+                    <div class="text-cnm-gold font-bold uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                        <i class="fa-solid fa-shield-halved"></i> CNM GenAI Policy Quickcheck
+                    </div>
+                    <ul class="space-y-1 text-slate-300 text-[11px]">
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400"></i> AI is a helper, not a substitute</li>
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400"></i> Always cite prompts in APA 7th</li>
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400"></i> Be ready for instructor verbal defense</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Four Pillars Tab Bar -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-xs">
+            <button onclick="switchTab('tab1')" id="btn-tab1" class="tab-btn active p-3 rounded-2xl bg-slate-900 border border-slate-800 hover:border-cnm-gold transition-all text-center flex items-center justify-center gap-2 group">
+                <i class="fa-solid fa-brain text-cnm-accent text-sm"></i>
+                <span>1. What is AI?</span>
+            </button>
+
+            <button onclick="switchTab('tab2')" id="btn-tab2" class="tab-btn p-3 rounded-2xl bg-slate-900 border border-slate-800 hover:border-cnm-gold transition-all text-center flex items-center justify-center gap-2 group text-slate-300">
+                <i class="fa-solid fa-comments text-amber-400 text-sm"></i>
+                <span>2. Prompt Studio</span>
+            </button>
+
+            <button onclick="switchTab('tab3')" id="btn-tab3" class="tab-btn p-3 rounded-2xl bg-slate-900 border border-slate-800 hover:border-cnm-gold transition-all text-center flex items-center justify-center gap-2 group text-slate-300">
+                <i class="fa-solid fa-magnifying-glass-chart text-emerald-400 text-sm"></i>
+                <span>3. Verifying Info</span>
+            </button>
+
+            <button onclick="switchTab('tab4')" id="btn-tab4" class="tab-btn p-3 rounded-2xl bg-slate-900 border border-slate-800 hover:border-cnm-gold transition-all text-center flex items-center justify-center gap-2 group text-slate-300">
+                <i class="fa-solid fa-scale-balanced text-purple-400 text-sm"></i>
+                <span>4. Ethics & APA</span>
+            </button>
+        </div>
+
+        <!-- PILLAR 1: WHAT IS AI? -->
+        <div id="tab1" class="tab-content space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Concept Breakdown -->
+                <div class="lg:col-span-7 glass-panel rounded-3xl p-6 border border-slate-800 space-y-4">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info text-cnm-gold"></i>
+                        <span>Demystifying Generative AI & Large Language Models (LLMs)</span>
+                    </h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Generative AI tools like ChatGPT, Claude, and Copilot do <strong>not</strong> possess consciousness, genuine understanding, or emotions. Instead, they are high-dimensional statistical pattern-matching engines trained on vast datasets of human text and code.
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-2">
+                        <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800">
+                            <h4 class="font-bold text-cnm-accent mb-1 flex items-center gap-1.5">
+                                <i class="fa-solid fa-diagram-project"></i> Traditional Software
+                            </h4>
+                            <p class="text-slate-400 text-[11px] leading-relaxed">
+                                Rule-based. Runs strict logic: <em>If X happens, do Y exactly as programmed.</em> Deterministic outputs.
+                            </p>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800">
+                            <h4 class="font-bold text-cnm-gold mb-1 flex items-center gap-1.5">
+                                <i class="fa-solid fa-sparkles"></i> Generative AI (LLMs)
+                            </h4>
+                            <p class="text-slate-400 text-[11px] leading-relaxed">
+                                Probability-based. Predicts the most likely next word (token) based on context and trained patterns. Probabilistic outputs.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Token Prediction Visualizer -->
+                    <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-3 font-mono text-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-200">Interactive Token Probability Simulator:</span>
+                            <span class="text-[10px] text-cnm-gold">Try typing a prompt prefix!</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="tokenInput" value="Central New Mexico Community" oninput="updateTokenPredictor()" 
+                                class="flex-grow bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cnm-accent">
+                        </div>
+                        <div id="tokenOutput" class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-[11px] text-slate-300 flex flex-wrap gap-2">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fact vs Fiction Interactive Sort Quiz -->
+                <div class="lg:col-span-5 glass-panel rounded-3xl p-6 border border-slate-800 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-gamepad text-amber-400"></i>
+                            <span>AI Myths vs. Reality Lab</span>
+                        </h3>
+                        <span id="p1QuizBadge" class="text-xs font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">0 / 4 Solved</span>
+                    </div>
+                    <p class="text-xs text-slate-400">Evaluate each statement below as either <strong>FACT</strong> or <strong>FICTION</strong>:</p>
+
+                    <div id="p1QuizContainer" class="space-y-3">
+                        <!-- Quiz Items generated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PILLAR 2: TALKING TO AI (PROMPT STUDIO) -->
+        <div id="tab2" class="tab-content hidden space-y-6">
+            <div class="glass-panel rounded-3xl p-6 border border-slate-800 space-y-6">
+                <div>
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2 mb-1">
+                        <i class="fa-solid fa-wand-magic-sparkles text-cnm-gold"></i>
+                        <span>The C-P-T-F Prompting Framework Workbench</span>
+                    </h3>
+                    <p class="text-xs text-slate-300">
+                        To get clear, reliable, professional responses from Generative AI, construct your prompt using four structural building blocks: <strong>Context</strong>, <strong>Persona</strong>, <strong>Task</strong>, and <strong>Format</strong>.
+                    </p>
+                </div>
+
+                <!-- Quick Preset Selector -->
+                <div class="flex flex-wrap items-center gap-2 pt-2">
+                    <span class="text-xs font-mono text-slate-400 mr-2">Load Practical Scenario:</span>
+                    <button onclick="loadPromptPreset('work')" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs hover:border-cnm-gold flex items-center gap-1.5">
+                        <i class="fa-solid fa-briefcase text-cnm-accent"></i> Work (Project Status Email)
+                    </button>
+                    <button onclick="loadPromptPreset('school')" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs hover:border-cnm-gold flex items-center gap-1.5">
+                        <i class="fa-solid fa-graduation-cap text-amber-400"></i> School (BCIS Exam Study Guide)
+                    </button>
+                    <button onclick="loadPromptPreset('personal')" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs hover:border-cnm-gold flex items-center gap-1.5">
+                        <i class="fa-solid fa-house text-emerald-400"></i> Personal (Budget Meal Planner)
+                    </button>
+                </div>
+
+                <!-- 4 Block Interactive Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
+                    
+                    <!-- Context -->
+                    <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                        <label class="font-bold text-cnm-gold flex items-center gap-2">
+                            <i class="fa-solid fa-compass"></i> 1. Context (Background Situation)
+                        </label>
+                        <textarea id="promptContext" oninput="buildFinalPrompt()" rows="3" placeholder="Provide background info... (e.g. 'I am a BCIS 1110 student preparing for an Excel formulas exam on Friday...')"
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-cnm-gold"></textarea>
+                    </div>
+
+                    <!-- Persona -->
+                    <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                        <label class="font-bold text-cnm-accent flex items-center gap-2">
+                            <i class="fa-solid fa-user-tie"></i> 2. Persona (AI Role)
+                        </label>
+                        <input type="text" id="promptPersona" oninput="buildFinalPrompt()" placeholder="Who should AI act as? (e.g. 'Act as an encouraging college tutor specializing in Microsoft Excel...')"
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-cnm-accent">
+                    </div>
+
+                    <!-- Task -->
+                    <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                        <label class="font-bold text-emerald-400 flex items-center gap-2">
+                            <i class="fa-solid fa-list-check"></i> 3. Task (Specific Action)
+                        </label>
+                        <textarea id="promptTask" oninput="buildFinalPrompt()" rows="3" placeholder="What specific action should AI take? (e.g. 'Create a 5-question practice drill focusing on VLOOKUP, IF functions, and relative cell referencing...')"
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-emerald-400"></textarea>
+                    </div>
+
+                    <!-- Format -->
+                    <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                        <label class="font-bold text-purple-400 flex items-center gap-2">
+                            <i class="fa-solid fa-table"></i> 4. Format & Constraints
+                        </label>
+                        <input type="text" id="promptFormat" oninput="buildFinalPrompt()" placeholder="How should output look? (e.g. 'Format as a numbered markdown table with questions in Column A and explanations hidden in Column B...')"
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-purple-400">
+                    </div>
+                </div>
+
+                <!-- Final Compiled Prompt Preview -->
+                <div class="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-3 font-mono">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-cnm-gold uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-terminal"></i> Engineered Master Prompt Preview
+                        </span>
+                        <button onclick="copyMasterPrompt()" class="px-3 py-1 rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700 transition-colors text-xs flex items-center gap-1.5">
+                            <i class="fa-solid fa-copy text-cnm-accent"></i> Copy Prompt
+                        </button>
+                    </div>
+
+                    <div id="compiledPrompt" class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300 leading-relaxed min-h-[100px] whitespace-pre-wrap">
+                        <!-- Compiled string appears here -->
+                    </div>
+
+                    <div class="flex justify-end pt-2">
+                        <button onclick="markPromptLabDone()" id="btnPromptDone" class="px-4 py-2 rounded-xl bg-cnm-gold text-slate-950 font-bold text-xs hover:bg-yellow-400 transition-colors flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check"></i> Validate Prompt Structure
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PILLAR 3: VERIFYING INFORMATION -->
+        <div id="tab3" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Hallucination Spotter Lab -->
+                <div class="lg:col-span-7 glass-panel rounded-3xl p-6 border border-slate-800 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-bug text-rose-400"></i>
+                            <span>Interactive Challenge: Spot the AI Hallucination!</span>
+                        </h3>
+                        <span id="p3HallucinationScore" class="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-slate-800 text-rose-400 border border-rose-500/30">
+                            0 / 3 Detected
+                        </span>
+                    </div>
+
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        AI tools frequently invent plausible-sounding facts, fake URLs, non-existent academic papers, or flawed formulas. Examine the AI-generated output below and click on the <strong>hallucinated errors</strong>:
+                    </p>
+
+                    <!-- Sample Output with Clickable Hotspots -->
+                    <div class="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3 font-mono text-xs">
+                        <div class="text-slate-400 text-[10px] uppercase tracking-wider font-bold">Simulated AI Response:</div>
+                        
+                        <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 leading-relaxed text-slate-300 space-y-2">
+                            <p>
+                                According to the official 
+                                <span onclick="checkHallucination(this, true, 'CNM was founded in 1964 as TVI (Technical Vocational Institute). 1922 is completely fabricated!')" class="cursor-pointer px-1 py-0.5 rounded bg-slate-800 hover:bg-rose-500/30 hover:border-rose-500 border border-transparent transition-all">CNM 1922 Founding Charter</span>, 
+                                Central New Mexico Community College was established in Albuquerque.
+                            </p>
+
+                            <p>
+                                In Microsoft Excel, the function to find the average of a range is 
+                                <span onclick="checkHallucination(this, true, 'Excel uses =AVERAGE(), whereas =MEAN() is a hallucinated function that causes a #NAME? error!')" class="cursor-pointer px-1 py-0.5 rounded bg-slate-800 hover:bg-rose-500/30 hover:border-rose-500 border border-transparent transition-all">=MEAN(A1:A10)</span>.
+                            </p>
+
+                            <p>
+                                For research on computing history, refer to the journal article by Dr. Alan Turing published in 
+                                <span onclick="checkHallucination(this, true, 'Alan Turing passed away in 1954; he could not have published a journal article in 1998!')" class="cursor-pointer px-1 py-0.5 rounded bg-slate-800 hover:bg-rose-500/30 hover:border-rose-500 border border-transparent transition-all">The Journal of Modern AI (1998)</span>.
+                            </p>
+                        </div>
+
+                        <div id="hallucinationFeedback" class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-[11px] text-slate-400 font-sans hidden">
+                            <!-- Feedback text -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CRAAP-AI Source Audit Checklist -->
+                <div class="lg:col-span-5 glass-panel rounded-3xl p-6 border border-slate-800 space-y-4">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-cnm-gold"></i>
+                        <span>The CRAAP-AI Verification Checklist</span>
+                    </h3>
+                    <p class="text-xs text-slate-400">Apply the BCIS 1110 CRAAP framework whenever evaluating AI-assisted research:</p>
+
+                    <div class="space-y-2.5 text-xs font-mono">
+                        <label class="flex items-start gap-2.5 p-3 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-cnm-gold transition-colors">
+                            <input type="checkbox" onchange="updateCraapCheck()" class="mt-0.5 craap-chk">
+                            <div>
+                                <span class="font-bold text-cnm-gold block">C - Currency</span>
+                                <span class="text-[11px] text-slate-400 font-sans">Is the AI model's training knowledge cutoff date recent enough for this topic?</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start gap-2.5 p-3 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-cnm-gold transition-colors">
+                            <input type="checkbox" onchange="updateCraapCheck()" class="mt-0.5 craap-chk">
+                            <div>
+                                <span class="font-bold text-cnm-accent block">R - Relevance</span>
+                                <span class="text-[11px] text-slate-400 font-sans">Does the response answer my specific assignment prompt without extra fluff?</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start gap-2.5 p-3 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-cnm-gold transition-colors">
+                            <input type="checkbox" onchange="updateCraapCheck()" class="mt-0.5 craap-chk">
+                            <div>
+                                <span class="font-bold text-emerald-400 block">A - Authority</span>
+                                <span class="text-[11px] text-slate-400 font-sans">Can I trace AI claims back to verified, primary human-authored sources or .edu websites?</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start gap-2.5 p-3 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-cnm-gold transition-colors">
+                            <input type="checkbox" onchange="updateCraapCheck()" class="mt-0.5 craap-chk">
+                            <div>
+                                <span class="font-bold text-purple-400 block">A - Accuracy</span>
+                                <span class="text-[11px] text-slate-400 font-sans">Have I cross-checked numbers, dates, formulas, and spelling against external databases?</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start gap-2.5 p-3 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-cnm-gold transition-colors">
+                            <input type="checkbox" onchange="updateCraapCheck()" class="mt-0.5 craap-chk">
+                            <div>
+                                <span class="font-bold text-pink-400 block">P - Purpose / Bias</span>
+                                <span class="text-[11px] text-slate-400 font-sans">Does the output reflect biased training data or present slanted opinions as objective facts?</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PILLAR 4: ETHICS & APA CITATION -->
+        <div id="tab4" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- APA 7th AI Citation Generator -->
+                <div class="lg:col-span-7 glass-panel rounded-3xl p-6 border border-slate-800 space-y-4">
+                    <div>
+                        <h3 class="text-base font-bold text-white flex items-center gap-2 mb-1">
+                            <i class="fa-solid fa-quote-right text-cnm-gold"></i>
+                            <span>CNM APA 7th Edition AI Citation Formatter</span>
+                        </h3>
+                        <p class="text-xs text-slate-300">
+                            Per syllabus instructions: <em>"Ask your AI tool at the end of a session: 'Please cite this interaction in APA format and be sure to include the original prompt.'"</em> Or use our builder below:
+                        </p>
+                    </div>
+
+                    <div class="space-y-3 text-xs font-mono">
+                        <div>
+                            <label class="text-slate-400 text-[11px] block mb-1">AI Tool Name & Company:</label>
+                            <select id="citeTool" onchange="generateApaCitation()" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-slate-200">
+                                <option value="OpenAI. (2026). ChatGPT (May 2026 version) [Large language model]">ChatGPT (OpenAI)</option>
+                                <option value="Microsoft. (2026). Copilot [Large language model]">Microsoft Copilot</option>
+                                <option value="Google. (2026). Gemini [Large language model]">Google Gemini</option>
+                                <option value="Anthropic. (2026). Claude 3.5 [Large language model]">Claude (Anthropic)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="text-slate-400 text-[11px] block mb-1">Original Student Prompt Used:</label>
+                            <input type="text" id="citePrompt" oninput="generateApaCitation()" value="Explain the difference between primary keys and foreign keys in MS Access"
+                                class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-slate-200 focus:outline-none focus:border-cnm-gold">
+                        </div>
+
+                        <div>
+                            <label class="text-slate-400 text-[11px] block mb-1">Date of AI Session:</label>
+                            <input type="text" id="citeDate" oninput="generateApaCitation()" value="May 28, 2026"
+                                class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-slate-200 focus:outline-none focus:border-cnm-gold">
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-cnm-gold uppercase">Formatted APA Citation Output:</span>
+                                <button onclick="copyApaCitation()" class="px-2.5 py-1 rounded bg-slate-800 text-slate-300 hover:text-white text-[11px] flex items-center gap-1">
+                                    <i class="fa-solid fa-copy"></i> Copy Citation
+                                </button>
+                            </div>
+                            <div id="apaOutput" class="text-xs text-slate-200 leading-relaxed font-sans p-2 rounded bg-slate-900 border border-slate-800">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Verbal Defense & Cheating Spectrum -->
+                <div class="lg:col-span-5 glass-panel rounded-3xl p-6 border border-slate-800 space-y-4">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-user-check text-purple-400"></i>
+                        <span>Verbal Review & Academic Integrity</span>
+                    </h3>
+
+                    <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2 text-xs">
+                        <span class="font-bold text-amber-400 block flex items-center gap-1.5">
+                            <i class="fa-solid fa-triangle-exclamation"></i> Verbal Review Readiness Policy
+                        </span>
+                        <p class="text-slate-300 text-[11px] leading-relaxed">
+                            CNM syllabus rule: <em>"Be prepared to explain and discuss the content of your work orally. If you cannot adequately do this, it may be assumed AI or plagiarism was used as a replacement for your learning."</em>
+                        </p>
+                    </div>
+
+                    <!-- Interactive Self-Audit Questions -->
+                    <div class="space-y-2 font-mono text-xs">
+                        <div class="text-slate-400 text-[11px] uppercase font-bold">Verbal Defense Checklist:</div>
+
+                        <label class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-purple-400 transition-colors">
+                            <input type="checkbox" onchange="updateEthicsCheck()" class="ethics-chk">
+                            <span class="text-slate-300 text-[11px] font-sans">I can explain every formula/concept in my submission without reading notes.</span>
+                        </label>
+
+                        <label class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-purple-400 transition-colors">
+                            <input type="checkbox" onchange="updateEthicsCheck()" class="ethics-chk">
+                            <span class="text-slate-300 text-[11px] font-sans">I generated all submitted text/edits through my own synthesis and critical thinking.</span>
+                        </label>
+
+                        <label class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-purple-400 transition-colors">
+                            <input type="checkbox" onchange="updateEthicsCheck()" class="ethics-chk">
+                            <span class="text-slate-300 text-[11px] font-sans">I have logged and formatted formal APA citations for all GenAI prompts used.</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lab Completion & Verification Certificate Banner -->
+        <div id="completionBanner" class="glass-panel rounded-3xl p-6 border border-cnm-gold/50 bg-gradient-to-r from-cnm-blue/80 to-slate-900 flex flex-col md:flex-row items-center justify-between gap-4 hidden">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-cnm-gold/20 text-cnm-gold border border-cnm-gold/40 flex items-center justify-center text-2xl shrink-0">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-white">BCIS 1110 AI Literacy & Prompting Completed!</h3>
+                    <p class="text-xs text-slate-300 mt-0.5">All 4 learning pillars completed. Generate your verification document for submission.</p>
+                </div>
+            </div>
+
+            <button onclick="openCertificateModal()" class="px-5 py-3 rounded-2xl bg-cnm-gold text-slate-950 font-bold text-xs hover:bg-yellow-400 transition-colors shadow-lg shadow-cnm-gold/20 flex items-center gap-2 shrink-0">
+                <i class="fa-solid fa-file-pdf"></i>
+                <span>View Verification Certificate</span>
+            </button>
+        </div>
+    </main>
+
+    <!-- Verification Modal -->
+    <div id="certModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md hidden">
+        <div class="bg-cnm-card border border-slate-700 rounded-3xl max-w-md w-full p-6 text-slate-100 shadow-2xl relative">
+            <button onclick="closeCertificateModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="w-14 h-14 rounded-2xl bg-cnm-gold/20 text-cnm-gold border border-cnm-gold/40 mx-auto flex items-center justify-center text-2xl mb-3">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white">BCIS 1110 AI Literacy Certificate</h3>
+                <p class="text-xs text-slate-400 font-mono mt-1">Instructor: David Batzer • CRN 95782</p>
+            </div>
+
+            <div class="bg-slate-900 rounded-2xl p-4 border border-slate-800 space-y-2 text-xs font-mono mb-6">
+                <div class="flex justify-between text-slate-400">
+                    <span>Student:</span>
+                    <span class="text-slate-200 font-bold">BCIS 1110 Student</span>
+                </div>
+                <div class="flex justify-between text-slate-400">
+                    <span>Course Module:</span>
+                    <span class="text-cnm-accent">activity_ai_basics.html</span>
+                </div>
+                <div class="flex justify-between text-slate-400">
+                    <span>Prompting Mastery:</span>
+                    <span class="text-emerald-400 font-bold">C-P-T-F Certified</span>
+                </div>
+                <div class="flex justify-between text-slate-400">
+                    <span>CRAAP Audit Score:</span>
+                    <span class="text-emerald-400 font-bold">5 / 5 Criteria Verified</span>
+                </div>
+                <div class="flex justify-between text-slate-400">
+                    <span>Verification Hash:</span>
+                    <span class="text-slate-500 text-[10px]">CNM-AI-2026-95782</span>
+                </div>
+            </div>
+
+            <button onclick="window.print()" class="w-full py-3 px-4 rounded-xl bg-cnm-gold text-slate-950 font-bold text-xs hover:bg-yellow-400 transition-colors flex items-center justify-center gap-2">
+                <i class="fa-solid fa-print"></i>
+                <span>Print / Save Completion Verification</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 bg-slate-900 border border-cnm-gold text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <i class="fa-solid fa-circle-check text-cnm-gold text-lg"></i>
+        <span id="toastMessage" class="text-sm font-medium">Action completed successfully</span>
+    </div>
+
+    <script>
+        // Progress State
+        let progressState = {
+            p1Quiz: false,
+            p2Prompt: false,
+            p3Hallucinations: false,
+            p3Craap: false,
+            p4Ethics: false
+        };
+
+        // Pillar 1 Quiz Dataset
+        const p1QuizData = [
+            { id: 1, text: "Generative AI possesses human-like feelings, empathy, and self-awareness.", answer: "fiction", explanation: "Fiction! LLMs predict statistical word sequences and have zero consciousness." },
+            { id: 2, text: "LLMs predict the next most probable word (token) based on trained patterns.", answer: "fact", explanation: "Fact! They calculate probabilities across massive neural networks." },
+            { id: 3, text: "AI search results can generate false citations or non-existent web URLs.", answer: "fact", explanation: "Fact! Known as hallucinations, AI frequently formats fake references." },
+            { id: 4, text: "Using AI to write an entire assignment without citing it is permitted if you edited 10% of it.", answer: "fiction", explanation: "Fiction! Submitting uncredited AI work violates CNM Academic Integrity policies." }
+        ];
+
+        let p1Solved = {};
+
+        function renderP1Quiz() {
+            const container = document.getElementById('p1QuizContainer');
+            container.innerHTML = '';
+
+            p1QuizData.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'p-3.5 rounded-2xl bg-slate-900 border border-slate-800 space-y-2 text-xs font-mono';
+
+                const solved = p1Solved[item.id];
+
+                card.innerHTML = `
+                    <p class="text-slate-200 font-sans text-xs">${item.text}</p>
+                    <div class="flex items-center gap-2 pt-1">
+                        <button onclick="answerP1Quiz(${item.id}, 'fact')" class="flex-1 py-1.5 rounded-lg border text-xs font-bold transition-colors ${
+                            solved === 'fact' 
+                            ? (item.answer === 'fact' ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'bg-rose-500/20 border-rose-500 text-rose-400')
+                            : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-cnm-gold'
+                        }">FACT</button>
+                        <button onclick="answerP1Quiz(${item.id}, 'fiction')" class="flex-1 py-1.5 rounded-lg border text-xs font-bold transition-colors ${
+                            solved === 'fiction' 
+                            ? (item.answer === 'fiction' ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'bg-rose-500/20 border-rose-500 text-rose-400')
+                            : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-cnm-gold'
+                        }">FICTION</button>
+                    </div>
+                    ${solved ? `<p class="text-[11px] font-sans text-slate-400 pt-1">${item.explanation}</p>` : ''}
+                `;
+
+                container.appendChild(card);
+            });
+
+            const solvedCount = Object.keys(p1Solved).length;
+            document.getElementById('p1QuizBadge').innerText = `${solvedCount} / ${p1QuizData.length} Solved`;
+
+            if (solvedCount === p1QuizData.length) {
+                progressState.p1Quiz = true;
+                updateOverallProgress();
+            }
+        }
+
+        function answerP1Quiz(id, choice) {
+            p1Solved[id] = choice;
+            renderP1Quiz();
+        }
+
+        function updateTokenPredictor() {
+            const val = document.getElementById('tokenInput').value;
+            const container = document.getElementById('tokenOutput');
+            
+            const suggestions = [
+                { token: "College", prob: "88%" },
+                { token: "University", prob: "7%" },
+                { token: "Campus", prob: "3%" },
+                { token: "Students", prob: "2%" }
+            ];
+
+            container.innerHTML = suggestions.map(s => 
+                `<span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-cnm-gold font-bold">${val} <strong class="text-cnm-accent">${s.token}</strong> <span class="text-slate-500 text-[10px]">(${s.prob})</span></span>`
+            ).join('');
+        }
+
+        // Pillar 2 Prompt Workbench
+        const promptPresets = {
+            work: {
+                context: "I am a project assistant at an Albuquerque logistics firm preparing a quarterly review for my manager...",
+                persona: "Act as a professional corporate communications executive...",
+                task: "Write a concise project update email explaining a 2-day delivery delay caused by weather in Interstate 40...",
+                format: "Format as a formal email with Subject Line, bulleted impact summary, and proposed resolution steps."
+            },
+            school: {
+                context: "I am a BCIS 1110 student studying Module 7 covering Microsoft Excel formulas and functions...",
+                persona: "Act as an encouraging college computer instructor specializing in information systems...",
+                task: "Generate a 5-question practice study quiz testing VLOOKUP, IF functions, and absolute cell references...",
+                format: "Format as a numbered markdown list with answers hidden under spoiler tags at the bottom."
+            },
+            personal: {
+                context: "I am planning weekly meal preparation for a family of four on a $120 weekly budget in New Mexico...",
+                persona: "Act as a practical nutritionist and budget meal planning consultant...",
+                task: "Design a 5-day dinner meal plan utilizing affordable staple ingredients available at local grocery stores...",
+                format: "Format as a 2-column table with Day/Meal in Column 1 and Estimated Prep Time + Cost in Column 2."
+            }
+        };
+
+        function loadPromptPreset(key) {
+            const p = promptPresets[key];
+            if (!p) return;
+
+            document.getElementById('promptContext').value = p.context;
+            document.getElementById('promptPersona').value = p.persona;
+            document.getElementById('promptTask').value = p.task;
+            document.getElementById('promptFormat').value = p.format;
+
+            buildFinalPrompt();
+            showToast(`Loaded ${key.toUpperCase()} prompt preset!`);
+        }
+
+        function buildFinalPrompt() {
+            const c = document.getElementById('promptContext').value.trim();
+            const p = document.getElementById('promptPersona').value.trim();
+            const t = document.getElementById('promptTask').value.trim();
+            const f = document.getElementById('promptFormat').value.trim();
+
+            const compiled = `[CONTEXT]:\n${c || '(Enter context above)'}\n\n[PERSONA]:\n${p || '(Enter persona above)'}\n\n[TASK]:\n${t || '(Enter task above)'}\n\n[FORMAT & CONSTRAINTS]:\n${f || '(Enter format constraints above)'}`;
+
+            document.getElementById('compiledPrompt').innerText = compiled;
+        }
+
+        function copyMasterPrompt() {
+            const text = document.getElementById('compiledPrompt').innerText;
+            const temp = document.createElement('textarea');
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+            showToast("Copied engineered prompt to clipboard!");
+        }
+
+        function markPromptLabDone() {
+            progressState.p2Prompt = true;
+            updateOverallProgress();
+            showToast("Prompting structure validated!");
+        }
+
+        // Pillar 3 Hallucinations & CRAAP
+        let detectedHallucinations = 0;
+        function checkHallucination(el, isError, msg) {
+            if (!el.dataset.clicked) {
+                el.dataset.clicked = "true";
+                if (isError) {
+                    el.classList.add('bg-rose-500/40', 'border-rose-500', 'text-rose-200');
+                    detectedHallucinations++;
+                    document.getElementById('p3HallucinationScore').innerText = `${detectedHallucinations} / 3 Detected`;
+                    
+                    const feedback = document.getElementById('hallucinationFeedback');
+                    feedback.classList.remove('hidden');
+                    feedback.innerText = `🚨 Hallucination Found: ${msg}`;
+
+                    if (detectedHallucinations >= 3) {
+                        progressState.p3Hallucinations = true;
+                        updateOverallProgress();
+                    }
+                }
+            }
+        }
+
+        function updateCraapCheck() {
+            const chks = document.querySelectorAll('.craap-chk');
+            const checkedCount = Array.from(chks).filter(c => c.checked).length;
+
+            if (checkedCount === chks.length) {
+                progressState.p3Craap = true;
+                updateOverallProgress();
+            }
+        }
+
+        // Pillar 4 APA Citation Generator & Ethics
+        function generateApaCitation() {
+            const tool = document.getElementById('citeTool').value;
+            const prompt = document.getElementById('citePrompt').value.trim();
+            const date = document.getElementById('citeDate').value.trim();
+
+            const citation = `${tool}. (${date}). [Response to prompt: "${prompt}"]. Central New Mexico Community College BCIS 1110 Academic Session. https://chat.openai.com`;
+
+            document.getElementById('apaOutput').innerText = citation;
+        }
+
+        function copyApaCitation() {
+            const text = document.getElementById('apaOutput').innerText;
+            const temp = document.createElement('textarea');
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+            showToast("Copied APA Citation!");
+        }
+
+        function updateEthicsCheck() {
+            const chks = document.querySelectorAll('.ethics-chk');
+            const checkedCount = Array.from(chks).filter(c => c.checked).length;
+
+            if (checkedCount === chks.length) {
+                progressState.p4Ethics = true;
+                updateOverallProgress();
+            }
+        }
+
+        // Overall Lab Progress Manager
+        function updateOverallProgress() {
+            const keys = Object.keys(progressState);
+            const doneCount = keys.filter(k => progressState[k]).length;
+            const percent = Math.round((doneCount / keys.length) * 100);
+
+            document.getElementById('overallProgressBar').style.width = `${percent}%`;
+            document.getElementById('overallProgressText').innerText = `${percent}%`;
+
+            if (percent === 100) {
+                document.getElementById('completionBanner').classList.remove('hidden');
+            }
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active');
+                el.classList.add('text-slate-300');
+            });
+
+            document.getElementById(tabId).classList.remove('hidden');
+            const btn = document.getElementById(`btn-${tabId}`);
+            btn.classList.add('active');
+            btn.classList.remove('text-slate-300');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 3000);
+        }
+
+        function openCertificateModal() {
+            document.getElementById('certModal').classList.remove('hidden');
+        }
+
+        function closeCertificateModal() {
+            document.getElementById('certModal').classList.add('hidden');
+        }
+
+        function toggleTheme() {
+            const htmlEl = document.documentElement;
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            
+            if (htmlEl.classList.contains('dark')) {
+                htmlEl.classList.remove('dark');
+                themeIcon.className = 'fa-solid fa-moon text-indigo-500';
+                themeText.innerText = 'Dark';
+                localStorage.setItem('cnm_theme', 'light');
+            } else {
+                htmlEl.classList.add('dark');
+                themeIcon.className = 'fa-solid fa-sun text-cnm-gold';
+                themeText.innerText = 'Light';
+                localStorage.setItem('cnm_theme', 'dark');
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('cnm_theme') === 'light') {
+                document.documentElement.classList.remove('dark');
+                const icon = document.getElementById('themeIcon');
+                const text = document.getElementById('themeText');
+                if (icon && text) {
+                    icon.className = 'fa-solid fa-moon text-indigo-500';
+                    text.innerText = 'Dark';
+                }
+            }
+
+            renderP1Quiz();
+            updateTokenPredictor();
+            loadPromptPreset('school');
+            generateApaCitation();
+        });
+    </script>
+</body>
+</html>
