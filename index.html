@@ -167,20 +167,20 @@
                         </p>
 
                         <!-- Quick Course Info Badges -->
-            <div class="flex flex-wrap gap-2 text-xs font-mono mb-6">
-                <span class="px-3 py-1.5 rounded-lg bg-slate-900/90 text-slate-300 border border-slate-700/80 flex items-center gap-2">
-                    <i class="fa-solid fa-envelope text-cnm-gold"></i> dbatzer@cnm.edu
-                </span>
-                <span class="px-3 py-1.5 rounded-lg bg-slate-900/90 text-slate-300 border border-slate-700/80 flex items-center gap-2">
-                    <i class="fa-solid fa-book-open text-cnm-accent"></i> SIMnet & MS Office 365
-                </span>
-                <span class="px-3 py-1.5 rounded-lg bg-slate-900/90 text-slate-300 border border-slate-700/80 flex items-center gap-2">
-                    <i class="fa-solid fa-clock text-emerald-400"></i> Due: Fridays @ 11:58 PM
-                </span>
-            </div>
-        </div>
+                        <div class="flex flex-wrap gap-2 text-xs font-mono mb-6">
+                            <span class="px-3 py-1.5 rounded-lg bg-slate-900/90 text-slate-300 border border-slate-700/80 flex items-center gap-2">
+                                <i class="fa-solid fa-envelope text-cnm-gold"></i> dbatzer@cnm.edu
+                            </span>
+                            <span class="px-3 py-1.5 rounded-lg bg-slate-900/90 text-slate-300 border border-slate-700/80 flex items-center gap-2">
+                                <i class="fa-solid fa-book-open text-cnm-accent"></i> SIMnet & MS Office 365
+                            </span>
+                            <span class="px-3 py-1.5 rounded-lg bg-slate-900/90 text-slate-300 border border-slate-700/80 flex items-center gap-2">
+                                <i class="fa-solid fa-clock text-emerald-400"></i> Due: Fridays @ 11:58 PM
+                            </span>
+                        </div>
+                    </div>
 
-        <!-- Course Syllabus Stat Card -->
+                    <!-- Course Syllabus Stat Card -->
                     <div class="lg:col-span-4 bg-slate-900/90 rounded-2xl p-5 border border-slate-800 shadow-inner">
                         <h3 class="text-xs font-bold text-cnm-gold uppercase tracking-wider mb-3 flex items-center justify-between">
                             <span>Syllabus Highlights</span>
@@ -215,8 +215,8 @@
                             <div class="flex items-start gap-2.5 p-2 rounded-lg bg-slate-800/60 border border-slate-700/50">
                                 <i class="fa-solid fa-robot text-purple-400 mt-0.5"></i>
                                 <div>
-                                    <span class="font-bold text-white block">SLO 5: GenAI & Citation</span>
-                                    <span class="text-slate-400">AI citation rules, prompt logs & verbal defense.</span>
+                                    <span class="font-bold text-white block">SLO 5: GenAI & Verification</span>
+                                    <span class="text-slate-400">AI citation rules, prompt logs & hallucination audits.</span>
                                 </div>
                             </div>
                         </div>
@@ -225,82 +225,14 @@
             </section>
 
             <!-- Activities Section Header -->
-        <div id="activities" class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-                <h2 class="text-2xl font-bold text-white flex items-center gap-3">
-                    <i class="fa-solid fa-folder-tree text-cnm-gold"></i>
-                    <span>BCIS 1110 Activities & Web Modules</span>
-                </h2>
-                <p class="text-slate-400 text-xs sm:text-sm mt-1">Select any module to launch live web applications, interactive builders, and assignment specifications.</p>
-            </div>
-
-            <!-- Search and Tag Filter Bar -->
-            <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
-                <!-- Search input -->
-                <div class="relative min-w-[240px]">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
-                    <input type="text" id="searchInput" placeholder="Search activities or topics..." 
-                        class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cnm-gold transition-colors">
+            <div id="activities" class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+                        <i class="fa-solid fa-folder-tree text-cnm-gold"></i>
+                        <span>BCIS 1110 Activities & Web Modules</span>
+                    </h2>
+                    <p class="text-slate-400 text-xs sm:text-sm mt-1">Select any module to launch live web applications, interactive builders, and assignment specifications.</p>
                 </div>
-
-                <!-- Category dropdown / filter -->
-                <select id="categoryFilter" class="bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-cnm-gold transition-colors">
-                    <option value="all">All BCIS Topics</option>
-                    <option value="office">MS Office & SIMnet</option>
-                    <option value="security">Security & Ethics</option>
-                    <option value="infolit">Info Literacy & Sources</option>
-                    <option value="tech">Systems & Tech</option>
-                    <option value="ai">GenAI & Prompting</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- Quick Access Bar for dbatzer Web Modules -->
-        <div class="mb-8 p-5 glass-panel rounded-2xl border border-cnm-gold/30">
-            <h3 class="text-xs font-bold text-cnm-gold uppercase tracking-wider mb-3 flex items-center gap-2">
-                <i class="fa-solid fa-code-branch text-cnm-gold"></i>
-                <span>Direct Repository Page Links (dbatzer Web Resources)</span>
-            </h3>
-            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 font-mono text-xs">
-                <a href="01-activity.html" target="_blank" class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-cnm-gold text-slate-200 hover:text-cnm-gold transition-all text-center flex flex-col items-center gap-1 group">
-                    <i class="fa-solid fa-file-code text-cnm-accent text-base group-hover:scale-110 transition-transform"></i>
-                    <span class="truncate w-full text-[11px]">01-activity</span>
-                </a>
-                <a href="02-wishes.html" target="_blank" class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-cnm-gold text-slate-200 hover:text-cnm-gold transition-all text-center flex flex-col items-center gap-1 group">
-                    <i class="fa-solid fa-wand-magic-sparkles text-amber-400 text-base group-hover:scale-110 transition-transform"></i>
-                    <span class="truncate w-full text-[11px]">02-wishes</span>
-                </a>
-                <a href="03-PromptBuilder.html" target="_blank" class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-cnm-gold text-slate-200 hover:text-cnm-gold transition-all text-center flex flex-col items-center gap-1 group">
-                    <i class="fa-solid fa-robot text-purple-400 text-base group-hover:scale-110 transition-transform"></i>
-                    <span class="truncate w-full text-[11px]">03-PromptBuilder</span>
-                </a>
-                <a href="04-FM.html" target="_blank" class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-cnm-gold text-slate-200 hover:text-cnm-gold transition-all text-center flex flex-col items-center gap-1 group">
-                    <i class="fa-solid fa-folder-tree text-cnm-gold text-base group-hover:scale-110 transition-transform"></i>
-                    <span class="truncate w-full text-[11px]">04-FM</span>
-                </a>
-                <a href="05-communication.html" target="_blank" class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-cnm-gold text-slate-200 hover:text-cnm-gold transition-all text-center flex flex-col items-center gap-1 group">
-                    <i class="fa-solid fa-comments text-emerald-400 text-base group-hover:scale-110 transition-transform"></i>
-                    <span class="truncate w-full text-[11px]">05-communication</span>
-                </a>
-                <a href="06-IPv6.html" target="_blank" class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-cnm-gold text-slate-200 hover:text-cnm-gold transition-all text-center flex flex-col items-center gap-1 group">
-                    <i class="fa-solid fa-network-wired text-cyan-400 text-base group-hover:scale-110 transition-transform"></i>
-                    <span class="truncate w-full text-[11px]">06-IPv6</span>
-                </a>
-                <a href="07-visual-prompt-builder.html" target="_blank" class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-cnm-gold text-slate-200 hover:text-cnm-gold transition-all text-center flex flex-col items-center gap-1 group">
-                    <i class="fa-solid fa-palette text-pink-400 text-base group-hover:scale-110 transition-transform"></i>
-                    <span class="truncate w-full text-[11px]">07-visual-prompt</span>
-                </a>
-                <a href="08-graphic-prompt-generator.html" target="_blank" class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-cnm-gold text-slate-200 hover:text-cnm-gold transition-all text-center flex flex-col items-center gap-1 group">
-                    <i class="fa-solid fa-image text-amber-300 text-base group-hover:scale-110 transition-transform"></i>
-                    <span class="truncate w-full text-[11px]">08-graphic-prompt</span>
-                </a>
-            </div>
-        </div>
-
-        <!-- Activity Grid Dynamic Container -->
-        <div id="activityGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Activity cards generated dynamically via JavaScript -->
-        </div>
 
                 <!-- Search and Tag Filter Bar -->
                 <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
@@ -318,8 +250,56 @@
                         <option value="security">Security & Ethics</option>
                         <option value="infolit">Info Literacy & Sources</option>
                         <option value="tech">Systems & Tech</option>
-                        <option value="ai">GenAI & Citation</option>
+                        <option value="ai">GenAI & Prompting</option>
                     </select>
+                </div>
+            </div>
+
+            <!-- Quick Access Bar for dbatzer Web Modules including check.html -->
+            <div class="mb-8 p-5 glass-panel rounded-2xl border border-cnm-gold/30">
+                <h3 class="text-xs font-bold text-cnm-gold uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-code-branch text-cnm-gold"></i>
+                    <span>Direct Repository Page Links (dbatzer Web Resources)</span>
+                </h3>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-2 font-mono text-xs">
+                    <a href="01-activity.html" target="_blank" class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-cnm-gold text-slate-200 hover:text-cnm-gold transition-all text-center flex flex-col items-center gap-1 group">
+                        <i class="fa-solid fa-file-code text-cnm-accent text-base group-hover:scale-110 transition-transform"></i>
+                        <span class="truncate w-full text-[11px]">01-activity</span>
+                    </a>
+                    <a href="02-wishes.html" target="_blank" class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-cnm-gold text-slate-200 hover:text-cnm-gold transition-all text-center flex flex-col items-center gap-1 group">
+                        <i class="fa-solid fa-wand-magic-sparkles text-amber-400 text-base group-hover:scale-110 transition-transform"></i>
+                        <span class="truncate w-full text-[11px]">02-wishes</span>
+                    </a>
+                    <a href="03-PromptBuilder.html" target="_blank" class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-cnm-gold text-slate-200 hover:text-cnm-gold transition-all text-center flex flex-col items-center gap-1 group">
+                        <i class="fa-solid fa-robot text-purple-400 text-base group-hover:scale-110 transition-transform"></i>
+                        <span class="truncate w-full text-[11px]">03-PromptBuilder</span>
+                    </a>
+                    <a href="04-FM.html" target="_blank" class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-cnm-gold text-slate-200 hover:text-cnm-gold transition-all text-center flex flex-col items-center gap-1 group">
+                        <i class="fa-solid fa-folder-tree text-cnm-gold text-base group-hover:scale-110 transition-transform"></i>
+                        <span class="truncate w-full text-[11px]">04-FM</span>
+                    </a>
+                    <a href="05-communication.html" target="_blank" class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-cnm-gold text-slate-200 hover:text-cnm-gold transition-all text-center flex flex-col items-center gap-1 group">
+                        <i class="fa-solid fa-comments text-emerald-400 text-base group-hover:scale-110 transition-transform"></i>
+                        <span class="truncate w-full text-[11px]">05-communication</span>
+                    </a>
+                    <a href="06-IPv6.html" target="_blank" class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-cnm-gold text-slate-200 hover:text-cnm-gold transition-all text-center flex flex-col items-center gap-1 group">
+                        <i class="fa-solid fa-network-wired text-cyan-400 text-base group-hover:scale-110 transition-transform"></i>
+                        <span class="truncate w-full text-[11px]">06-IPv6</span>
+                    </a>
+                    <a href="07-visual-prompt-builder.html" target="_blank" class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-cnm-gold text-slate-200 hover:text-cnm-gold transition-all text-center flex flex-col items-center gap-1 group">
+                        <i class="fa-solid fa-palette text-pink-400 text-base group-hover:scale-110 transition-transform"></i>
+                        <span class="truncate w-full text-[11px]">07-visual-prompt</span>
+                    </a>
+                    <a href="08-graphic-prompt-generator.html" target="_blank" class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-cnm-gold text-slate-200 hover:text-cnm-gold transition-all text-center flex flex-col items-center gap-1 group">
+                        <i class="fa-solid fa-image text-amber-300 text-base group-hover:scale-110 transition-transform"></i>
+                        <span class="truncate w-full text-[11px]">08-graphic-prompt</span>
+                    </a>
+                    <!-- Sounds Confident Page Link -->
+                    <a href="check.html" target="_blank" class="p-2.5 rounded-xl bg-slate-900/90 border border-cnm-gold/50 hover:border-cnm-gold text-slate-200 hover:text-cnm-gold transition-all text-center flex flex-col items-center gap-1 group relative overflow-hidden">
+                        <div class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping"></div>
+                        <i class="fa-solid fa-circle-check text-emerald-400 text-base group-hover:scale-110 transition-transform"></i>
+                        <span class="truncate w-full text-[11px] font-bold text-cnm-gold">check.html</span>
+                    </a>
                 </div>
             </div>
 
@@ -338,7 +318,7 @@
                         </div>
                         <h3 class="text-lg font-bold text-white mb-2">BCIS 1110 Generative AI Policy</h3>
                         <p class="text-slate-300 text-xs leading-relaxed mb-4">
-                            Artificial Intelligence (ChatGPT, Copilot, Gemini) is utilized as a tool for assistance—not substitution. Students are expected to understand all submitted work and provide formal prompt citations.
+                            Artificial Intelligence (ChatGPT, Copilot, Gemini) is utilized as a tool for assistance—not substitution. Students are expected to understand all submitted work, audit for hallucinations, and provide formal prompt citations.
                         </p>
                         <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-xs font-mono text-slate-300">
                             <span class="text-cnm-gold font-bold block mb-1">APA Prompt Citation Format:</span>
@@ -400,7 +380,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div class="text-xs text-slate-400 text-center sm:text-left">
                     <p>© 2026 CNM BCIS 1110 Activity Repository • Instructor: David Batzer</p>
-                    <p class="mt-1 font-mono text-slate-500">Target Files: activity01.html ... activity10.html</p>
+                    <p class="mt-1 font-mono text-slate-500">Target Files: 01-activity.html ... check.html</p>
                 </div>
                 <div class="flex items-center gap-4 text-xs text-slate-400">
                     <a href="https://www.cnm.edu" target="_blank" rel="noopener" class="hover:text-cnm-gold transition-colors">
@@ -559,6 +539,18 @@
             },
             {
                 id: "09",
+                file: "check.html",
+                title: "Sounds Confident - Is It Correct?",
+                category: "ai",
+                categoryLabel: "GenAI & Citation",
+                slo: "SLO 5: GenAI Hallucination & Fact-Checking",
+                icon: "fa-circle-check",
+                description: "Interactive fact-checking and AI hallucination verification module designed to evaluate confident-sounding LLM responses, detect misplaced authority, and verify claims against factual sources.",
+                stack: "Fact Check Verification Engine, Source Audit Matrix, JS",
+                tags: ["check.html", "Sounds Confident", "Fact Checking", "GenAI", "Hallucinations"]
+            },
+            {
+                id: "10",
                 file: "activity09.html",
                 title: "Relational Database & Access Query Studio",
                 category: "office",
@@ -570,7 +562,7 @@
                 tags: ["MS Access", "Database", "Module 11"]
             },
             {
-                id: "10",
+                id: "11",
                 file: "activity10.html",
                 title: "Attention Economy & E-Commerce Impact Hub",
                 category: "infolit",
