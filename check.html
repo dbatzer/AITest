@@ -1,0 +1,1700 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sounds Confident. Is It Correct?</title>
+    <style>
+        :root {
+            /* Light Theme Palette */
+            --primary: #1e3a8a;
+            --primary-light: #2563eb;
+            --primary-dark: #1e293b;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-subtle: #f1f5f9;
+            --bg-hover: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border-color: #cbd5e1;
+            
+            /* Status / Context colors */
+            --accent-green: #059669;
+            --accent-green-bg: #ecfdf5;
+            --accent-green-text: #065f46;
+            --accent-red: #dc2626;
+            --accent-red-bg: #fef2f2;
+            --accent-red-text: #991b1b;
+            --accent-amber: #d97706;
+            --accent-amber-bg: #fffbeb;
+            --accent-amber-text: #92400e;
+
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --focus-ring: 3px solid #2563eb;
+        }
+
+        /* Dark Theme Overrides */
+        [data-theme="dark"] {
+            --primary: #60a5fa;
+            --primary-light: #3b82f6;
+            --primary-dark: #f8fafc;
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --bg-subtle: #334155;
+            --bg-hover: #475569;
+            --text-main: #f8fafc;
+            --text-muted: #cbd5e1;
+            --border-color: #475569;
+
+            --accent-green: #10b981;
+            --accent-green-bg: #064e3b;
+            --accent-green-text: #a7f3d0;
+            --accent-red: #f87171;
+            --accent-red-bg: #7f1d1d;
+            --accent-red-text: #fecaca;
+            --accent-amber: #fbbf24;
+            --accent-amber-bg: #78350f;
+            --accent-amber-text: #fef3c7;
+
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            --focus-ring: 3px solid #60a5fa;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        /* Keyboard Accessibility Focus Indicators */
+        a:focus-visible,
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        [tabindex="0"]:focus-visible {
+            outline: var(--focus-ring);
+            outline-offset: 2px;
+        }
+
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary-light);
+            color: #ffffff;
+            padding: 8px 16px;
+            z-index: 1000;
+            text-decoration: none;
+            border-radius: 0 0 var(--radius-md) 0;
+            transition: top 0.2s;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Header and Navigation */
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+            transition: background-color 0.25s ease, border-color 0.25s ease;
+        }
+
+        .header-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .site-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.85rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-subtle);
+            color: var(--text-main);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle-btn:hover {
+            background-color: var(--bg-hover);
+        }
+
+        .stepper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            list-style: none;
+            position: relative;
+            margin-top: 0.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .stepper::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: var(--border-color);
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+
+        .progress-bar-fill {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            height: 3px;
+            background-color: var(--primary-light);
+            z-index: 2;
+            transform: translateY(-50%);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .step-item {
+            position: relative;
+            z-index: 3;
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-color);
+            color: var(--text-muted);
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+
+        .step-item:hover {
+            border-color: var(--primary-light);
+            color: var(--primary-light);
+            transform: scale(1.08);
+        }
+
+        .step-item:hover .step-label {
+            color: var(--primary-light);
+        }
+
+        .step-item.active {
+            border-color: var(--primary-light);
+            background-color: var(--primary-light);
+            color: #ffffff;
+        }
+
+        .step-item.completed {
+            border-color: var(--accent-green);
+            background-color: var(--accent-green);
+            color: #ffffff;
+        }
+
+        .step-label {
+            position: absolute;
+            top: 2.5rem;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            color: var(--text-muted);
+            font-weight: 500;
+            display: none;
+            transition: color 0.2s ease;
+        }
+
+        .stepper::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: var(--border-color);
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+
+        .progress-bar-fill {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            height: 3px;
+            background-color: var(--primary-light);
+            z-index: 2;
+            transform: translateY(-50%);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .step-item {
+            position: relative;
+            z-index: 3;
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-color);
+            color: var(--text-muted);
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .step-item.active {
+            border-color: var(--primary-light);
+            background-color: var(--primary-light);
+            color: #ffffff;
+        }
+
+        .step-item.completed {
+            border-color: var(--accent-green);
+            background-color: var(--accent-green);
+            color: #ffffff;
+        }
+
+        .step-label {
+            position: absolute;
+            top: 2.5rem;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            color: var(--text-muted);
+            font-weight: 500;
+            display: none;
+        }
+
+        @media (min-width: 640px) {
+            .step-label {
+                display: block;
+            }
+            .header-container {
+                padding: 1.25rem 1.5rem;
+            }
+        }
+
+        main {
+            max-width: 900px;
+            width: 100%;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            flex-grow: 1;
+        }
+
+        .section-card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 1.75rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+            display: none;
+            transition: background-color 0.25s ease, border-color 0.25s ease;
+        }
+
+        .section-card.active {
+            display: block;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--primary-dark);
+            line-height: 1.3;
+        }
+
+        h1 { font-size: 2rem; margin-bottom: 1rem; }
+        h2 { font-size: 1.5rem; margin-bottom: 1rem; margin-top: 0.5rem; }
+        h3 { font-size: 1.2rem; margin-bottom: 0.75rem; margin-top: 1.25rem; }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-main);
+        }
+
+        .lead-text {
+            font-size: 1.125rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Buttons and Controls */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-light);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.92;
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-subtle);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--bg-hover);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary-light);
+            color: var(--primary-light);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--accent-green-bg);
+            color: var(--text-main);
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1.75rem;
+        }
+
+        .callout-box {
+            background-color: var(--bg-subtle);
+            border-left: 4px solid var(--primary-light);
+            padding: 1.25rem;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            margin: 1.25rem 0;
+            color: var(--text-main);
+        }
+
+        .callout-box.warning {
+            border-left-color: var(--accent-amber);
+            background-color: var(--accent-amber-bg);
+            color: var(--accent-amber-text);
+        }
+
+        .takeaway-banner {
+            background-color: var(--primary-light);
+            color: #ffffff;
+            padding: 1.25rem;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 1.75rem 0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Claims Classification Styling */
+        .claims-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin: 1.5rem 0;
+        }
+
+        .claim-card {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            background-color: var(--bg-card);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .claim-text {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-main);
+        }
+
+        .options-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .option-btn {
+            padding: 0.5rem 0.875rem;
+            font-size: 0.875rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-subtle);
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .option-btn:hover {
+            background-color: var(--bg-hover);
+        }
+
+        .option-btn.selected {
+            background-color: var(--primary-light);
+            color: #ffffff;
+            border-color: var(--primary-light);
+        }
+
+        .feedback-box {
+            padding: 0.875rem;
+            border-radius: var(--radius-md);
+            font-size: 0.925rem;
+            display: none;
+            margin-top: 0.5rem;
+        }
+
+        .feedback-box.correct {
+            display: block;
+            background-color: var(--accent-green-bg);
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green-text);
+        }
+
+        .feedback-box.incorrect {
+            display: block;
+            background-color: var(--accent-red-bg);
+            border: 1px solid var(--accent-red);
+            color: var(--accent-red-text);
+        }
+
+        .citation-box {
+            background-color: var(--bg-subtle);
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            font-family: Georgia, serif;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin: 1.5rem 0;
+            color: var(--text-main);
+        }
+
+        .citation-part {
+            padding: 2px 4px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            display: inline-block;
+            border: 1px transparent solid;
+        }
+
+        .citation-part:hover {
+            background-color: var(--bg-hover);
+            border-color: var(--border-color);
+        }
+
+        .citation-part.active-part {
+            background-color: var(--accent-amber-bg);
+            border-color: var(--accent-amber);
+            color: var(--accent-amber-text);
+            font-weight: bold;
+        }
+
+        .parts-checklist {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.5rem;
+            margin: 1rem 0;
+            font-size: 0.875rem;
+        }
+
+        .part-tag {
+            padding: 0.5rem 0.75rem;
+            background-color: var(--bg-subtle);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+
+        .part-tag:hover {
+            background-color: var(--bg-hover);
+            border-color: var(--primary-light);
+        }
+
+        .part-tag.found {
+            background-color: var(--accent-green-bg);
+            color: var(--accent-green-text);
+            border-color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        .sim-box {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            background-color: var(--bg-card);
+            margin: 1.5rem 0;
+        }
+
+        .sim-display {
+            background-color: #020617;
+            color: #38bdf8;
+            font-family: monospace;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            min-height: 60px;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        @media (min-width: 640px) {
+            .comparison-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .comp-column {
+            background-color: var(--bg-subtle);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+        }
+
+        .comp-column h3 {
+            color: var(--primary);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+        }
+
+        .comp-list {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 1rem;
+        }
+
+        .comp-list li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .comp-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0.5rem;
+            color: var(--primary-light);
+            font-weight: bold;
+        }
+
+        /* Stakes Challenge Grid */
+        .stakes-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .stakes-item {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            background: var(--bg-card);
+        }
+
+        /* PAUSE Checklist */
+        .pause-container {
+            background-color: var(--bg-card);
+            border: 2px solid var(--primary-light);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .pause-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .pause-step:last-child {
+            border-bottom: none;
+        }
+
+        .pause-letter {
+            background-color: var(--primary-light);
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 1.25rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .pause-checkbox {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-top: 0.3rem;
+            cursor: pointer;
+        }
+
+        .quiz-q {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .quiz-option-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: background-color 0.15s;
+            color: var(--text-main);
+        }
+
+        .quiz-option-label:hover {
+            background-color: var(--bg-subtle);
+        }
+
+        .quiz-option-label input[type="radio"] {
+            margin-top: 0.2rem;
+        }
+
+        /* Summary copy block */
+        .summary-box {
+            background-color: var(--bg-subtle);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            font-family: monospace;
+            white-space: pre-wrap;
+            font-size: 0.9rem;
+            margin: 1.5rem 0;
+            color: var(--text-main);
+        }
+
+        footer {
+            background-color: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 2rem 1rem;
+            margin-top: auto;
+            font-size: 0.875rem;
+            transition: background-color 0.25s ease, border-color 0.25s ease;
+        }
+
+        .footer-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .footer-content h3 {
+            color: var(--text-main);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-content a {
+            color: var(--primary-light);
+            text-decoration: underline;
+        }
+
+        .footer-content a:hover {
+            opacity: 0.85;
+        }
+
+        /* Accessibility: Respect Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, ::before, ::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header role="banner">
+        <div class="header-container">
+            <div class="header-top">
+                <div class="site-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    <span>Sounds Confident. Is It Correct?</span>
+                </div>
+                <button id="theme-toggle" class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Switch to dark theme">
+                    <svg id="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>
+                    <span id="theme-label">Dark Mode</span>
+                </button>
+            </div>
+            <nav aria-label="Module Progress">
+                <ol class="stepper" id="stepper-list">
+                    <li class="step-item active" id="step-dot-0" onclick="goToSection(0)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToSection(0);}" tabindex="0" role="button" aria-label="Go to Step 1: Intro" aria-current="step">1<span class="step-label">Intro</span></li>
+                    <li class="step-item" id="step-dot-1" onclick="goToSection(1)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToSection(1);}" tabindex="0" role="button" aria-label="Go to Step 2: Bromide Case">2<span class="step-label">Bromide Case</span></li>
+                    <li class="step-item" id="step-dot-2" onclick="goToSection(2)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToSection(2);}" tabindex="0" role="button" aria-label="Go to Step 3: Invented Source">3<span class="step-label">Invented Source</span></li>
+                    <li class="step-item" id="step-dot-3" onclick="goToSection(3)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToSection(3);}" tabindex="0" role="button" aria-label="Go to Step 4: Comparison">4<span class="step-label">Comparison</span></li>
+                    <li class="step-item" id="step-dot-4" onclick="goToSection(4)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToSection(4);}" tabindex="0" role="button" aria-label="Go to Step 5: Verification">5<span class="step-label">Verification</span></li>
+                    <li class="step-item" id="step-dot-5" onclick="goToSection(5)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToSection(5);}" tabindex="0" role="button" aria-label="Go to Step 6: Quiz">6<span class="step-label">Quiz</span></li>
+                    <li class="step-item" id="step-dot-6" onclick="goToSection(6)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToSection(6);}" tabindex="0" role="button" aria-label="Go to Step 7: Complete">7<span class="step-label">Complete</span></li>
+                </ol>
+                <div class="progress-bar-fill" id="progress-fill" aria-hidden="true"></div>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content" tabIndex="-1">
+        <section id="section-0" class="section-card active" aria-labelledby="intro-title">
+            <h1 id="intro-title">Sounds Confident. Is It Correct?</h1>
+            <p class="lead-text">
+                Generative AI can produce clear and convincing answers, but convincing is not the same as correct. Explore two examples and practice deciding what should be verified.
+            </p>
+
+            <div class="callout-box">
+                <h2 style="font-size: 1.1rem; margin-top: 0;">Core Principle</h2>
+                <p style="margin-bottom: 0;">
+                    AI can produce information that is false, invented, incomplete, outdated, insufficiently contextualized, or inappropriate for your specific purpose. AI-generated information can also be technically accurate in one context but dangerously wrong in another. A confident tone is not evidence of accuracy.
+                </p>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="goToSection(1)">
+                    Begin the Investigation
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+            </div>
+        </section>
+
+        <section id="section-1" class="section-card" aria-labelledby="story1-title">
+            <h2 id="story1-title">Story 1: The Bromide Case</h2>
+            
+            <p><strong>Documented Case:</strong></p>
+            <blockquote class="callout-box">
+                “In a published medical case, a 60-year-old man reported consulting ChatGPT while conducting a personal experiment to eliminate sodium chloride from his diet. He purchased sodium bromide online and consumed it in place of sodium chloride for approximately three months. He developed bromide toxicity, including serious psychiatric symptoms, and required hospitalization.”
+            </blockquote>
+
+            <div class="callout-box warning">
+                <h3 style="color: var(--accent-amber-text);">Limits of the Evidence</h3>
+                <p style="margin-bottom: 0;">
+                    The treating physicians did not have access to the original ChatGPT conversation. We therefore do not know the user’s exact prompt, the complete AI response, the model used, what context the user provided, or whether the response contained warnings.
+                </p>
+            </div>
+
+            <h3>What the physicians tested:</h3>
+            <p>
+                Because the original conversation was unavailable, the physicians conducted a separate test. They asked ChatGPT 3.5 what chloride could be replaced with. The response included bromide and stated that context mattered, but it did not provide a specific health warning or ask why the substitution was being considered. This test did not reproduce or verify the patient’s original conversation.
+            </p>
+
+            <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--border-color);" />
+
+            <h3>Interactive Exercise: What can we responsibly conclude?</h3>
+            <p>Evaluate each claim below based only on the available evidence.</p>
+
+            <div class="claims-grid" id="claims-container">
+                <!-- Dynamically injected via JavaScript -->
+            </div>
+
+            <div class="takeaway-banner" role="region" aria-label="Key Takeaway">
+                “Technically related does not mean safe, appropriate, or useful.”
+            </div>
+
+            <p style="font-size: 0.95rem; color: var(--text-muted);">
+                <strong>Teaching Point:</strong> This scenario is better described as a context failure, unsafe omission, or inappropriate application than as a classic hallucination. A hallucination generally involves fabricated or false information. In this case, the proposed substitution may have had meaning within chemistry, but was unsafe when transferred to a dietary and medical context.
+            </p>
+
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="goToSection(0)">Previous</button>
+                <button class="btn btn-primary" onclick="goToSection(2)">
+                    Continue to Story 2
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+            </div>
+        </section>
+
+        <section id="section-2" class="section-card" aria-labelledby="story2-title">
+            <h2 id="story2-title">Story 2: The Invented Source</h2>
+            <p><span style="background-color: var(--accent-amber-bg); color: var(--accent-amber-text); padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.85rem; border: 1px solid var(--accent-amber);">Hypothetical Classroom Example</span></p>
+
+            <div class="callout-box">
+                <p><strong>Scenario:</strong></p>
+                <p>A student asks an AI tool for a scholarly source supporting the claim that four-day workweeks always increase employee productivity. The AI provides this citation:</p>
+            </div>
+
+            <div class="citation-box" id="citation-interactive">
+                <span class="citation-part" data-part="authors" tabIndex="0" role="button" aria-pressed="false" aria-label="Authors: Martinez, L. R., and Chen, D.">Martinez, L. R., and Chen, D.</span>
+                <span class="citation-part" data-part="year" tabIndex="0" role="button" aria-pressed="false" aria-label="Publication Year: 2023">(2023)</span>.
+                <span class="citation-part" data-part="title" tabIndex="0" role="button" aria-pressed="false" aria-label="Title: The Universal Productivity Effects of Four-Day Workweeks">The Universal Productivity Effects of Four-Day Workweeks</span>.
+                <span class="citation-part" data-part="journal" tabIndex="0" role="button" aria-pressed="false" aria-label="Journal Name: Journal of Modern Workplace Science">Journal of Modern Workplace Science</span>,
+                <span class="citation-part" data-part="vol" tabIndex="0" role="button" aria-pressed="false" aria-label="Volume and Issue: 18(4)">18(4)</span>,
+                <span class="citation-part" data-part="pages" tabIndex="0" role="button" aria-pressed="false" aria-label="Page Range: 201 to 219">201–219</span>.
+            </div>
+
+            <p><strong>Interactive Task:</strong> Click or press Enter on the citation elements above or the checklist buttons below to inspect all 6 credible-looking parts.</p>
+
+            <div class="parts-checklist" id="parts-checklist">
+                <div class="part-tag" id="tag-authors" data-part="authors" tabIndex="0" role="button" aria-pressed="false">⚪ Author names</div>
+                <div class="part-tag" id="tag-year" data-part="year" tabIndex="0" role="button" aria-pressed="false">⚪ Publication year</div>
+                <div class="part-tag" id="tag-title" data-part="title" tabIndex="0" role="button" aria-pressed="false">⚪ Academic-sounding title</div>
+                <div class="part-tag" id="tag-journal" data-part="journal" tabIndex="0" role="button" aria-pressed="false">⚪ Journal name</div>
+                <div class="part-tag" id="tag-vol" data-part="vol" tabIndex="0" role="button" aria-pressed="false">⚪ Volume & issue</div>
+                <div class="part-tag" id="tag-pages" data-part="pages" tabIndex="0" role="button" aria-pressed="false">⚪ Page range</div>
+            </div>
+
+            <div id="citation-reveal" class="callout-box warning" style="display: none;">
+                <strong>Key Insight:</strong> Formatting can create an appearance of authority. Correct-looking details do not prove that a source exists.
+            </div>
+
+            <div class="sim-box">
+                <h3>Classroom Simulation: Verify the Source</h3>
+                <p>Test whether this source exists in real-world academic indices:</p>
+                <div class="btn-group" style="margin-top: 0.75rem;">
+                    <button class="btn btn-outline" onclick="runSim('Library Database')">Search library database</button>
+                    <button class="btn btn-outline" onclick="runSim('Google Scholar')">Search Google Scholar</button>
+                    <button class="btn btn-outline" onclick="runSim('Journal Website')">Check journal website</button>
+                </div>
+                <div class="sim-display" id="sim-output" aria-live="polite">
+                    [Simulation Terminal] Click a search button above to perform a simulated catalog search...
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem;">
+                <h3>What should the student do next?</h3>
+                <div class="quiz-options" id="story2-options">
+                    <label class="quiz-option-label">
+                        <input type="radio" name="story2_next" value="1" onclick="checkStory2Action(1)">
+                        <span>1. Use the citation because it looks scholarly.</span>
+                    </label>
+                    <label class="quiz-option-label">
+                        <input type="radio" name="story2_next" value="2" onclick="checkStory2Action(2)">
+                        <span>2. Change a few citation details so it appears more believable.</span>
+                    </label>
+                    <label class="quiz-option-label">
+                        <input type="radio" name="story2_next" value="3" onclick="checkStory2Action(3)">
+                        <span>3. Ask the AI to promise that the citation is real.</span>
+                    </label>
+                    <label class="quiz-option-label">
+                        <input type="radio" name="story2_next" value="4" onclick="checkStory2Action(4)">
+                        <span>4. Locate a real source through a library database or another reliable research tool, open it, and confirm that it supports the claim.</span>
+                    </label>
+                </div>
+                <div id="story2-action-feedback" class="feedback-box"></div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="goToSection(1)">Previous</button>
+                <button class="btn btn-primary" onclick="goToSection(3)">
+                    Compare the Two Cases
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+            </div>
+        </section>
+
+        <section id="section-3" class="section-card" aria-labelledby="comp-title">
+            <h2 id="comp-title">Different Failure, Same Responsibility</h2>
+            <p>Comparing these two scenarios highlights how AI risks manifest differently, but require the same fundamental habit of verification.</p>
+
+            <div class="comparison-grid">
+                <div class="comp-column">
+                    <h3>Story 1: Bromide Case</h3>
+                    <ul class="comp-list">
+                        <li><strong>Context:</strong> High-consequence personal health decision.</li>
+                        <li><strong>Evidence:</strong> Original prompt and response unavailable.</li>
+                        <li><strong>Nature of AI output:</strong> Information may have been technically relevant in chemistry, but dangerous in a dietary context.</li>
+                        <li><strong>Core Failure:</strong> Missing context, unsafe omission, overreliance, and lack of professional verification.</li>
+                    </ul>
+                </div>
+                <div class="comp-column">
+                    <h3>Story 2: Invented Citation</h3>
+                    <ul class="comp-list">
+                        <li><strong>Context:</strong> Lower-consequence academic assignment context.</li>
+                        <li><strong>Evidence:</strong> Source does not exist in any database.</li>
+                        <li><strong>Nature of AI output:</strong> AI generated realistic-looking bibliographic details from scratch.</li>
+                        <li><strong>Core Failure:</strong> Clear example of hallucinated (completely fabricated) information.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="takeaway-banner">
+                In both situations, the AI’s confident presentation is not proof. The user remains responsible for checking important information.
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="goToSection(2)">Previous</button>
+                <button class="btn btn-primary" onclick="goToSection(4)">
+                    Go to Verification Challenge
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+            </div>
+        </section>
+
+        <section id="section-4" class="section-card" aria-labelledby="verif-title">
+            <h2 id="verif-title">Verification Challenge</h2>
+            <p>Assign an appropriate verification level for each of the following AI use cases:</p>
+
+            <div class="stakes-grid" id="stakes-container">
+                <!-- Dynamically injected via JavaScript -->
+            </div>
+
+            <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border-color);" />
+
+            <div class="pause-container">
+                <h2>PAUSE Before You Use AI Output</h2>
+                <p style="margin-bottom: 1rem;">Complete this interactive checklist for high-stakes or scholarly work:</p>
+
+                <div class="pause-step">
+                    <input type="checkbox" id="pause-p" class="pause-checkbox" onchange="updatePauseChecklist()">
+                    <div class="pause-letter">P</div>
+                    <div>
+                        <label for="pause-p" style="font-weight: 700; cursor: pointer;">Pinpoint the claim.</label>
+                        <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted);">What exactly is the AI asking you to believe or use?</p>
+                    </div>
+                </div>
+
+                <div class="pause-step">
+                    <input type="checkbox" id="pause-a" class="pause-checkbox" onchange="updatePauseChecklist()">
+                    <div class="pause-letter">A</div>
+                    <div>
+                        <label for="pause-a" style="font-weight: 700; cursor: pointer;">Assess the stakes.</label>
+                        <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted);">What could happen if the information is wrong?</p>
+                    </div>
+                </div>
+
+                <div class="pause-step">
+                    <input type="checkbox" id="pause-u" class="pause-checkbox" onchange="updatePauseChecklist()">
+                    <div class="pause-letter">U</div>
+                    <div>
+                        <label for="pause-u" style="font-weight: 700; cursor: pointer;">Use another source.</label>
+                        <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted);">Check reliable sources independent of the AI response.</p>
+                    </div>
+                </div>
+
+                <div class="pause-step">
+                    <input type="checkbox" id="pause-s" class="pause-checkbox" onchange="updatePauseChecklist()">
+                    <div class="pause-letter">S</div>
+                    <div>
+                        <label for="pause-s" style="font-weight: 700; cursor: pointer;">See the original.</label>
+                        <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted);">Open the cited article, policy, document, data set, or webpage.</p>
+                    </div>
+                </div>
+
+                <div class="pause-step">
+                    <input type="checkbox" id="pause-e" class="pause-checkbox" onchange="updatePauseChecklist()">
+                    <div class="pause-letter">E</div>
+                    <div>
+                        <label for="pause-e" style="font-weight: 700; cursor: pointer;">Evaluate the evidence.</label>
+                        <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted);">Does the source exist, and does it actually support the claim?</p>
+                    </div>
+                </div>
+
+                <div id="pause-banner" class="feedback-box correct" style="margin-top: 1rem; text-align: center; font-weight: bold;">
+                    Verification complete. Confidence should come from evidence, not presentation.
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="goToSection(3)">Previous</button>
+                <button class="btn btn-primary" onclick="goToSection(5)">
+                    Take Final Knowledge Check
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+            </div>
+        </section>
+
+        <section id="section-5" class="section-card" aria-labelledby="quiz-title">
+            <h2 id="quiz-title">Final Knowledge Check</h2>
+            <p class="lead-text">Answer all 5 questions below to complete the module.</p>
+
+            <form id="quiz-form" onsubmit="event.preventDefault(); evaluateQuiz();">
+                <div class="quiz-q" id="q1-container">
+                    <p><strong>1. Why can an AI response be dangerous even when part of it is technically accurate?</strong></p>
+                    <div class="quiz-options">
+                        <label class="quiz-option-label"><input type="radio" name="q1" value="A"> A) AI models never make technical mistakes.</label>
+                        <label class="quiz-option-label"><input type="radio" name="q1" value="B"> B) Technical relevance in one context (e.g., general chemistry) can be dangerous when applied to another (e.g., human health).</label>
+                        <label class="quiz-option-label"><input type="radio" name="q1" value="C"> C) AI responses are always pre-approved by experts.</label>
+                    </div>
+                    <div class="feedback-box" id="q1-fb"></div>
+                </div>
+
+                <div class="quiz-q" id="q2-container">
+                    <p><strong>2. What important evidence was unavailable in the bromide case?</strong></p>
+                    <div class="quiz-options">
+                        <label class="quiz-option-label"><input type="radio" name="q2" value="A"> A) The patient's hospital records.</label>
+                        <label class="quiz-option-label"><input type="radio" name="q2" value="B"> B) The exact prompt entered by the patient and the original complete AI response.</label>
+                        <label class="quiz-option-label"><input type="radio" name="q2" value="C"> C) Evidence that bromide is toxicity-inducing.</label>
+                    </div>
+                    <div class="feedback-box" id="q2-fb"></div>
+                </div>
+
+                <div class="quiz-q" id="q3-container">
+                    <p><strong>3. Why does a complete-looking citation not prove that a source exists?</strong></p>
+                    <div class="quiz-options">
+                        <label class="quiz-option-label"><input type="radio" name="q3" value="A"> A) AI models assemble citation patterns probabilistically without checking real database records.</label>
+                        <label class="quiz-option-label"><input type="radio" name="q3" value="B"> B) Scholarly databases erase citations after 12 months.</label>
+                        <label class="quiz-option-label"><input type="radio" name="q3" value="C"> C) Real academic papers never include page numbers.</label>
+                    </div>
+                    <div class="feedback-box" id="q3-fb"></div>
+                </div>
+
+                <div class="quiz-q" id="q4-container">
+                    <p><strong>4. Which situations require the strongest independent verification?</strong></p>
+                    <div class="quiz-options">
+                        <label class="quiz-option-label"><input type="radio" name="q4" value="A"> A) Decisions involving health, legal, financial, or safety consequences.</label>
+                        <label class="quiz-option-label"><input type="radio" name="q4" value="B"> B) Brainstorming titles for fictional short stories.</label>
+                        <label class="quiz-option-label"><input type="radio" name="q4" value="C"> C) Rewriting an email to sound more enthusiastic.</label>
+                    </div>
+                    <div class="feedback-box" id="q4-fb"></div>
+                </div>
+
+                <div class="quiz-q" id="q5-container">
+                    <p><strong>5. What should you do before including an AI-provided source in an assignment?</strong></p>
+                    <div class="quiz-options">
+                        <label class="quiz-option-label"><input type="radio" name="q5" value="A"> A) Assume it exists if the journal name sounds professional.</label>
+                        <label class="quiz-option-label"><input type="radio" name="q5" value="B"> B) Locate and open the original source in a library or authoritative database to confirm it exists and supports your claim.</label>
+                        <label class="quiz-option-label"><input type="radio" name="q5" value="C"> C) Change the author names to match a real book you read.</label>
+                    </div>
+                    <div class="feedback-box" id="q5-fb"></div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">Submit Answers</button>
+                </div>
+            </form>
+        </section>
+
+        <section id="section-6" class="section-card" aria-labelledby="complete-title">
+            <h2 id="complete-title">You completed the investigation.</h2>
+            <p class="lead-text">You have successfully evaluated the evidence, analyzed AI failure modes, and practiced verification skills.</p>
+
+            <div class="callout-box" style="background-color: var(--accent-green-bg); border-left-color: var(--accent-green); color: var(--accent-green-text);">
+                <h3 style="color: var(--accent-green-text);">Core Principles to Remember:</h3>
+                <ul style="margin-left: 1.25rem; margin-top: 0.5rem;">
+                    <li>AI output is a starting point, not automatic evidence.</li>
+                    <li>Confident wording does not guarantee accuracy.</li>
+                    <li>Ask what context may be missing.</li>
+                    <li>Verify citations by locating and opening the original source.</li>
+                    <li>Increase verification as the possible consequences increase.</li>
+                    <li>Consult qualified professionals for health, legal, financial, or safety decisions.</li>
+                </ul>
+            </div>
+
+            <div class="callout-box" style="background-color: var(--bg-subtle); border-left: 4px solid var(--primary-light); color: var(--text-main); margin: 1.5rem 0;">
+                <h3 style="margin-top: 0; color: var(--primary);">Personal Reflection</h3>
+                <label for="reflection-input" style="display: block; font-weight: 600; margin-bottom: 0.5rem;">
+                    How will you approach verifying AI-generated output in your future academic, personal, or professional decisions?
+                </label>
+                <textarea id="reflection-input" rows="4" style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background-color: var(--bg-card); color: var(--text-main); font-family: var(--font-sans); font-size: 0.95rem; resize: vertical;" placeholder="Type your reflection here..."></textarea>
+                <div style="margin-top: 0.75rem; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" onclick="addReflectionToSummary()" type="button">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+                        Add Reflection to Activity Summary
+                    </button>
+                    <span id="reflection-toast" class="feedback-box correct" style="display: none; padding: 0.4rem 0.8rem; font-size: 0.875rem;">✓ Reflection added to summary!</span>
+                </div>
+            </div>
+
+            <h3>Your Completion Summary</h3>
+            <div class="summary-box" id="summary-text-box">Generating summary...</div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="copySummary()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                    Copy My Completion Summary
+                </button>
+                <button class="btn btn-secondary" onclick="restartActivity()">Restart Activity</button>
+            </div>
+            <div id="copy-toast" class="feedback-box correct" style="display: none; margin-top: 1rem; text-align: center;">Summary copied to clipboard!</div>
+        </section>
+    </main>
+
+    <footer role="contentinfo">
+        <div class="footer-content">
+            <h3>About the examples</h3>
+            <p style="margin-bottom: 0.75rem;">
+                The bromide example is based on the 2025 medical case report <em>“A Case of Bromism Influenced by Use of Artificial Intelligence.”</em> The original patient conversation was unavailable to the authors, so this activity does not claim to reproduce the patient’s prompt or the complete AI response. The invented-source scenario is hypothetical and was created for this learning activity.
+            </p>
+            <p style="margin-bottom: 0;">
+                <strong>References &amp; External Reporting:</strong><br>
+                • <a href="https://www.nbcnews.com/tech/tech-news/man-asked-chatgpt-cutting-salt-diet-was-hospitalized-hallucinations-rcna225055" target="_blank" rel="noopener noreferrer">NBC News Reporting on Case Study</a><br>
+                • <a href="https://incidentdatabase.ai/cite/1166/" target="_blank" rel="noopener noreferrer">AI Incident Database Record (#1166)</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        let currentSection = 0;
+        const totalSections = 7;
+        let quizScore = 0;
+
+        // Theme Switcher Logic
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-theme', newTheme);
+            
+            const btnLabel = document.getElementById('theme-label');
+            const btnIcon = document.getElementById('theme-icon');
+            const btn = document.getElementById('theme-toggle');
+
+            if (newTheme === 'dark') {
+                btnLabel.innerText = 'Light Mode';
+                btnIcon.innerHTML = `<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>`;
+                btn.setAttribute('aria-label', 'Switch to light theme');
+            } else {
+                btnLabel.innerText = 'Dark Mode';
+                btnIcon.innerHTML = `<circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>`;
+                btn.setAttribute('aria-label', 'Switch to dark theme');
+            }
+        }
+
+        // Data for Story 1 Claims
+        const claimsData = [
+            {
+                id: 1,
+                text: "1. “The patient reported consulting ChatGPT before making the substitution.”",
+                correct: "Supported",
+                feedback: "Correct. The published case report explicitly documents that the patient reported consulting ChatGPT."
+            },
+            {
+                id: 2,
+                text: "2. “We know the exact prompt the patient entered.”",
+                correct: "Not supported",
+                feedback: "Correct. The physicians did not have access to the original chat log, so the exact prompt is unknown."
+            },
+            {
+                id: 3,
+                text: "3. “The original ChatGPT response was available to the physicians.”",
+                correct: "Not supported",
+                feedback: "Correct. The treating physicians stated they did not have access to the original response."
+            },
+            {
+                id: 4,
+                text: "4. “Bromide may be a chemically meaningful replacement for chloride in some contexts, but that does not make it a safe dietary substitute.”",
+                correct: "Supported",
+                feedback: "Correct. Bromide shares chemical family properties with chloride, but it is toxic to humans when ingested."
+            },
+            {
+                id: 5,
+                text: "5. “The case demonstrates the danger of acting on consequential AI information without verification.”",
+                correct: "Supported",
+                feedback: "Correct. Ingesting substances based on unverified AI recommendations poses severe personal safety risks."
+            },
+            {
+                id: 6,
+                text: "6. “Every harmful AI response is a hallucination.”",
+                correct: "Not supported",
+                feedback: "Correct. Harm can also stem from context omission, poor framing, or misuse of accurate chemistry facts."
+            },
+            {
+                id: 7,
+                text: "7. “A separate test by the physicians produced bromide as a possible chloride replacement.”",
+                correct: "Supported",
+                feedback: "Correct. The physicians ran a separate test prompt with ChatGPT 3.5 which mentioned bromide."
+            },
+            {
+                id: 8,
+                text: "8. “The patient’s original AI exchange and the physicians’ later test were identical.”",
+                correct: "Not supported",
+                feedback: "Correct. The physicians' test was a new query and did not replicate or confirm the patient's original interaction."
+            }
+        ];
+
+        // Data for Verification Challenge Stakes
+        const stakesData = [
+            {
+                id: 1,
+                scenario: "Brainstorming names for a fictional coffee shop",
+                correct: "low",
+                explanation: "Low stakes: Output can be reviewed simply for creative usefulness and subjective appeal."
+            },
+            {
+                id: 2,
+                scenario: "Locating a quotation for a research paper",
+                correct: "verify",
+                explanation: "Verify before using: Citations and quotes must be double-checked in original sources."
+            },
+            {
+                id: 3,
+                scenario: "Checking whether a medication is safe",
+                correct: "high",
+                explanation: "High stakes: Health decisions require authoritative sources or qualified medical professionals."
+            },
+            {
+                id: 4,
+                scenario: "Summarizing a document you have already read",
+                correct: "verify",
+                explanation: "Verify before using: Check the summary against your knowledge to ensure no key context was skewed."
+            },
+            {
+                id: 5,
+                scenario: "Providing a statistic for a workplace report",
+                correct: "verify",
+                explanation: "Verify before using: Workplace stats must be traced to authentic primary data sources."
+            },
+            {
+                id: 6,
+                scenario: "Suggesting a more professional subject line for an email",
+                correct: "low",
+                explanation: "Low stakes: Formatting/style suggestions carry low operational risk."
+            }
+        ];
+
+        function goToSection(sectionIndex) {
+            if (sectionIndex < 0 || sectionIndex >= totalSections) return;
+            
+            // Hide current section
+            document.getElementById(`section-${currentSection}`).classList.remove('active');
+            
+            currentSection = sectionIndex;
+
+            // Update state of all step dots
+            for (let i = 0; i < totalSections; i++) {
+                const dot = document.getElementById(`step-dot-${i}`);
+                dot.classList.remove('active', 'completed');
+                dot.removeAttribute('aria-current');
+                
+                if (i < currentSection) {
+                    dot.classList.add('completed');
+                } else if (i === currentSection) {
+                    dot.classList.add('active');
+                    dot.setAttribute('aria-current', 'step');
+                }
+            }
+            
+            // Show new section
+            const nextSec = document.getElementById(`section-${currentSection}`);
+            nextSec.classList.add('active');
+
+            // Update Progress Line Fill
+            const progressPercent = (currentSection / (totalSections - 1)) * 100;
+            document.getElementById('progress-fill').style.width = `${progressPercent}%`;
+
+            // Focus management for accessibility
+            nextSec.setAttribute('tabindex', '-1');
+            nextSec.focus();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if (currentSection === 6) {
+                renderSummaryText();
+            }
+        }
+
+        function initStory1() {
+            const container = document.getElementById('claims-container');
+            container.innerHTML = '';
+
+            claimsData.forEach(claim => {
+                const card = document.createElement('div');
+                card.className = 'claim-card';
+                card.innerHTML = `
+                    <div class="claim-text">${claim.text}</div>
+                    <div class="options-row">
+                        <button class="option-btn" onclick="selectClaimAnswer(${claim.id}, 'Supported', this)">Supported by available evidence</button>
+                        <button class="option-btn" onclick="selectClaimAnswer(${claim.id}, 'Not supported', this)">Not supported by available evidence</button>
+                        <button class="option-btn" onclick="selectClaimAnswer(${claim.id}, 'Needs context', this)">Needs more context</button>
+                    </div>
+                    <div id="claim-fb-${claim.id}" class="feedback-box"></div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function selectClaimAnswer(claimId, choice, btnElement) {
+            const claim = claimsData.find(c => c.id === claimId);
+            const parent = btnElement.parentElement;
+            
+            // Clear selection states
+            const buttons = parent.querySelectorAll('.option-btn');
+            buttons.forEach(b => b.classList.remove('selected'));
+            btnElement.classList.add('selected');
+
+            const fbBox = document.getElementById(`claim-fb-${claimId}`);
+            if (choice === claim.correct) {
+                fbBox.className = "feedback-box correct";
+                fbBox.innerHTML = `<strong>Correct:</strong> ${claim.feedback}`;
+            } else {
+                fbBox.className = "feedback-box incorrect";
+                fbBox.innerHTML = `<strong>Re-evaluate:</strong> Choice is not aligned. ${claim.feedback}`;
+            }
+        }
+
+        // Story 2 Citation Highlighter Logic
+        const clickedCitationParts = new Set();
+        const partLabels = {
+            authors: 'Author names',
+            year: 'Publication year',
+            title: 'Academic-sounding title',
+            journal: 'Journal name',
+            vol: 'Volume & issue',
+            pages: 'Page range'
+        };
+
+        function activateCitationPart(key) {
+            if (!key) return;
+            
+            clickedCitationParts.add(key);
+
+            // Highlight citation text span
+            const span = document.querySelector(`.citation-part[data-part="${key}"]`);
+            if (span) {
+                span.classList.add('active-part');
+                span.setAttribute('aria-pressed', 'true');
+            }
+
+            // Highlight checklist button tag
+            const tag = document.getElementById(`tag-${key}`);
+            if (tag) {
+                tag.classList.add('found');
+                tag.setAttribute('aria-pressed', 'true');
+                tag.innerHTML = `✓ ${partLabels[key] || ''}`;
+            }
+
+            // Reveal insight once all 6 parts are selected
+            if (clickedCitationParts.size >= 6) {
+                document.getElementById('citation-reveal').style.display = 'block';
+            }
+        }
+
+        function initStory2() {
+            const interactiveElements = document.querySelectorAll('.citation-part, .part-tag');
+            interactiveElements.forEach(el => {
+                const key = el.getAttribute('data-part');
+                const handler = (e) => {
+                    e.preventDefault();
+                    activateCitationPart(key);
+                };
+
+                el.addEventListener('click', handler);
+                el.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        handler(e);
+                    }
+                });
+            });
+        }
+
+        function runSim(sourceType) {
+            const output = document.getElementById('sim-output');
+            output.innerText = `Searching ${sourceType}...`;
+            setTimeout(() => {
+                output.innerText = `[Simulated ${sourceType} Search Result]: No matching record found for title "The Universal Productivity Effects of Four-Day Workweeks".`;
+            }, 400);
+        }
+
+        function checkStory2Action(optionIndex) {
+            const fb = document.getElementById('story2-action-feedback');
+            if (optionIndex === 4) {
+                fb.className = "feedback-box correct";
+                fb.innerHTML = "<strong>Best Response:</strong> Exactly. When a citation cannot be found, you must search authoritative library tools for real sources that back up the claim directly.";
+            } else {
+                fb.className = "feedback-box incorrect";
+                fb.innerHTML = "<strong>Unreliable Choice:</strong> Unverified sources or altering text damages research integrity. Always locate and verify a real publication.";
+            }
+        }
+
+        function initStakes() {
+            const container = document.getElementById('stakes-container');
+            container.innerHTML = '';
+
+            stakesData.forEach(item => {
+                const el = document.createElement('div');
+                el.className = 'stakes-item';
+                el.innerHTML = `
+                    <div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--text-main);">${item.scenario}</div>
+                    <div class="options-row">
+                        <button class="option-btn" onclick="checkStake(${item.id}, 'low', this)">Low stakes: Review for usefulness</button>
+                        <button class="option-btn" onclick="checkStake(${item.id}, 'verify', this)">Verify before using</button>
+                        <button class="option-btn" onclick="checkStake(${item.id}, 'high', this)">High stakes: Confirm with professional source</button>
+                    </div>
+                    <div id="stake-fb-${item.id}" class="feedback-box"></div>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        function checkStake(id, choice, btn) {
+            const item = stakesData.find(s => s.id === id);
+            const parent = btn.parentElement;
+            parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+
+            const fb = document.getElementById(`stake-fb-${id}`);
+            if (choice === item.correct) {
+                fb.className = "feedback-box correct";
+                fb.innerHTML = `<strong>Correct:</strong> ${item.explanation}`;
+            } else {
+                fb.className = "feedback-box incorrect";
+                fb.innerHTML = `<strong>Consider consequences:</strong> ${item.explanation}`;
+            }
+        }
+
+        function updatePauseChecklist() {
+            const p = document.getElementById('pause-p').checked;
+            const a = document.getElementById('pause-a').checked;
+            const u = document.getElementById('pause-u').checked;
+            const s = document.getElementById('pause-s').checked;
+            const e = document.getElementById('pause-e').checked;
+
+            const banner = document.getElementById('pause-banner');
+            if (p && a && u && s && e) {
+                banner.style.display = 'block';
+            } else {
+                banner.style.display = 'none';
+            }
+        }
+
+        function evaluateQuiz() {
+            const answers = {
+                q1: 'B',
+                q2: 'B',
+                q3: 'A',
+                q4: 'A',
+                q5: 'B'
+            };
+
+            let count = 0;
+            let total = 5;
+
+            for (let i = 1; i <= total; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                const fb = document.getElementById(`q${i}-fb`);
+
+                if (!selected) {
+                    fb.className = "feedback-box incorrect";
+                    fb.innerHTML = "Please select an answer for this question.";
+                    return;
+                }
+
+                if (selected.value === answers[`q${i}`]) {
+                    count++;
+                    fb.className = "feedback-box correct";
+                    fb.innerHTML = "✓ Correct!";
+                } else {
+                    fb.className = "feedback-box incorrect";
+                    fb.innerHTML = "✗ Incorrect. Try reviewing the lesson material for this topic.";
+                }
+            }
+
+            quizScore = count;
+            setTimeout(() => {
+                goToSection(6);
+            }, 600);
+        }
+
+        function getPauseCheckCount() {
+            const ids = ['pause-p', 'pause-a', 'pause-u', 'pause-s', 'pause-e'];
+            return ids.filter(id => document.getElementById(id).checked).length;
+        }
+
+        function renderSummaryText() {
+            const pauseCount = getPauseCheckCount();
+            const reflectionInput = document.getElementById('reflection-input');
+            const reflectionVal = reflectionInput ? reflectionInput.value.trim() : '';
+            const reflectionText = reflectionVal ? reflectionVal : "(No reflection provided)";
+
+            const text = 
+`==================================================
+MODULE COMPLETION SUMMARY
+Title: Sounds Confident. Is It Correct?
+Knowledge-Check Score: ${quizScore} / 5
+Verification Checklist Completed: ${pauseCount} / 5 items
+
+Student Reflection:
+${reflectionText}
+--------------------------------------------------
+Statement of Understanding:
+"I understand that AI-generated information should be reviewed and independently verified before it is used."
+==================================================`;
+            
+            document.getElementById('summary-text-box').innerText = text;
+        }
+
+        function addReflectionToSummary() {
+            renderSummaryText();
+            const toast = document.getElementById('reflection-toast');
+            if (toast) {
+                toast.style.display = 'inline-block';
+                setTimeout(() => { toast.style.display = 'none'; }, 3000);
+            }
+        }
+
+        function copySummary() {
+            const text = document.getElementById('summary-text-box').innerText;
+            
+            const tempTextarea = document.createElement('textarea');
+            tempTextarea.value = text;
+            document.body.appendChild(tempTextarea);
+            tempTextarea.select();
+            
+            try {
+                document.execCommand('copy');
+                const toast = document.getElementById('copy-toast');
+                toast.style.display = 'block';
+                setTimeout(() => { toast.style.display = 'none'; }, 3000);
+            } catch (err) {
+                alert('Copy failed. Please copy the text manually from the summary box.');
+            } finally {
+                document.body.removeChild(tempTextarea);
+            }
+        }
+
+        function restartActivity() {
+            // Reset Quiz
+            document.getElementById('quiz-form').reset();
+            for (let i = 1; i <= 5; i++) {
+                const fb = document.getElementById(`q${i}-fb`);
+                fb.className = 'feedback-box';
+                fb.style.display = 'none';
+            }
+
+            // Reset Reflection & Toast Notifications
+            const refInput = document.getElementById('reflection-input');
+            if (refInput) refInput.value = '';
+            const refToast = document.getElementById('reflection-toast');
+            if (refToast) refToast.style.display = 'none';
+            const copyToast = document.getElementById('copy-toast');
+            if (copyToast) copyToast.style.display = 'none';
+
+            // Reset PAUSE Checklist
+            ['pause-p', 'pause-a', 'pause-u', 'pause-s', 'pause-e'].forEach(id => {
+                document.getElementById(id).checked = false;
+            });
+            updatePauseChecklist();
+
+            // Reset Citation tasks
+            clickedCitationParts.clear();
+            document.querySelectorAll('.citation-part').forEach(p => {
+                p.classList.remove('active-part');
+                p.setAttribute('aria-pressed', 'false');
+            });
+            document.querySelectorAll('.part-tag').forEach(t => {
+                t.classList.remove('found');
+                t.setAttribute('aria-pressed', 'false');
+            });
+            document.getElementById('tag-authors').innerHTML = '⚪ Author names';
+            document.getElementById('tag-year').innerHTML = '⚪ Publication year';
+            document.getElementById('tag-title').innerHTML = '⚪ Academic-sounding title';
+            document.getElementById('tag-journal').innerHTML = '⚪ Journal name';
+            document.getElementById('tag-vol').innerHTML = '⚪ Volume & issue';
+            document.getElementById('tag-pages').innerHTML = '⚪ Page range';
+            document.getElementById('citation-reveal').style.display = 'none';
+
+            // Reset Stepper
+            for (let i = 0; i < totalSections; i++) {
+                const dot = document.getElementById(`step-dot-${i}`);
+                dot.classList.remove('completed', 'active');
+            }
+
+            goToSection(0);
+        }
+
+        window.onload = function() {
+            initStory1();
+            initStory2();
+            initStakes();
+            updatePauseChecklist();
+        };
+    </script>
+</body>
+</html>
