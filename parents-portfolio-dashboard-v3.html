@@ -140,14 +140,14 @@
     .care-row input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--accent); }
     .care-row input[type="number"] { margin: 0; padding: 0.25rem 0.35rem; font-size: 0.78rem; }
     .care-cost { color: var(--muted); font-size: 0.75rem; text-align: right; }
-    .toggle-line {
-      display: flex;
-      align-items: center;
-      gap: 0.45rem;
+    .fixed-fee {
       font-size: 0.8rem;
-      margin: 0.55rem 0 0.3rem;
+      color: var(--muted);
+      background: var(--bg);
+      padding: 0.4rem 0.55rem;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
     }
-    .toggle-line input { width: 14px; height: 14px; accent-color: var(--accent); }
     .export-row { display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.5rem; }
     .main { padding: 1.25rem; overflow-y: auto; }
     .tabs { display: flex; gap: 0.3rem; margin-bottom: 1rem; flex-wrap: wrap; }
@@ -250,10 +250,10 @@
         <h2>Quick Scenarios</h2>
         <div class="preset-row">
           <button class="btn-sm" id="presetCons">Conservative</button>
-          <button class="btn-sm" id="presetBase">Base Case</button>
+          <button class="btn-sm active" id="presetBase">Base Case</button>
           <button class="btn-sm" id="presetOpt">Optimistic</button>
         </div>
-        <p class="note" style="margin-top:0;">Sets expected returns for all funds + VOO. You can still override any individual value afterward.</p>
+        <p class="note" style="margin-top:0;">Base = lower end of prudent 15-yr ranges (system default). Optimistic = top of range. Conservative = ~1% below Base.</p>
       </div>
 
       <div class="section">
@@ -264,19 +264,18 @@
         </p>
         <div id="fundControls"></div>
 
-        <!-- VOO override -->
         <div class="voo-card">
           <div class="fund-top">
             <span class="fund-name" style="color:#fca5a5;">VOO (S&P 500 Benchmark)</span>
             <span class="fund-er">ER 0.03%</span>
           </div>
           <div class="return-row">
-            <span class="def">Default 9.0%</span>
+            <span class="def">Default 7.0%</span>
             <span>→</span>
             <input type="number" id="ret-voo" placeholder="override" step="0.1" min="-5" max="25" />
             <span>%</span>
           </div>
-          <p class="note" style="margin:0.2rem 0 0;">Always shown on chart. Override lets you model bull/bear index scenarios.</p>
+          <p class="note" style="margin:0.2rem 0 0;">Always shown on chart. Override for bull/bear index scenarios.</p>
         </div>
 
         <div style="font-size:0.78rem;margin-top:0.45rem;">
@@ -289,17 +288,14 @@
         <label>2-Bedroom Rent (fixed)</label>
         <input type="number" id="rent" value="9880" step="50" min="0" />
 
-        <label style="margin-top:0.5rem;">Care Levels</label>
-        <div class="toggle-line">
-          <input type="checkbox" id="highestOnly" />
-          <span>Bill only the highest active care level</span>
-        </div>
-        <p class="note" style="margin:0 0 0.4rem;">When checked, only the single highest-cost checked level that has started is charged (instead of summing all).</p>
+        <div class="fixed-fee">2nd Person Fee: <strong>$995/mo</strong> (always applied)</div>
 
+        <label>Care Level (highest active only • med mgmt included in higher levels)</label>
         <div class="care-row" style="font-size:0.72rem;color:var(--muted);margin-bottom:0.25rem;">
           <span></span><span>Level</span><span style="text-align:right;">$/mo</span><span>Start Yr</span>
         </div>
         <div id="careLevels"></div>
+        <p class="note">Only the single highest checked level that has started is charged. Medication Management applies only when no higher level is active.</p>
 
         <label style="margin-top:0.55rem;">Other Monthly Recurring ($)</label>
         <input type="number" id="otherMonthly" value="0" step="50" min="0" />
@@ -419,32 +415,36 @@
   <div class="toast" id="toast"></div>
 
   <script>
+    // ========== DATA ==========
+    // New prudent 15-yr defaults = lower end of ranges (Base scenario)
     const FUNDS = [
-      { id: 'abalx', name: 'American Balanced Fund (ABALX)', short: 'Balanced (ABALX)', er: 0.0055, defaultReturn: 0.075, color: '#3b82f6' },
-      { id: 'amrmx', name: 'American Mutual Fund (AMRMX)', short: 'Mutual (AMRMX)', er: 0.0057, defaultReturn: 0.085, color: '#10b981' },
-      { id: 'agthx', name: 'Growth Fund of America (AGTHX)', short: 'Growth (AGTHX)', er: 0.0059, defaultReturn: 0.095, color: '#8b5cf6' }
+      { id: 'abalx', name: 'American Balanced Fund (ABALX)', short: 'Balanced (ABALX)', er: 0.0055, defaultReturn: 0.055, color: '#3b82f6' },
+      { id: 'amrmx', name: 'American Mutual Fund (AMRMX)', short: 'Mutual (AMRMX)', er: 0.0057, defaultReturn: 0.065, color: '#10b981' },
+      { id: 'agthx', name: 'Growth Fund of America (AGTHX)', short: 'Growth (AGTHX)', er: 0.0059, defaultReturn: 0.075, color: '#8b5cf6' }
     ];
-    const VOO = { id: 'voo', name: 'Vanguard S&P 500 ETF (VOO)', short: 'VOO (Passive)', er: 0.0003, defaultReturn: 0.09, color: '#ef4444' };
+    const VOO = { id: 'voo', name: 'Vanguard S&P 500 ETF (VOO)', short: 'VOO (Passive)', er: 0.0003, defaultReturn: 0.07, color: '#ef4444' };
 
+    // Care levels ordered by cost (highest last for easy max)
+    // Medication Management is special: only applies if no higher level is active
     const CARE_LEVELS = [
-      { id: 'med', label: 'Medication Mgmt', cost: 595, defaultOn: true, defaultYear: 0 },
+      { id: 'med', label: 'Medication Mgmt', cost: 595, defaultOn: true, defaultYear: 0, isMed: true },
       { id: 'basic', label: 'Basic Care', cost: 1095, defaultOn: false, defaultYear: 0 },
       { id: 'l1', label: 'Level 1', cost: 1895, defaultOn: true, defaultYear: 2 },
       { id: 'l2', label: 'Level 2', cost: 2395, defaultOn: false, defaultYear: 0 },
       { id: 'l3', label: 'Level 3', cost: 2995, defaultOn: false, defaultYear: 0 },
-      { id: 'enh', label: 'Enhanced', cost: 4195, defaultOn: false, defaultYear: 0 },
-      { id: 'second', label: '2nd Person Fee', cost: 995, defaultOn: false, defaultYear: 0 }
+      { id: 'enh', label: 'Enhanced', cost: 4195, defaultOn: false, defaultYear: 0 }
     ];
+    const SECOND_PERSON_FEE = 995; // always applied
 
-    // Scenario presets (gross expected returns)
+    // Scenarios
     const PRESETS = {
-      conservative: { abalx: 6.0, amrmx: 7.0, agthx: 8.0, voo: 7.0 },
-      base:         { abalx: 7.5, amrmx: 8.5, agthx: 9.5, voo: 9.0 },
-      optimistic:   { abalx: 9.0, amrmx: 10.5, agthx: 12.0, voo: 11.0 }
+      conservative: { abalx: 4.5, amrmx: 5.5, agthx: 6.5, voo: 6.0 },
+      base:         { abalx: 5.5, amrmx: 6.5, agthx: 7.5, voo: 7.0 },
+      optimistic:   { abalx: 6.5, amrmx: 7.5, agthx: 8.5, voo: 8.0 }
     };
 
     let allocState = {};
-    let returnOverrides = {}; // includes 'voo'
+    let returnOverrides = {};
     let valueChart, cashflowChart, compareChart, mcChart;
     let allProjections = {};
     let hoveredFundId = null;
@@ -640,7 +640,6 @@
     function applyPreset(name) {
       const p = PRESETS[name];
       if (!p) return;
-      // Clear existing override inputs and set new values
       FUNDS.forEach(f => {
         const input = document.getElementById('ret-' + f.id);
         input.value = p[f.id];
@@ -650,7 +649,6 @@
       vooInput.value = p.voo;
       returnOverrides.voo = p.voo;
 
-      // Visual feedback
       document.querySelectorAll('.preset-row .btn-sm').forEach(b => b.classList.remove('active'));
       const map = { conservative: 'presetCons', base: 'presetBase', optimistic: 'presetOpt' };
       document.getElementById(map[name]).classList.add('active');
@@ -673,28 +671,34 @@
       return er;
     }
 
+    // Care cost: highest non-med level that has started wins.
+    // Medication Management only applies when no higher level is active.
+    // 2nd Person Fee is always added.
     function getMonthlyCostForYear(yearIndex) {
       let cost = parseFloat(document.getElementById('rent').value) || 0;
       cost += parseFloat(document.getElementById('otherMonthly').value) || 0;
+      cost += SECOND_PERSON_FEE; // always on
 
-      const highestOnly = document.getElementById('highestOnly').checked;
-      const activeCare = [];
+      let highestCare = 0;
+      let medActive = false;
 
       CARE_LEVELS.forEach(c => {
         const on = document.getElementById('care-' + c.id).checked;
         const startY = parseInt(document.getElementById('year-' + c.id).value, 10) || 0;
-        if (on && yearIndex >= startY) activeCare.push(c);
+        if (!on || yearIndex < startY) return;
+        if (c.isMed) {
+          medActive = true;
+        } else {
+          if (c.cost > highestCare) highestCare = c.cost;
+        }
       });
 
-      if (highestOnly) {
-        if (activeCare.length) {
-          // pick the single highest cost level
-          const top = activeCare.reduce((a, b) => a.cost > b.cost ? a : b);
-          cost += top.cost;
-        }
-      } else {
-        activeCare.forEach(c => cost += c.cost);
+      if (highestCare > 0) {
+        cost += highestCare; // higher level already includes med mgmt
+      } else if (medActive) {
+        cost += 595;
       }
+
       return cost;
     }
 
@@ -827,7 +831,7 @@
         <div class="card">
           <div class="label">Starting Monthly</div>
           <div class="value">${fmt(startMonthly)}</div>
-          <div class="sub">Rent + active care</div>
+          <div class="sub">Rent + care + 2nd person</div>
         </div>
         <div class="card">
           <div class="label">Mix Expected Return</div>
@@ -1064,7 +1068,6 @@
       `;
     }
 
-    // ========== EXPORT HELPERS ==========
     function buildSummaryText() {
       const startValue = parseFloat(document.getElementById('startValue').value) || 0;
       const years = parseInt(document.getElementById('years').value) || 12;
@@ -1081,7 +1084,8 @@
       lines.push('- Analysis Horizon: ' + years + ' years');
       lines.push('- Inflation: ' + inflation + '%');
       lines.push('- 2BR Rent: ' + fmt(parseFloat(document.getElementById('rent').value) || 0) + '/mo');
-      lines.push('- Highest-care-only: ' + (document.getElementById('highestOnly').checked ? 'Yes' : 'No (additive)'));
+      lines.push('- 2nd Person Fee: $995/mo (always on)');
+      lines.push('- Care rule: highest active level only (med mgmt included in higher levels)');
       lines.push('');
       lines.push('YOUR MIX ALLOCATION');
       getActiveFunds().forEach(f => {
@@ -1119,15 +1123,14 @@
         lines.push(`- ${f.short}: End ${fmt(p.endingValue)}  |  Fees ${fmt(p.totalFees)}  |  Runs out ${yearsLabel(p.yearsUntilZero)}  |  Ret ${(ret*100).toFixed(1)}%`);
       });
       lines.push('');
-      lines.push('Notes: Expected returns are conservative forward-looking estimates (or user overrides).');
-      lines.push('Fees are applied annually. Care costs inflate each year.');
+      lines.push('Notes: Expected returns are prudent 15-year forward estimates (or user overrides).');
+      lines.push('Fees applied annually. Care costs inflate each year. Only highest care level charged.');
       return lines.join('\n');
     }
 
     function copySummary() {
       const text = buildSummaryText();
       navigator.clipboard.writeText(text).then(() => showToast('Summary copied to clipboard')).catch(() => {
-        // fallback
         const ta = document.createElement('textarea');
         ta.value = text;
         document.body.appendChild(ta);
@@ -1166,7 +1169,6 @@
       showToast('Report downloaded');
     }
 
-    // ========== MAIN RUN ==========
     function run() {
       const startValue = parseFloat(document.getElementById('startValue').value) || 0;
       const years = parseInt(document.getElementById('years').value) || 12;
@@ -1192,7 +1194,6 @@
       renderMonteCarlo(mc);
     }
 
-    // Tabs
     document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1214,11 +1215,11 @@
       document.getElementById('petDeposit').checked = false;
       document.getElementById('pendant').checked = false;
       document.getElementById('extraOnetime').value = 0;
-      document.getElementById('highestOnly').checked = false;
       document.getElementById('ret-voo').value = '';
       hoveredFundId = null;
       returnOverrides = {};
       document.querySelectorAll('.preset-row .btn-sm').forEach(b => b.classList.remove('active'));
+      document.getElementById('presetBase').classList.add('active');
       initFunds();
       initCare();
       run();
@@ -1227,13 +1228,11 @@
     document.getElementById('presetCons').addEventListener('click', () => applyPreset('conservative'));
     document.getElementById('presetBase').addEventListener('click', () => applyPreset('base'));
     document.getElementById('presetOpt').addEventListener('click', () => applyPreset('optimistic'));
-    document.getElementById('highestOnly').addEventListener('change', run);
 
     document.getElementById('copySummary').addEventListener('click', copySummary);
     document.getElementById('downloadCsv').addEventListener('click', downloadCsv);
     document.getElementById('exportReport').addEventListener('click', exportReport);
 
-    // Init
     initFunds();
     initCare();
     run();
