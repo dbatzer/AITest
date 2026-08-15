@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parents' Portfolio Longevity Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --surface: #1a2332;
+      --surface2: #243044;
+      --border: #2d3a4f;
+      --text: #e7ecf3;
+      --muted: #8b9bb4;
+      --accent: #3b82f6;
+      --green: #10b981;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --purple: #8b5cf6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+      min-height: 100vh;
+    }
+    .app {
+      display: grid;
+      grid-template-columns: 430px 1fr;
+      min-height: 100vh;
+    }
+    @media (max-width: 1100px) { .app { grid-template-columns: 1fr; } }
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 1.1rem 1.15rem;
+      overflow-y: auto;
+      max-height: 100vh;
+    }
+    .sidebar h1 { font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 0.15rem; }
+    .subtitle { font-size: 0.78rem; color: var(--muted); margin-bottom: 1.1rem; }
+    .section {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.9rem;
+      margin-bottom: 0.85rem;
+    }
+    .section h2 {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 0.65rem;
+    }
+    label { display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 0.2rem; }
+    input[type="number"], input[type="text"], select {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.45rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      margin-bottom: 0.55rem;
+    }
+    input:focus, select:focus { outline: none; border-color: var(--accent); }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .btn {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 0.65rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.92rem;
+      cursor: pointer;
+    }
+    .btn:hover { background: #2563eb; }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      margin-top: 0.4rem;
+    }
+    .btn-secondary:hover { background: var(--surface2); }
+    .btn-sm {
+      padding: 0.35rem 0.55rem;
+      font-size: 0.75rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      cursor: pointer;
+    }
+    .btn-sm:hover { border-color: var(--accent); color: #fff; }
+    .btn-sm.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .preset-row { display: flex; gap: 0.35rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+    .note { font-size: 0.72rem; color: var(--muted); margin-top: 0.4rem; line-height: 1.35; }
+    .fund-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 0.7rem;
+      margin-bottom: 0.5rem;
+    }
+    .fund-card.active { border-color: var(--accent); background: rgba(59,130,246,0.07); }
+    .fund-top { display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.35rem; }
+    .fund-top input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; }
+    .fund-name { font-size: 0.84rem; font-weight: 600; flex: 1; }
+    .fund-er { font-size: 0.72rem; color: var(--muted); }
+    .return-row { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.35rem; font-size: 0.78rem; }
+    .return-row .def { color: var(--muted); }
+    .return-row input { width: 70px; margin: 0; padding: 0.25rem 0.4rem; font-size: 0.8rem; }
+    .slider-row { display: flex; align-items: center; gap: 0.5rem; }
+    .slider-row input[type="range"] { flex: 1; height: 5px; accent-color: var(--accent); cursor: pointer; }
+    .slider-val { width: 38px; text-align: right; font-size: 0.82rem; font-weight: 600; color: var(--accent); }
+    .fund-card:not(.active) .slider-row,
+    .fund-card:not(.active) .return-row { opacity: 0.4; pointer-events: none; }
+    .voo-card {
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.35);
+      border-radius: 8px;
+      padding: 0.6rem 0.7rem;
+      margin-top: 0.5rem;
+    }
+    .care-row {
+      display: grid;
+      grid-template-columns: 22px 1fr 70px 55px;
+      align-items: center;
+      gap: 0.35rem;
+      margin-bottom: 0.4rem;
+      font-size: 0.8rem;
+    }
+    .care-row input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--accent); }
+    .care-row input[type="number"] { margin: 0; padding: 0.25rem 0.35rem; font-size: 0.78rem; }
+    .care-cost { color: var(--muted); font-size: 0.75rem; text-align: right; }
+    .toggle-line {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.8rem;
+      margin: 0.55rem 0 0.3rem;
+    }
+    .toggle-line input { width: 14px; height: 14px; accent-color: var(--accent); }
+    .export-row { display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.5rem; }
+    .main { padding: 1.25rem; overflow-y: auto; }
+    .tabs { display: flex; gap: 0.3rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .tab {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.78rem;
+    }
+    .tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .hidden { display: none !important; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.15rem;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 0.85rem 1rem;
+    }
+    .card .label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
+    .card .value { font-size: 1.15rem; font-weight: 700; margin-top: 0.15rem; }
+    .card .sub { font-size: 0.7rem; color: var(--muted); margin-top: 0.1rem; }
+    .positive { color: var(--green); }
+    .negative { color: var(--red); }
+    .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin-bottom: 1.15rem; }
+    @media (max-width: 900px) { .charts { grid-template-columns: 1fr; } }
+    .chart-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 0.9rem;
+    }
+    .chart-box h3 { font-size: 0.88rem; font-weight: 600; margin-bottom: 0.2rem; }
+    .chart-sub { font-size: 0.72rem; color: var(--muted); margin-bottom: 0.5rem; }
+    .chart-container { position: relative; height: 290px; }
+    .legend-hint { font-size: 0.72rem; color: var(--muted); margin-top: 0.35rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    th, td { padding: 0.45rem 0.55rem; text-align: right; border-bottom: 1px solid var(--border); }
+    th:first-child, td:first-child { text-align: left; }
+    th { background: var(--surface2); color: var(--muted); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; }
+    tr:hover td { background: rgba(59,130,246,0.05); }
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      overflow: auto;
+      max-height: 420px;
+    }
+    .mc-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0.6rem;
+      margin-top: 0.7rem;
+    }
+    .mc-item { background: var(--bg); padding: 0.55rem 0.65rem; border-radius: 6px; text-align: center; }
+    .mc-item .v { font-weight: 700; font-size: 1rem; }
+    .mc-item .l { font-size: 0.68rem; color: var(--muted); }
+    .toast {
+      position: fixed; bottom: 1.2rem; right: 1.2rem;
+      background: var(--green); color: #fff;
+      padding: 0.6rem 1rem; border-radius: 8px;
+      font-size: 0.85rem; font-weight: 600;
+      opacity: 0; transition: opacity 0.25s; pointer-events: none; z-index: 100;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <h1>Parents' Portfolio Longevity</h1>
+      <p class="subtitle">American Funds vs VOO • MorningStar care modeling</p>
+
+      <div class="section">
+        <h2>Portfolio Parameters</h2>
+        <label>Starting Value ($)</label>
+        <input type="number" id="startValue" value="2000000" step="10000" min="0" />
+        <div class="row">
+          <div>
+            <label>Years</label>
+            <input type="number" id="years" value="12" min="1" max="40" />
+          </div>
+          <div>
+            <label>Inflation %</label>
+            <input type="number" id="inflation" value="3.5" step="0.1" min="0" max="12" />
+          </div>
+        </div>
+        <label>Volatility for Monte Carlo (%)</label>
+        <input type="number" id="volatility" value="15" step="0.5" min="5" max="35" />
+      </div>
+
+      <div class="section">
+        <h2>Quick Scenarios</h2>
+        <div class="preset-row">
+          <button class="btn-sm" id="presetCons">Conservative</button>
+          <button class="btn-sm" id="presetBase">Base Case</button>
+          <button class="btn-sm" id="presetOpt">Optimistic</button>
+        </div>
+        <p class="note" style="margin-top:0;">Sets expected returns for all funds + VOO. You can still override any individual value afterward.</p>
+      </div>
+
+      <div class="section">
+        <h2>Fund Selection & Expected Returns</h2>
+        <p class="note" style="margin-top:0;margin-bottom:0.6rem;">
+          Toggle funds on. Only one → 100%. Multiple → sliders stay at 100% total.
+          Enter a custom return to override the default. Clear the box to reset.
+        </p>
+        <div id="fundControls"></div>
+
+        <!-- VOO override -->
+        <div class="voo-card">
+          <div class="fund-top">
+            <span class="fund-name" style="color:#fca5a5;">VOO (S&P 500 Benchmark)</span>
+            <span class="fund-er">ER 0.03%</span>
+          </div>
+          <div class="return-row">
+            <span class="def">Default 9.0%</span>
+            <span>→</span>
+            <input type="number" id="ret-voo" placeholder="override" step="0.1" min="-5" max="25" />
+            <span>%</span>
+          </div>
+          <p class="note" style="margin:0.2rem 0 0;">Always shown on chart. Override lets you model bull/bear index scenarios.</p>
+        </div>
+
+        <div style="font-size:0.78rem;margin-top:0.45rem;">
+          Active allocation: <strong id="allocTotal">100</strong>%
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>MorningStar Costs</h2>
+        <label>2-Bedroom Rent (fixed)</label>
+        <input type="number" id="rent" value="9880" step="50" min="0" />
+
+        <label style="margin-top:0.5rem;">Care Levels</label>
+        <div class="toggle-line">
+          <input type="checkbox" id="highestOnly" />
+          <span>Bill only the highest active care level</span>
+        </div>
+        <p class="note" style="margin:0 0 0.4rem;">When checked, only the single highest-cost checked level that has started is charged (instead of summing all).</p>
+
+        <div class="care-row" style="font-size:0.72rem;color:var(--muted);margin-bottom:0.25rem;">
+          <span></span><span>Level</span><span style="text-align:right;">$/mo</span><span>Start Yr</span>
+        </div>
+        <div id="careLevels"></div>
+
+        <label style="margin-top:0.55rem;">Other Monthly Recurring ($)</label>
+        <input type="number" id="otherMonthly" value="0" step="50" min="0" />
+
+        <label style="margin-top:0.55rem;">One-time Costs (Year 0)</label>
+        <div style="display:flex;flex-direction:column;gap:0.25rem;font-size:0.8rem;">
+          <label style="display:flex;align-items:center;gap:0.4rem;margin:0;">
+            <input type="checkbox" id="communityFee" checked style="width:14px;height:14px;" />
+            Community Fee $5,000
+          </label>
+          <label style="display:flex;align-items:center;gap:0.4rem;margin:0;">
+            <input type="checkbox" id="petDeposit" style="width:14px;height:14px;" />
+            Pet Deposit $1,000
+          </label>
+          <label style="display:flex;align-items:center;gap:0.4rem;margin:0;">
+            <input type="checkbox" id="pendant" style="width:14px;height:14px;" />
+            Emergency Pendant $250
+          </label>
+        </div>
+        <label style="margin-top:0.4rem;">Additional One-time ($)</label>
+        <input type="number" id="extraOnetime" value="0" step="100" min="0" />
+      </div>
+
+      <button class="btn" id="runBtn">Run Projection</button>
+      <button class="btn btn-secondary" id="resetBtn">Reset Defaults</button>
+
+      <div class="section" style="margin-top:0.85rem;">
+        <h2>Export</h2>
+        <div class="export-row">
+          <button class="btn-sm" id="copySummary">Copy Summary to Clipboard</button>
+          <button class="btn-sm" id="downloadCsv">Download Year-by-Year CSV</button>
+          <button class="btn-sm" id="exportReport">Export Summary Report (.txt)</button>
+        </div>
+      </div>
+
+      <p class="note">VOO (red dashed) is always shown as the pure passive benchmark so fee impact is visible.</p>
+    </aside>
+
+    <main class="main">
+      <div class="tabs">
+        <button class="tab active" data-tab="overview">Overview</button>
+        <button class="tab" data-tab="comparison">Fund Comparison</button>
+        <button class="tab" data-tab="montecarlo">Monte Carlo</button>
+        <button class="tab" data-tab="yeartable">Year-by-Year</button>
+      </div>
+
+      <div id="tab-overview">
+        <div class="cards" id="summaryCards"></div>
+        <div class="charts">
+          <div class="chart-box">
+            <h3>Portfolio Value Over Time</h3>
+            <div class="chart-sub">Toggled funds (100% each) + Your Mix + always VOO • Hover a line to focus fees</div>
+            <div class="chart-container"><canvas id="valueChart"></canvas></div>
+            <p class="legend-hint">Solid = selected funds / mix • Red dashed = VOO (passive benchmark)</p>
+          </div>
+          <div class="chart-box">
+            <h3 id="cashflowTitle">Annual Withdrawals vs Fees</h3>
+            <div class="chart-sub" id="cashflowSubtitle">Showing: Your Mix</div>
+            <div class="chart-container"><canvas id="cashflowChart"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-comparison" class="hidden">
+        <div class="chart-box" style="margin-bottom:0.9rem;">
+          <h3>Ending Value — 100% in Each Option</h3>
+          <div class="chart-container" style="height:300px;"><canvas id="compareChart"></canvas></div>
+        </div>
+        <div class="table-wrap">
+          <table id="compareTable">
+            <thead>
+              <tr>
+                <th>Fund</th>
+                <th>ER</th>
+                <th>Expected Return</th>
+                <th>Ending Value</th>
+                <th>Total Fees</th>
+                <th>Total Withdrawn</th>
+                <th>vs VOO</th>
+                <th>Years to $0</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="tab-montecarlo" class="hidden">
+        <div class="chart-box">
+          <h3>Monte Carlo — Your Mix (1,000 paths)</h3>
+          <div class="chart-container" style="height:290px;"><canvas id="mcChart"></canvas></div>
+          <div class="mc-summary" id="mcSummary"></div>
+        </div>
+        <p class="note" style="margin-top:0.7rem;">Sequence-of-returns risk is the largest driver of depletion under high withdrawal rates.</p>
+      </div>
+
+      <div id="tab-yeartable" class="hidden">
+        <div class="table-wrap">
+          <table id="yearTable">
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>Start</th>
+                <th>Growth</th>
+                <th>Fees</th>
+                <th>Withdrawals</th>
+                <th>End Value</th>
+                <th>Monthly Cost</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const FUNDS = [
+      { id: 'abalx', name: 'American Balanced Fund (ABALX)', short: 'Balanced (ABALX)', er: 0.0055, defaultReturn: 0.075, color: '#3b82f6' },
+      { id: 'amrmx', name: 'American Mutual Fund (AMRMX)', short: 'Mutual (AMRMX)', er: 0.0057, defaultReturn: 0.085, color: '#10b981' },
+      { id: 'agthx', name: 'Growth Fund of America (AGTHX)', short: 'Growth (AGTHX)', er: 0.0059, defaultReturn: 0.095, color: '#8b5cf6' }
+    ];
+    const VOO = { id: 'voo', name: 'Vanguard S&P 500 ETF (VOO)', short: 'VOO (Passive)', er: 0.0003, defaultReturn: 0.09, color: '#ef4444' };
+
+    const CARE_LEVELS = [
+      { id: 'med', label: 'Medication Mgmt', cost: 595, defaultOn: true, defaultYear: 0 },
+      { id: 'basic', label: 'Basic Care', cost: 1095, defaultOn: false, defaultYear: 0 },
+      { id: 'l1', label: 'Level 1', cost: 1895, defaultOn: true, defaultYear: 2 },
+      { id: 'l2', label: 'Level 2', cost: 2395, defaultOn: false, defaultYear: 0 },
+      { id: 'l3', label: 'Level 3', cost: 2995, defaultOn: false, defaultYear: 0 },
+      { id: 'enh', label: 'Enhanced', cost: 4195, defaultOn: false, defaultYear: 0 },
+      { id: 'second', label: '2nd Person Fee', cost: 995, defaultOn: false, defaultYear: 0 }
+    ];
+
+    // Scenario presets (gross expected returns)
+    const PRESETS = {
+      conservative: { abalx: 6.0, amrmx: 7.0, agthx: 8.0, voo: 7.0 },
+      base:         { abalx: 7.5, amrmx: 8.5, agthx: 9.5, voo: 9.0 },
+      optimistic:   { abalx: 9.0, amrmx: 10.5, agthx: 12.0, voo: 11.0 }
+    };
+
+    let allocState = {};
+    let returnOverrides = {}; // includes 'voo'
+    let valueChart, cashflowChart, compareChart, mcChart;
+    let allProjections = {};
+    let hoveredFundId = null;
+    let lastMc = null;
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    function initFunds() {
+      const container = document.getElementById('fundControls');
+      container.innerHTML = '';
+      FUNDS.forEach((f, i) => {
+        const on = i < 2;
+        allocState[f.id] = { on, pct: on ? 50 : 0 };
+        returnOverrides[f.id] = null;
+
+        const card = document.createElement('div');
+        card.className = 'fund-card' + (on ? ' active' : '');
+        card.id = 'card-' + f.id;
+        card.innerHTML = `
+          <div class="fund-top">
+            <input type="checkbox" id="chk-${f.id}" ${on ? 'checked' : ''} data-id="${f.id}" />
+            <span class="fund-name">${f.short}</span>
+            <span class="fund-er">ER ${(f.er*100).toFixed(2)}%</span>
+          </div>
+          <div class="return-row">
+            <span class="def">Default ${(f.defaultReturn*100).toFixed(1)}%</span>
+            <span>→</span>
+            <input type="number" id="ret-${f.id}" placeholder="override" step="0.1" min="-5" max="25" data-id="${f.id}" />
+            <span>%</span>
+          </div>
+          <div class="slider-row">
+            <input type="range" id="sld-${f.id}" min="0" max="100" value="${allocState[f.id].pct}" data-id="${f.id}" />
+            <span class="slider-val" id="val-${f.id}">${allocState[f.id].pct}%</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      FUNDS.forEach(f => {
+        document.getElementById('chk-' + f.id).addEventListener('change', onToggle);
+        document.getElementById('sld-' + f.id).addEventListener('input', onSlider);
+        document.getElementById('ret-' + f.id).addEventListener('input', onReturnOverride);
+      });
+      document.getElementById('ret-voo').addEventListener('input', onVooOverride);
+      returnOverrides.voo = null;
+
+      normalizeAlloc();
+      updateAllocUI();
+    }
+
+    function initCare() {
+      const container = document.getElementById('careLevels');
+      container.innerHTML = '';
+      CARE_LEVELS.forEach(c => {
+        const row = document.createElement('div');
+        row.className = 'care-row';
+        row.innerHTML = `
+          <input type="checkbox" id="care-${c.id}" ${c.defaultOn ? 'checked' : ''} />
+          <span>${c.label}</span>
+          <span class="care-cost">$${c.cost.toLocaleString()}</span>
+          <input type="number" id="year-${c.id}" value="${c.defaultYear}" min="0" max="40" />
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function getActiveFunds() { return FUNDS.filter(f => allocState[f.id].on); }
+
+    function getFundReturn(f) {
+      const override = returnOverrides[f.id];
+      if (override !== null && override !== undefined && !isNaN(override)) return override / 100;
+      return f.defaultReturn;
+    }
+
+    function getVooReturn() {
+      const override = returnOverrides.voo;
+      if (override !== null && override !== undefined && !isNaN(override)) return override / 100;
+      return VOO.defaultReturn;
+    }
+
+    function normalizeAlloc() {
+      const active = getActiveFunds();
+      if (active.length === 0) {
+        allocState[FUNDS[0].id].on = true;
+        allocState[FUNDS[0].id].pct = 100;
+        return;
+      }
+      if (active.length === 1) {
+        allocState[active[0].id].pct = 100;
+        return;
+      }
+      let sum = active.reduce((s, f) => s + (allocState[f.id].pct || 0), 0);
+      if (sum <= 0) {
+        const eq = Math.floor(100 / active.length);
+        active.forEach((f, i) => {
+          allocState[f.id].pct = i === active.length - 1 ? 100 - eq * (active.length - 1) : eq;
+        });
+      } else {
+        let run = 0;
+        active.forEach((f, i) => {
+          if (i === active.length - 1) allocState[f.id].pct = 100 - run;
+          else {
+            const p = Math.round((allocState[f.id].pct / sum) * 100);
+            allocState[f.id].pct = p;
+            run += p;
+          }
+        });
+      }
+    }
+
+    function onToggle(e) {
+      const id = e.target.dataset.id;
+      allocState[id].on = e.target.checked;
+      if (!e.target.checked) allocState[id].pct = 0;
+      normalizeAlloc();
+      updateAllocUI();
+      run();
+    }
+
+    function onSlider(e) {
+      const id = e.target.dataset.id;
+      if (!allocState[id].on) return;
+      const newVal = parseInt(e.target.value, 10);
+      const active = getActiveFunds();
+      if (active.length === 1) {
+        allocState[id].pct = 100;
+        e.target.value = 100;
+        document.getElementById('val-' + id).textContent = '100%';
+        return;
+      }
+      const others = active.filter(f => f.id !== id);
+      const remaining = 100 - newVal;
+      const otherSum = others.reduce((s, f) => s + allocState[f.id].pct, 0) || others.length;
+      let run = 0;
+      others.forEach((f, i) => {
+        if (i === others.length - 1) allocState[f.id].pct = remaining - run;
+        else {
+          const p = Math.round((allocState[f.id].pct / otherSum) * remaining);
+          allocState[f.id].pct = p;
+          run += p;
+        }
+      });
+      allocState[id].pct = newVal;
+      updateAllocUI();
+      run();
+    }
+
+    function onReturnOverride(e) {
+      const id = e.target.dataset.id;
+      const val = e.target.value.trim();
+      if (val === '') returnOverrides[id] = null;
+      else {
+        const n = parseFloat(val);
+        returnOverrides[id] = isNaN(n) ? null : n;
+      }
+      run();
+    }
+
+    function onVooOverride(e) {
+      const val = e.target.value.trim();
+      if (val === '') returnOverrides.voo = null;
+      else {
+        const n = parseFloat(val);
+        returnOverrides.voo = isNaN(n) ? null : n;
+      }
+      run();
+    }
+
+    function updateAllocUI() {
+      let total = 0;
+      FUNDS.forEach(f => {
+        const st = allocState[f.id];
+        const card = document.getElementById('card-' + f.id);
+        const chk = document.getElementById('chk-' + f.id);
+        const sld = document.getElementById('sld-' + f.id);
+        const val = document.getElementById('val-' + f.id);
+        chk.checked = st.on;
+        card.classList.toggle('active', st.on);
+        sld.value = st.pct;
+        val.textContent = st.pct + '%';
+        total += st.on ? st.pct : 0;
+      });
+      const el = document.getElementById('allocTotal');
+      el.textContent = total;
+      el.style.color = total === 100 ? 'var(--green)' : 'var(--red)';
+    }
+
+    function applyPreset(name) {
+      const p = PRESETS[name];
+      if (!p) return;
+      // Clear existing override inputs and set new values
+      FUNDS.forEach(f => {
+        const input = document.getElementById('ret-' + f.id);
+        input.value = p[f.id];
+        returnOverrides[f.id] = p[f.id];
+      });
+      const vooInput = document.getElementById('ret-voo');
+      vooInput.value = p.voo;
+      returnOverrides.voo = p.voo;
+
+      // Visual feedback
+      document.querySelectorAll('.preset-row .btn-sm').forEach(b => b.classList.remove('active'));
+      const map = { conservative: 'presetCons', base: 'presetBase', optimistic: 'presetOpt' };
+      document.getElementById(map[name]).classList.add('active');
+      run();
+    }
+
+    function getMixReturn() {
+      let r = 0;
+      FUNDS.forEach(f => {
+        if (allocState[f.id].on) r += (allocState[f.id].pct / 100) * getFundReturn(f);
+      });
+      return r;
+    }
+
+    function getMixER() {
+      let er = 0;
+      FUNDS.forEach(f => {
+        if (allocState[f.id].on) er += (allocState[f.id].pct / 100) * f.er;
+      });
+      return er;
+    }
+
+    function getMonthlyCostForYear(yearIndex) {
+      let cost = parseFloat(document.getElementById('rent').value) || 0;
+      cost += parseFloat(document.getElementById('otherMonthly').value) || 0;
+
+      const highestOnly = document.getElementById('highestOnly').checked;
+      const activeCare = [];
+
+      CARE_LEVELS.forEach(c => {
+        const on = document.getElementById('care-' + c.id).checked;
+        const startY = parseInt(document.getElementById('year-' + c.id).value, 10) || 0;
+        if (on && yearIndex >= startY) activeCare.push(c);
+      });
+
+      if (highestOnly) {
+        if (activeCare.length) {
+          // pick the single highest cost level
+          const top = activeCare.reduce((a, b) => a.cost > b.cost ? a : b);
+          cost += top.cost;
+        }
+      } else {
+        activeCare.forEach(c => cost += c.cost);
+      }
+      return cost;
+    }
+
+    function getOnetime() {
+      let t = 0;
+      if (document.getElementById('communityFee').checked) t += 5000;
+      if (document.getElementById('petDeposit').checked) t += 1000;
+      if (document.getElementById('pendant').checked) t += 250;
+      t += parseFloat(document.getElementById('extraOnetime').value) || 0;
+      return t;
+    }
+
+    function fmt(n) {
+      if (n == null || isNaN(n)) return '—';
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
+    }
+    function fmtPct(n) { return (n * 100).toFixed(2) + '%'; }
+    function yearsLabel(y) {
+      if (y === 0) return 'Already $0';
+      if (y >= 60) return '> 60 yrs';
+      return y + ' yrs';
+    }
+
+    function project(startValue, years, grossReturn, er, inflation, onetime) {
+      const rows = [];
+      let value = Math.max(0, startValue - onetime);
+      let totalFees = 0, totalWithdrawn = 0;
+      let yearsUntilZero = null;
+
+      for (let y = 1; y <= years; y++) {
+        const yearIndex = y - 1;
+        const start = value;
+        if (start <= 0) {
+          if (yearsUntilZero === null) yearsUntilZero = y - 1;
+          const monthly = getMonthlyCostForYear(yearIndex);
+          rows.push({ year: y, start: 0, growth: 0, fees: 0, withdrawal: 0, end: 0, monthly: monthly * Math.pow(1 + inflation, yearIndex) });
+          continue;
+        }
+        const growth = start * grossReturn;
+        const after = start + growth;
+        const fees = after * er;
+        totalFees += fees;
+        const baseMonthly = getMonthlyCostForYear(yearIndex);
+        const monthly = baseMonthly * Math.pow(1 + inflation, yearIndex);
+        const annualWd = monthly * 12;
+        totalWithdrawn += annualWd;
+        value = Math.max(0, after - fees - annualWd);
+        rows.push({ year: y, start, growth, fees, withdrawal: annualWd, end: value, monthly });
+        if (value <= 0 && yearsUntilZero === null) yearsUntilZero = y;
+      }
+
+      if (yearsUntilZero === null && value > 0) {
+        let extra = years, v = value;
+        while (v > 0 && extra < 60) {
+          extra++;
+          const yi = extra - 1;
+          const g = v * grossReturn;
+          const after = v + g;
+          const f = after * er;
+          const baseM = getMonthlyCostForYear(Math.min(yi, years - 1));
+          const m = baseM * Math.pow(1 + inflation, yi);
+          v = Math.max(0, after - f - m * 12);
+          if (v <= 0) { yearsUntilZero = extra; break; }
+        }
+        if (yearsUntilZero === null) yearsUntilZero = 60;
+      }
+      if (yearsUntilZero === null) yearsUntilZero = 0;
+
+      return {
+        rows,
+        totalFees,
+        totalWithdrawn,
+        endingValue: rows.length ? rows[rows.length - 1].end : 0,
+        yearsUntilZero
+      };
+    }
+
+    function runMonteCarlo(startValue, years, meanR, vol, er, inflation, onetime, n = 1000) {
+      const endings = [];
+      let depleted = 0;
+      for (let s = 0; s < n; s++) {
+        let value = Math.max(0, startValue - onetime);
+        for (let y = 0; y < years; y++) {
+          const u1 = Math.random(), u2 = Math.random();
+          const z = Math.sqrt(-2 * Math.log(Math.max(u1, 1e-10))) * Math.cos(2 * Math.PI * u2);
+          const r = meanR + vol * z;
+          value *= (1 + r);
+          value -= value * er;
+          const baseM = getMonthlyCostForYear(y);
+          const m = baseM * Math.pow(1 + inflation, y);
+          value -= m * 12;
+          if (value < 0) value = 0;
+          if (value === 0) break;
+        }
+        endings.push(value);
+        if (value === 0) depleted++;
+      }
+      endings.sort((a, b) => a - b);
+      const pct = p => endings[Math.min(endings.length - 1, Math.floor(p / 100 * endings.length))];
+      return {
+        endings,
+        median: pct(50),
+        p10: pct(10),
+        p90: pct(90),
+        successRate: 1 - depleted / n,
+        depleted
+      };
+    }
+
+    function renderSummary(mix, years) {
+      const startMonthly = getMonthlyCostForYear(0);
+      const cards = document.getElementById('summaryCards');
+      const dep = mix.yearsUntilZero;
+      cards.innerHTML = `
+        <div class="card">
+          <div class="label">Your Mix Ending</div>
+          <div class="value ${mix.endingValue > 0 ? 'positive' : 'negative'}">${fmt(mix.endingValue)}</div>
+          <div class="sub">After ${years} years</div>
+        </div>
+        <div class="card">
+          <div class="label">Total Withdrawn</div>
+          <div class="value">${fmt(mix.totalWithdrawn)}</div>
+          <div class="sub">Care + rent</div>
+        </div>
+        <div class="card">
+          <div class="label">Total Fees Paid</div>
+          <div class="value negative">${fmt(mix.totalFees)}</div>
+          <div class="sub">Weighted ER ${fmtPct(getMixER())}</div>
+        </div>
+        <div class="card">
+          <div class="label">Starting Monthly</div>
+          <div class="value">${fmt(startMonthly)}</div>
+          <div class="sub">Rent + active care</div>
+        </div>
+        <div class="card">
+          <div class="label">Mix Expected Return</div>
+          <div class="value">${(getMixReturn()*100).toFixed(1)}%</div>
+          <div class="sub">Before fees</div>
+        </div>
+        <div class="card">
+          <div class="label">Depletion Risk</div>
+          <div class="value ${dep <= years ? 'negative' : 'positive'}">${dep <= years ? 'Year ' + dep : 'None in window'}</div>
+          <div class="sub">Deterministic path</div>
+        </div>
+        <div class="card">
+          <div class="label">Money Runs Out In</div>
+          <div class="value ${dep <= years ? 'negative' : 'positive'}">${yearsLabel(dep)}</div>
+          <div class="sub">Even beyond analysis</div>
+        </div>
+      `;
+    }
+
+    function renderValueChart(years) {
+      const ctx = document.getElementById('valueChart').getContext('2d');
+      if (valueChart) valueChart.destroy();
+      const labels = Array.from({ length: years }, (_, i) => 'Y' + (i + 1));
+      const datasets = [];
+
+      if (allProjections.mix) {
+        datasets.push({
+          label: 'Your Mix',
+          data: allProjections.mix.rows.map(r => r.end),
+          borderColor: '#ffffff',
+          borderWidth: 2.5,
+          borderDash: [3, 3],
+          tension: 0.25,
+          pointRadius: 0,
+          pointHoverRadius: 5
+        });
+      }
+
+      getActiveFunds().forEach(f => {
+        const p = allProjections[f.id];
+        if (!p) return;
+        datasets.push({
+          label: f.short,
+          data: p.rows.map(r => r.end),
+          borderColor: f.color,
+          borderWidth: 2,
+          tension: 0.25,
+          pointRadius: 0,
+          pointHoverRadius: 5
+        });
+      });
+
+      if (allProjections.voo) {
+        datasets.push({
+          label: VOO.short,
+          data: allProjections.voo.rows.map(r => r.end),
+          borderColor: VOO.color,
+          borderWidth: 2.5,
+          borderDash: [6, 4],
+          tension: 0.25,
+          pointRadius: 0,
+          pointHoverRadius: 5
+        });
+      }
+
+      valueChart = new Chart(ctx, {
+        type: 'line',
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'nearest', axis: 'x', intersect: false },
+          plugins: {
+            legend: { labels: { color: '#e7ecf3', usePointStyle: true, boxWidth: 10 } },
+            tooltip: { callbacks: { label: c => c.dataset.label + ': ' + fmt(c.raw) } }
+          },
+          onHover: (evt, els) => {
+            if (!els.length) return;
+            const label = valueChart.data.datasets[els[0].datasetIndex].label;
+            let id = null;
+            if (label === 'Your Mix') id = 'mix';
+            else if (label === VOO.short) id = 'voo';
+            else {
+              const found = FUNDS.find(f => f.short === label);
+              if (found) id = found.id;
+            }
+            if (id && id !== hoveredFundId) {
+              hoveredFundId = id;
+              updateCashflow(id);
+            }
+          },
+          scales: {
+            y: { ticks: { callback: v => '$' + (v / 1e6).toFixed(1) + 'M', color: '#8b9bb4' }, grid: { color: 'rgba(45,58,79,0.55)' } },
+            x: { ticks: { color: '#8b9bb4' }, grid: { display: false } }
+          }
+        }
+      });
+    }
+
+    function updateCashflow(fundId) {
+      const proj = allProjections[fundId];
+      if (!proj) return;
+      let name = 'Your Mix';
+      if (fundId === 'voo') name = VOO.short;
+      else if (fundId !== 'mix') {
+        const f = FUNDS.find(x => x.id === fundId);
+        if (f) name = f.short;
+      }
+      document.getElementById('cashflowTitle').textContent = 'Annual Withdrawals vs Fees — ' + name;
+      document.getElementById('cashflowSubtitle').textContent = 'Fee impact for ' + name + ' (hover another line to switch)';
+
+      const ctx = document.getElementById('cashflowChart').getContext('2d');
+      if (cashflowChart) cashflowChart.destroy();
+      cashflowChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: proj.rows.map(r => 'Y' + r.year),
+          datasets: [
+            { label: 'Withdrawals', data: proj.rows.map(r => r.withdrawal), backgroundColor: 'rgba(239,68,68,0.7)' },
+            { label: 'Fees', data: proj.rows.map(r => r.fees), backgroundColor: 'rgba(245,158,11,0.7)' }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: '#e7ecf3' } } },
+          scales: {
+            y: { ticks: { callback: v => '$' + (v / 1000).toFixed(0) + 'k', color: '#8b9bb4' }, grid: { color: 'rgba(45,58,79,0.55)' } },
+            x: { ticks: { color: '#8b9bb4' }, grid: { display: false } }
+          }
+        }
+      });
+    }
+
+    function renderYearTable(rows) {
+      document.querySelector('#yearTable tbody').innerHTML = rows.map(r => `
+        <tr>
+          <td>${r.year}</td>
+          <td>${fmt(r.start)}</td>
+          <td class="positive">${fmt(r.growth)}</td>
+          <td class="negative">${fmt(r.fees)}</td>
+          <td>${fmt(r.withdrawal)}</td>
+          <td><strong>${fmt(r.end)}</strong></td>
+          <td>${fmt(r.monthly)}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderComparison() {
+      const list = [...FUNDS, VOO];
+      const results = list.map(f => ({ fund: f, ...allProjections[f.id] }));
+      const vooEnd = results.find(r => r.fund.id === 'voo').endingValue;
+
+      document.querySelector('#compareTable tbody').innerHTML = results.map(r => {
+        const diff = r.endingValue - vooEnd;
+        const ret = r.fund.id === 'voo' ? getVooReturn() : getFundReturn(r.fund);
+        return `
+          <tr>
+            <td style="text-align:left;">${r.fund.name}</td>
+            <td>${fmtPct(r.fund.er)}</td>
+            <td>${(ret * 100).toFixed(1)}%</td>
+            <td><strong>${fmt(r.endingValue)}</strong></td>
+            <td class="negative">${fmt(r.totalFees)}</td>
+            <td>${fmt(r.totalWithdrawn)}</td>
+            <td class="${diff >= 0 ? 'positive' : 'negative'}">${diff >= 0 ? '+' : ''}${fmt(diff)}</td>
+            <td>${yearsLabel(r.yearsUntilZero)}</td>
+          </tr>
+        `;
+      }).join('');
+
+      const ctx = document.getElementById('compareChart').getContext('2d');
+      if (compareChart) compareChart.destroy();
+      compareChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: results.map(r => r.fund.short),
+          datasets: [{
+            label: 'Ending Value',
+            data: results.map(r => r.endingValue),
+            backgroundColor: results.map(r => r.fund.color)
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { ticks: { callback: v => '$' + (v / 1e6).toFixed(1) + 'M', color: '#8b9bb4' }, grid: { color: 'rgba(45,58,79,0.55)' } },
+            x: { ticks: { color: '#e7ecf3' }, grid: { display: false } }
+          }
+        }
+      });
+    }
+
+    function renderMonteCarlo(mc) {
+      lastMc = mc;
+      const bins = 18;
+      const min = Math.max(0, mc.p10 * 0.65);
+      const max = mc.p90 * 1.3 || 1;
+      const step = (max - min) / bins || 1;
+      const counts = new Array(bins).fill(0);
+      mc.endings.forEach(v => {
+        let idx = Math.floor((v - min) / step);
+        if (idx < 0) idx = 0;
+        if (idx >= bins) idx = bins - 1;
+        counts[idx]++;
+      });
+
+      const ctx = document.getElementById('mcChart').getContext('2d');
+      if (mcChart) mcChart.destroy();
+      mcChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: counts.map((_, i) => fmt(min + i * step)),
+          datasets: [{ data: counts, backgroundColor: 'rgba(59,130,246,0.6)' }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { ticks: { color: '#8b9bb4' }, grid: { color: 'rgba(45,58,79,0.55)' } },
+            x: { ticks: { color: '#8b9bb4', maxRotation: 45, minRotation: 45, font: { size: 9 } }, grid: { display: false } }
+          }
+        }
+      });
+
+      document.getElementById('mcSummary').innerHTML = `
+        <div class="mc-item"><div class="v">${fmt(mc.median)}</div><div class="l">Median Ending</div></div>
+        <div class="mc-item"><div class="v">${fmt(mc.p10)}</div><div class="l">10th %ile</div></div>
+        <div class="mc-item"><div class="v">${fmt(mc.p90)}</div><div class="l">90th %ile</div></div>
+        <div class="mc-item"><div class="v">${(mc.successRate * 100).toFixed(1)}%</div><div class="l">Success Rate</div></div>
+        <div class="mc-item"><div class="v">${mc.depleted}</div><div class="l">Paths to $0</div></div>
+      `;
+    }
+
+    // ========== EXPORT HELPERS ==========
+    function buildSummaryText() {
+      const startValue = parseFloat(document.getElementById('startValue').value) || 0;
+      const years = parseInt(document.getElementById('years').value) || 12;
+      const inflation = parseFloat(document.getElementById('inflation').value) || 0;
+      const mix = allProjections.mix;
+      const voo = allProjections.voo;
+      const lines = [];
+      lines.push('PARENTS\' PORTFOLIO LONGEVITY SUMMARY');
+      lines.push('Generated: ' + new Date().toLocaleString());
+      lines.push('='.repeat(52));
+      lines.push('');
+      lines.push('PARAMETERS');
+      lines.push('- Starting Value: ' + fmt(startValue));
+      lines.push('- Analysis Horizon: ' + years + ' years');
+      lines.push('- Inflation: ' + inflation + '%');
+      lines.push('- 2BR Rent: ' + fmt(parseFloat(document.getElementById('rent').value) || 0) + '/mo');
+      lines.push('- Highest-care-only: ' + (document.getElementById('highestOnly').checked ? 'Yes' : 'No (additive)'));
+      lines.push('');
+      lines.push('YOUR MIX ALLOCATION');
+      getActiveFunds().forEach(f => {
+        lines.push(`- ${f.short}: ${allocState[f.id].pct}%  |  Expected return ${(getFundReturn(f)*100).toFixed(1)}%  |  ER ${fmtPct(f.er)}`);
+      });
+      lines.push(`- Weighted expected return: ${(getMixReturn()*100).toFixed(1)}%`);
+      lines.push(`- Weighted expense ratio: ${fmtPct(getMixER())}`);
+      lines.push('');
+      lines.push('VOO BENCHMARK');
+      lines.push(`- Expected return: ${(getVooReturn()*100).toFixed(1)}%  |  ER 0.03%`);
+      lines.push('');
+      lines.push('RESULTS — YOUR MIX');
+      lines.push('- Ending Value: ' + fmt(mix.endingValue));
+      lines.push('- Total Withdrawn: ' + fmt(mix.totalWithdrawn));
+      lines.push('- Total Fees Paid: ' + fmt(mix.totalFees));
+      lines.push('- Money Runs Out In: ' + yearsLabel(mix.yearsUntilZero));
+      lines.push('');
+      lines.push('RESULTS — VOO (100%)');
+      lines.push('- Ending Value: ' + fmt(voo.endingValue));
+      lines.push('- Total Fees Paid: ' + fmt(voo.totalFees));
+      lines.push('- Money Runs Out In: ' + yearsLabel(voo.yearsUntilZero));
+      lines.push('- Difference vs Your Mix: ' + fmt(mix.endingValue - voo.endingValue));
+      lines.push('');
+      if (lastMc) {
+        lines.push('MONTE CARLO (Your Mix, 1,000 paths)');
+        lines.push('- Median Ending: ' + fmt(lastMc.median));
+        lines.push('- 10th / 90th %ile: ' + fmt(lastMc.p10) + ' / ' + fmt(lastMc.p90));
+        lines.push('- Success Rate: ' + (lastMc.successRate * 100).toFixed(1) + '%');
+        lines.push('');
+      }
+      lines.push('SIDE-BY-SIDE (100% allocation each)');
+      [...FUNDS, VOO].forEach(f => {
+        const p = allProjections[f.id];
+        const ret = f.id === 'voo' ? getVooReturn() : getFundReturn(f);
+        lines.push(`- ${f.short}: End ${fmt(p.endingValue)}  |  Fees ${fmt(p.totalFees)}  |  Runs out ${yearsLabel(p.yearsUntilZero)}  |  Ret ${(ret*100).toFixed(1)}%`);
+      });
+      lines.push('');
+      lines.push('Notes: Expected returns are conservative forward-looking estimates (or user overrides).');
+      lines.push('Fees are applied annually. Care costs inflate each year.');
+      return lines.join('\n');
+    }
+
+    function copySummary() {
+      const text = buildSummaryText();
+      navigator.clipboard.writeText(text).then(() => showToast('Summary copied to clipboard')).catch(() => {
+        // fallback
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast('Summary copied');
+      });
+    }
+
+    function downloadCsv() {
+      const rows = allProjections.mix.rows;
+      let csv = 'Year,Start Value,Growth,Fees,Withdrawals,End Value,Monthly Cost\n';
+      rows.forEach(r => {
+        csv += `${r.year},${Math.round(r.start)},${Math.round(r.growth)},${Math.round(r.fees)},${Math.round(r.withdrawal)},${Math.round(r.end)},${Math.round(r.monthly)}\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'parents-portfolio-year-by-year.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('CSV downloaded');
+    }
+
+    function exportReport() {
+      const text = buildSummaryText();
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'parents-portfolio-summary-report.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Report downloaded');
+    }
+
+    // ========== MAIN RUN ==========
+    function run() {
+      const startValue = parseFloat(document.getElementById('startValue').value) || 0;
+      const years = parseInt(document.getElementById('years').value) || 12;
+      const inflation = (parseFloat(document.getElementById('inflation').value) || 0) / 100;
+      const vol = (parseFloat(document.getElementById('volatility').value) || 15) / 100;
+      const onetime = getOnetime();
+
+      allProjections = {};
+
+      FUNDS.forEach(f => {
+        allProjections[f.id] = project(startValue, years, getFundReturn(f), f.er, inflation, onetime);
+      });
+      allProjections.voo = project(startValue, years, getVooReturn(), VOO.er, inflation, onetime);
+      allProjections.mix = project(startValue, years, getMixReturn(), getMixER(), inflation, onetime);
+
+      renderSummary(allProjections.mix, years);
+      renderValueChart(years);
+      updateCashflow(hoveredFundId || 'mix');
+      renderYearTable(allProjections.mix.rows);
+      renderComparison();
+
+      const mc = runMonteCarlo(startValue, years, getMixReturn(), vol, getMixER(), inflation, onetime);
+      renderMonteCarlo(mc);
+    }
+
+    // Tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.add('hidden'));
+        document.getElementById('tab-' + tab.dataset.tab).classList.remove('hidden');
+      });
+    });
+
+    document.getElementById('runBtn').addEventListener('click', run);
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      document.getElementById('startValue').value = 2000000;
+      document.getElementById('years').value = 12;
+      document.getElementById('inflation').value = 3.5;
+      document.getElementById('volatility').value = 15;
+      document.getElementById('rent').value = 9880;
+      document.getElementById('otherMonthly').value = 0;
+      document.getElementById('communityFee').checked = true;
+      document.getElementById('petDeposit').checked = false;
+      document.getElementById('pendant').checked = false;
+      document.getElementById('extraOnetime').value = 0;
+      document.getElementById('highestOnly').checked = false;
+      document.getElementById('ret-voo').value = '';
+      hoveredFundId = null;
+      returnOverrides = {};
+      document.querySelectorAll('.preset-row .btn-sm').forEach(b => b.classList.remove('active'));
+      initFunds();
+      initCare();
+      run();
+    });
+
+    document.getElementById('presetCons').addEventListener('click', () => applyPreset('conservative'));
+    document.getElementById('presetBase').addEventListener('click', () => applyPreset('base'));
+    document.getElementById('presetOpt').addEventListener('click', () => applyPreset('optimistic'));
+    document.getElementById('highestOnly').addEventListener('change', run);
+
+    document.getElementById('copySummary').addEventListener('click', copySummary);
+    document.getElementById('downloadCsv').addEventListener('click', downloadCsv);
+    document.getElementById('exportReport').addEventListener('click', exportReport);
+
+    // Init
+    initFunds();
+    initCare();
+    run();
+  </script>
+</body>
+</html>
