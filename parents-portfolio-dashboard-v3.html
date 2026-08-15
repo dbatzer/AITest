@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Parents' Portfolio Longevity Dashboard</title>
+  <title>Parents' Portfolio Longevity Dashboard - v4</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
     :root {
@@ -140,6 +140,13 @@
     .care-row input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--accent); }
     .care-row input[type="number"] { margin: 0; padding: 0.25rem 0.35rem; font-size: 0.78rem; }
     .care-cost { color: var(--muted); font-size: 0.75rem; text-align: right; }
+    .toggle-line {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.8rem;
+    }
+    .toggle-line input { width: 14px; height: 14px; accent-color: var(--accent); }
     .fixed-fee {
       font-size: 0.8rem;
       color: var(--muted);
@@ -289,6 +296,12 @@
         <input type="number" id="rent" value="9880" step="50" min="0" />
 
         <div class="fixed-fee">2nd Person Fee: <strong>$995/mo</strong> (always applied)</div>
+
+        <div class="toggle-line" style="margin:0.55rem 0 0.35rem;">
+          <input type="checkbox" id="forceEnhanced" style="width:14px;height:14px;accent-color:var(--accent);" />
+          <span><strong>Force Enhanced care from Year 0</strong> (worst-case)</span>
+        </div>
+        <p class="note" style="margin:0 0 0.5rem;">When checked, ignores the individual care levels below and charges Enhanced ($4,195) starting immediately. Still non-cumulative.</p>
 
         <label>Care Level (highest active only • med mgmt included in higher levels)</label>
         <div class="care-row" style="font-size:0.72rem;color:var(--muted);margin-bottom:0.25rem;">
@@ -678,6 +691,12 @@
       let cost = parseFloat(document.getElementById('rent').value) || 0;
       cost += parseFloat(document.getElementById('otherMonthly').value) || 0;
       cost += SECOND_PERSON_FEE; // always on
+
+      // Worst-case override: force Enhanced from Year 0
+      if (document.getElementById('forceEnhanced') && document.getElementById('forceEnhanced').checked) {
+        cost += 4195;
+        return cost;
+      }
 
       let highestCare = 0;
       let medActive = false;
@@ -1216,6 +1235,7 @@
       document.getElementById('pendant').checked = true;
       document.getElementById('extraOnetime').value = 0;
       document.getElementById('ret-voo').value = '';
+      document.getElementById('forceEnhanced').checked = false;
       hoveredFundId = null;
       returnOverrides = {};
       document.querySelectorAll('.preset-row .btn-sm').forEach(b => b.classList.remove('active'));
@@ -1228,6 +1248,7 @@
     document.getElementById('presetCons').addEventListener('click', () => applyPreset('conservative'));
     document.getElementById('presetBase').addEventListener('click', () => applyPreset('base'));
     document.getElementById('presetOpt').addEventListener('click', () => applyPreset('optimistic'));
+    document.getElementById('forceEnhanced').addEventListener('change', run);
 
     document.getElementById('copySummary').addEventListener('click', copySummary);
     document.getElementById('downloadCsv').addEventListener('click', downloadCsv);
