@@ -873,7 +873,10 @@
     function renderValueChart(years) {
       const ctx = document.getElementById('valueChart').getContext('2d');
       if (valueChart) valueChart.destroy();
-      const labels = Array.from({ length: years }, (_, i) => 'Y' + (i + 1));
+      const labels = Array.from({ length: years }, (_, i) => {
+        const yr = new Date().getFullYear() + (i + 1);
+        return `Y${i + 1} (${yr})`;
+        });
       const datasets = [];
 
       if (allProjections.mix) {
@@ -967,7 +970,10 @@
       cashflowChart = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: proj.rows.map(r => 'Y' + r.year),
+          labels: proj.rows.map(r => {
+            const yr = new Date().getFullYear() + r.year;
+            return `Y${r.year} (${yr})`;
+          }),
           datasets: [
             { label: 'Withdrawals', data: proj.rows.map(r => r.withdrawal), backgroundColor: 'rgba(239,68,68,0.7)' },
             { label: 'Fees', data: proj.rows.map(r => r.fees), backgroundColor: 'rgba(245,158,11,0.7)' }
