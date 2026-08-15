@@ -307,11 +307,11 @@
             Community Fee $5,000
           </label>
           <label style="display:flex;align-items:center;gap:0.4rem;margin:0;">
-            <input type="checkbox" id="petDeposit" style="width:14px;height:14px;" />
+            <input type="checkbox" id="petDeposit" checked style="width:14px;height:14px;" />
             Pet Deposit $1,000
           </label>
           <label style="display:flex;align-items:center;gap:0.4rem;margin:0;">
-            <input type="checkbox" id="pendant" style="width:14px;height:14px;" />
+            <input type="checkbox" id="pendant" checked style="width:14px;height:14px;" />
             Emergency Pendant $250
           </label>
         </div>
@@ -428,11 +428,11 @@
     // Medication Management is special: only applies if no higher level is active
     const CARE_LEVELS = [
       { id: 'med', label: 'Medication Mgmt', cost: 595, defaultOn: true, defaultYear: 0, isMed: true },
-      { id: 'basic', label: 'Basic Care', cost: 1095, defaultOn: false, defaultYear: 0 },
-      { id: 'l1', label: 'Level 1', cost: 1895, defaultOn: true, defaultYear: 2 },
-      { id: 'l2', label: 'Level 2', cost: 2395, defaultOn: false, defaultYear: 0 },
-      { id: 'l3', label: 'Level 3', cost: 2995, defaultOn: false, defaultYear: 0 },
-      { id: 'enh', label: 'Enhanced', cost: 4195, defaultOn: false, defaultYear: 0 }
+      { id: 'basic', label: 'Basic Care', cost: 1095, defaultOn: false, defaultYear: 1 },
+      { id: 'l1', label: 'Level 1', cost: 1895, defaultOn: false, defaultYear: 2 },
+      { id: 'l2', label: 'Level 2', cost: 2395, defaultOn: false, defaultYear: 3 },
+      { id: 'l3', label: 'Level 3', cost: 2995, defaultOn: false, defaultYear: 4 },
+      { id: 'enh', label: 'Enhanced', cost: 4195, defaultOn: false, defaultYear: 5 }
     ];
     const SECOND_PERSON_FEE = 995; // always applied
 
@@ -461,7 +461,7 @@
       const container = document.getElementById('fundControls');
       container.innerHTML = '';
       FUNDS.forEach((f, i) => {
-        const on = i < 2;
+        const on = i === 2; // only Growth (AGTHX) on by default
         allocState[f.id] = { on, pct: on ? 50 : 0 };
         returnOverrides[f.id] = null;
 
@@ -1212,8 +1212,8 @@
       document.getElementById('rent').value = 9880;
       document.getElementById('otherMonthly').value = 0;
       document.getElementById('communityFee').checked = true;
-      document.getElementById('petDeposit').checked = false;
-      document.getElementById('pendant').checked = false;
+      document.getElementById('petDeposit').checked = true;
+      document.getElementById('pendant').checked = true;
       document.getElementById('extraOnetime').value = 0;
       document.getElementById('ret-voo').value = '';
       hoveredFundId = null;
